@@ -1,0 +1,4 @@
+*.v
+a.out
+*.vcd
+*.vvp

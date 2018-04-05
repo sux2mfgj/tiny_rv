@@ -1,0 +1,58 @@
+#include "decode.nh"
+#include "execute.nh"
+
+module instruction_decode
+{
+    wire opecode[7];
+    wire rd[5];
+    //wire imm_4_0[5];
+    wire funct3[3];
+    wire rs1[5];
+    //wire rs2[5];
+    wire imm_11_0[12];
+    wire shamt[5];
+
+    wire rs1_value[32];
+    //reg rs1_value[32] = 32'x0;
+
+    proc_name decode_register_fetch;
+
+    execute exec;
+    reg inst[32];
+
+    //type-iだけならclock書けないで行ける
+    func decode
+    {
+        decode_register_fetch();
+        inst := instruction;
+    }
+
+    proc decode_register_fetch
+    {
+        opecode = inst[6:0];
+        rd = inst[11:7];
+        //imm_4_0 = inst[11:7];
+        funct3 = inst[14:12];
+        rs1 = inst[19:15];
+        //rs2 = inst[24:20];
+        imm_11_0 = inst[31:20];
+
+        any
+        {
+            // Integer Register-Immediate Instructions
+            opecode == OP_IMM:
+            {
+                //exec.type_i(rd, funct3, rs1_value, imm_11_0);
+                exec.type_i(rd, funct3, register_1_read(rs1), imm_11_0);
+                finish();
+            }
+            else :
+            {
+                error();
+                finish();
+            }
+        }
+    }
+
+
+}
