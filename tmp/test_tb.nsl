@@ -1,0 +1,63 @@
+declare test_tb simulation {}
+
+declare inner
+{
+    input b;
+    func_out a();
+    func_out c();
+    func_in start();
+}
+
+module test_tb
+{
+    inner in;
+
+    reg count[10] = 0;
+
+    count++;
+    if(count == 8)
+    {
+        in.start();
+    }
+
+    if(count > 0x30)
+    {
+        _finish();
+    }
+
+    if(in.a)
+    {
+        _display("a");
+    }
+    func in.c
+    {
+        _display("c");
+    }
+}
+
+module inner
+{
+    proc_name pro;
+    reg counter[10] = 0;
+
+    func start
+    {
+        pro();
+    }
+
+    proc pro
+    {
+        counter++;
+
+        if(counter == 0x10)
+        {
+            a();
+            pro();
+        }
+        else
+        {
+            c();
+        }
+    }
+}
+

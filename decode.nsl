@@ -53,6 +53,4 @@ module instruction_decode
             }
         }
     }
-
-
 }

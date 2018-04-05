@@ -1,0 +1,6 @@
+#include "inst_fetch.nh"
+
+module instruction_fetch
+{
+
+}

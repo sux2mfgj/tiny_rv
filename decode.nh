@@ -40,7 +40,7 @@ declare instruction_decode
 
     func_in decode(instruction);
 
-    func_out register_1_read(register_1_addr) : in_rs1;
+    func_out register_1_read(register_1_addr) : in_rs1, waiting;
     //func_out register_2_read() : in_rs2;
 
     func_out error();
