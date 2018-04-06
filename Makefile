@@ -35,3 +35,6 @@ $(CC):
 	mkdir -p build
 	cd build; ../riscv-gnu-toolchain/configure --prefix=$(shell pwd)/toolchain --with-arch=rv32i --with-guile=no
 	cd build; make -j $(shell nproc)
+
+clean:
+	rm -fr *.v *.vcd a.out build
