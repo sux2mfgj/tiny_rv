@@ -1,13 +1,22 @@
 #ifndef __INCLUDED_INST_FETCH_NH__
-#deinfe __INCLUDED_INST_FETCH_NH__
+#define __INCLUDED_INST_FETCH_NH__
 
 declare instruction_fetch
 {
     output address[32];
-    input data[32];
+    input inst[32];
+    output inst_out[32];
 
-    func_out request(address);
-    func_in enable(data);
+    input next_pc[32];
+    //input is_interlock;
+
+    func_out inst_request(address);
+    func_in inst_enable(inst);
+
+    func_out get_pc() : next_pc;
+    func_in run();
+
+    func_out execute(inst_out);
 }
 
 #endif

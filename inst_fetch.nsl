@@ -2,5 +2,24 @@
 
 module instruction_fetch
 {
+    state_name idle, waiting;
 
+    state idle
+    {
+        if(run)
+        {
+            inst_request(get_pc());
+            goto waiting;
+        }
+    }
+
+    state idle
+    {
+        func inst_enable
+        {
+            execute(inst);
+            goto idle;
+        }
+    }
 }
+
