@@ -12,12 +12,13 @@ module inst_fetch_tb
 
     reg address[32] = 0;
     proc_name read_mem(address);
+    proc_name fetch;
 
     // for simulation
     counter++;
-    if(counter == 10'0x8)
+    if(counter == 10'0x4)
     {
-        ifetch.run();
+        fetch();
     }
     if(counter == 10'0x20)
     {
@@ -34,7 +35,15 @@ module inst_fetch_tb
     func ifetch.execute
     {
         _display("execute is called");
+        fetch();
     }
+
+    proc fetch
+    {
+        ifetch.run();
+        finish();
+    }
+
 
     // memory side
     func ifetch.inst_request
@@ -44,7 +53,7 @@ module inst_fetch_tb
 
     proc read_mem
     {
-        if(counter[2])
+        if(counter[0] & counter[2])
         {
             ifetch.inst_enable(32'h00000793); // li a5, 0
             finish();

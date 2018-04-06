@@ -13,7 +13,7 @@ module instruction_fetch
         }
     }
 
-    state idle
+    state waiting
     {
         func inst_enable
         {
