@@ -3,22 +3,37 @@
 module instruction_fetch
 {
     state_name idle, waiting;
+    reg inst_buf[32] = 0;
+    reg buf_enable = 0;
 
     state idle
     {
         if(run)
         {
             inst_request(get_pc());
-            goto waiting;
+            if(!inst_enable)
+            {
+                goto waiting;
+            }
         }
+    }
+
+    func inst_enable
+    {
+        execute(inst);
     }
 
     state waiting
     {
-        func inst_enable
+        if(inst_enable)
         {
-            execute(inst);
-            goto idle;
+            if(run)
+            {
+                inst_request(get_pc());
+            }
+            else {
+                goto idle;
+            }
         }
     }
 }

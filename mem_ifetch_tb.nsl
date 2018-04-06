@@ -1,0 +1,64 @@
+#include "test_memory.nh"
+#include "inst_fetch.nh"
+
+declare mem_ifetch_tb simulation {}
+
+module mem_ifetch_tb
+{
+    test_memory memory;
+    instruction_fetch ifetch;
+
+    reg counter[10] = 10'h0;
+    reg pc[32] = 32'h00000000;
+    reg instruction[32] = 32'h0000000;
+
+    proc_name fetch, execute(instruction);
+
+    counter++;
+    if(counter == 10'0x4)
+    {
+        fetch();
+    }
+    if(counter == 10'0x20)
+    {
+        _finish();
+    }
+
+    proc fetch
+    {
+        ifetch.run();
+        finish();
+    }
+
+    proc execute
+    {
+        _display("execute", instruction);
+        finish();
+    }
+
+    // top module side
+    func ifetch.get_pc
+    {
+        return pc;
+        pc := pc + 32'0x4;
+    }
+
+    func ifetch.execute
+    {
+        // you should check interlock.
+        fetch();
+        execute(ifetch.inst_out);
+    }
+
+    // memory side
+    func ifetch.inst_request //(address)
+    {
+        memory.request(ifetch.address);
+    }
+
+    func memory.return_value
+    {
+        ifetch.inst_enable(memory.value);
+    }
+
+}

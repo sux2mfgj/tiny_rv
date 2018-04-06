@@ -19,6 +19,10 @@ ifetch: inst_fetch.v inst_fetch_tb.nsl
 	nsl2vl -verisim2 inst_fetch_tb.nsl -target inst_fetch_tb
 	iverilog inst_fetch.v inst_fetch_tb.v
 
+mem_ifetch: inst_fetch.v test_memory.v mem_ifetch_tb.nsl
+	nsl2vl -verisim2 mem_ifetch_tb.nsl -target mem_ifetch_tb
+	iverilog inst_fetch.v test_memory.v mem_ifetch_tb.v
+	./a.out
 
 build_mem: main.s
 	$(CC) -c $<
