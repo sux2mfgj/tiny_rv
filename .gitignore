@@ -4,3 +4,4 @@ a.out
 *.vvp
 toolchain/
 build/
+*.o
