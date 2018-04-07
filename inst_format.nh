@@ -17,11 +17,11 @@
  */
 struct op_imm_t
 {
-    opcode[7];
-    rd[5];
-    funct3[3];
-    rs1[5];
     imm[12];
+    rs1[5];
+    funct3[3];
+    rd[5];
+    opcode[7];
 };
 
 #endif

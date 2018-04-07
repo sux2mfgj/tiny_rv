@@ -1,0 +1,19 @@
+#ifndef __INCLUDED_EXECUTE_NH__
+#define __INCLUDED_EXECUTE_NH__
+
+declare execute
+{
+    input inst[32];
+    output rs1_addr[5];
+    input rs1_value[32];
+
+    output out_rd[5];
+    output result[32];
+
+    func_in run(inst);
+
+    func_out rs1_reg_read(rs1_addr) : rs1_value;
+    func_out done(out_rd, result);
+}
+
+#endif

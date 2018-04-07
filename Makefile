@@ -30,6 +30,11 @@ ipu: ipu.v ipu_tb.nsl
 	iverilog ipu.v ipu_tb.v
 	./a.out
 
+exec: ipu.v decode.v execute.v execute_tb.nsl
+	nsl2vl -verisim2 execute_tb.nsl -target execute_tb
+	iverilog ipu.v decode.v execute.v execute_tb.v
+	./a.out
+
 tiny_rv: tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.nsl # decode.v
 	nsl2vl -verisim2 tiny_rv_tb.nsl -target tiny_rv_tb
 	iverilog tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.v
