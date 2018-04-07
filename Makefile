@@ -25,6 +25,11 @@ mem_ifetch: inst_fetch.v test_memory.v mem_ifetch_tb.nsl
 	iverilog inst_fetch.v test_memory.v mem_ifetch_tb.v
 	./a.out
 
+ipu: ipu.v ipu_tb.nsl
+	nsl2vl -verisim2 ipu_tb.nsl -target ipu_tb
+	iverilog ipu.v ipu_tb.v
+	./a.out
+
 tiny_rv: tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.nsl # decode.v
 	nsl2vl -verisim2 tiny_rv_tb.nsl -target tiny_rv_tb
 	iverilog tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.v

@@ -1,0 +1,28 @@
+#include "ipu.nh"
+
+declare ipu_tb simulation {}
+
+module ipu_tb
+{
+    integer_processing_unit ipu;
+
+    reg counter[10] = 10'h0;
+    counter++;
+
+    //0b000000000001_00000_000_00001_0010011; // addi x1, x0, 1
+
+    if(counter == 10'h4)
+    {
+        ipu.int(3'b000, 5'b00001, 32'h8, 32'h1);
+    }
+
+    if(counter == 10'h10)
+    {
+        _finish();
+    }
+
+    func ipu.done
+    {
+        _display("done", ipu.out_rd, ipu.result);
+    }
+}
