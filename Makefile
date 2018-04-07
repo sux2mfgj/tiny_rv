@@ -6,6 +6,11 @@ OBJDUMP := $(RV_PATH)/riscv32-unknown-elf-objdump
 .nsl.v:
 	nsl2vl $<
 
+regs: integer_register.v integer_register_tb.nsl
+	nsl2vl -verisim2 integer_register_tb.nsl -target integer_register_tb
+	iverilog integer_register.v integer_register_tb.v
+	./a.out
+
 build_mem: main.s
 	$(CC) -c $<
 	$(OBJDUMP) -D main.o | awk '{if(NR>=8){ printf "32\x27h%s, ",$$2} }' > test.mem
