@@ -25,6 +25,11 @@ mem_ifetch: inst_fetch.v test_memory.v mem_ifetch_tb.nsl
 	iverilog inst_fetch.v test_memory.v mem_ifetch_tb.v
 	./a.out
 
+tiny_rv: tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.nsl # decode.v
+	nsl2vl -verisim2 tiny_rv_tb.nsl -target tiny_rv_tb
+	iverilog tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.v
+	./a.out
+
 build_mem: main.s
 	$(CC) -c $<
 	$(OBJDUMP) -D main.o | awk '{if(NR>=8){ printf "32\x27h%s, ",$$2} }' > test.mem

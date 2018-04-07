@@ -1,0 +1,17 @@
+#ifndef __INCLUDED_TINY_RV_NH__
+#define __INCLUDED_TINY_RV_NH__
+
+declare tiny_rv
+{
+    // for instruction fetch
+    output inst_req_address[32];
+    input instruction[32];
+
+    func_out inst_request(inst_req_address);
+    func_in inst_enable(instruction);
+
+    func_in reset();
+
+}
+
+#endif // __INCLUDED_TINY_RV_NH__

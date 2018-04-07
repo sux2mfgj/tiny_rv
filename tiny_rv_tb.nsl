@@ -1,0 +1,33 @@
+#include "tiny_rv.nh"
+#include "test_memory.nh"
+
+declare tiny_rv_tb simulation {}
+
+module tiny_rv_tb
+{
+    test_memory memory;
+    tiny_rv rv_processor;
+
+    reg counter[10] = 10'h0;
+    counter++;
+
+    if(counter == 10'h4 || counter == 10'h10)
+    {
+        rv_processor.reset();
+    }
+
+    if(counter == 10'h30)
+    {
+        _finish();
+    }
+
+    func rv_processor.inst_request
+    {
+        memory.request(rv_processor.inst_req_address);
+    }
+
+    func memory.return_value
+    {
+        rv_processor.inst_enable(memory.value);
+    }
+}

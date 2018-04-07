@@ -1,0 +1,61 @@
+#include "tiny_rv.nh"
+#include "inst_fetch.nh"
+
+module tiny_rv
+{
+    instruction_fetch ifetch;
+
+    reg pc[32] = 0x00001000; // initial address
+
+    reg inst_exec[32] = 32'h0;
+
+    proc_name fetch(), execute(inst_exec);
+
+    func reset
+    {
+        pc := 32'0x00001000;
+        fetch();
+    }
+
+    proc fetch
+    {
+        ifetch.run();
+        finish();
+    }
+
+    /*
+     * for instruction fetch
+     */
+
+    func ifetch.get_pc
+    {
+        return pc;
+        pc := pc + 32'0x4;
+    }
+
+    func ifetch.execute
+    {
+        //TODO: check interlock.
+        fetch();
+        execute(ifetch.inst_out);
+    }
+
+    func ifetch.inst_request //(address)
+    {
+        inst_request(ifetch.address);
+    }
+
+    func inst_enable
+    {
+        ifetch.inst_enable(instruction);
+    }
+
+    /*
+     * for execution
+     */
+
+    proc execute
+    {
+        finish();
+    }
+}
