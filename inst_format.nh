@@ -1,0 +1,21 @@
+#ifndef __INCLUDED_INST_FORMAT_NH__
+#define __INCLUDED_INST_FORMAT_NH__
+
+/*
+ * RV32I opcodes
+ */
+#define OP_IMM  (7'b0010011)
+
+/*
+ * struct for eatch inst types
+ */
+struct op_imm_t
+{
+    opcode[7];
+    rd[5];
+    funct3[3];
+    rs1[5];
+    imm[12];
+};
+
+#endif

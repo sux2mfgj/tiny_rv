@@ -1,49 +1,21 @@
 #ifndef __INCLUDED_DECODE_NH__
 #define __INCLUDED_DECODE_NH__
 
-/*
- * RV32I opcodes
- */
-#define OP_IMM      (7'b0010011)
-//#define OP_LUI      (7')
-//#define OP_AUIPC    (7')
-//#define OP_OP       (7')
-//#define OP_JAL      (7')
-//#define OP_JALR     (7')
-//#define OP_BRANCH   (7')
-//#define OP_LOAD     (7')
-//#define OP_STORE    (7')
-//#define OP_MISC_MEM (7')
-//#define OP_SYSTEM   (7')
-
-/*
- * funct3s in OP_IMM
- */
-#define FUNCT3_IMM_ADDI     (3'000)
-//#define FUNCT3_IMM_SLTI     (3')
-//#define FUNCT3_IMM_SLTIU    (3')
-//#define FUNCT3_IMM_XORI     (3')
-//#define FUNCT3_IMM_ORI      (3')
-//#define FUNCT3_IMM_ANDI     (3')
-//#define FUNCT3_IMM_SLLI     (3')
-//#define FUNCT3_IMM_SRLI     (3')
-//#define FUNCT3_IMM_SRAI     (3')
-
 declare instruction_decode
 {
     input instruction[32];
 
-    output register_1_addr[5];
-    //output register_2_addr[5];
-    input in_rs1[32];
-    //input in_rs2[32];
+    output rs1[5];
+    //output rs2[5];
+    output rd[5];
+    output funct3[3];
+    //output funct7[7];
+    output imm[32];
+
+    func_out reg_imm(rd, funct3, rs1, imm);
 
     func_in decode(instruction);
-
-    func_out register_1_read(register_1_addr) : in_rs1, waiting;
-    //func_out register_2_read() : in_rs2;
-
-    func_out error();
+    func_out error(); //should we inform with error number?
 }
 
 #endif

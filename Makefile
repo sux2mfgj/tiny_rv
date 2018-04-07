@@ -11,9 +11,10 @@ decode: decode.v
 	nsl2vl $<
 
 
-decode: decode.v decode_tb.nsl execute_dumy.v
+decode: decode.v decode_tb.nsl
 	nsl2vl -verisim2 decode_tb.nsl -target decode_tb
-	iverilog decode.v decode_tb.v execute_dumy.v
+	iverilog decode.v decode_tb.v
+	./a.out
 
 ifetch: inst_fetch.v inst_fetch_tb.nsl
 	nsl2vl -verisim2 inst_fetch_tb.nsl -target inst_fetch_tb

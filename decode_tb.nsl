@@ -27,33 +27,15 @@ module decode_tb
         _finish();
     }
 
-    func decode.register_1_read
+    func decode.error
     {
-        any {
-            decode.register_1_addr == 0:
-            {
-                return 32'0x0;
-            }
-            decode.register_1_addr == 1:
-            {
-                //return 32'0x0;
-                return x1;
-            }
-            decode.register_1_addr == 2:
-            {
-                //return 32'0x0;
-                return x1;
-            }
-            decode.register_1_addr == 3:
-            {
-                //return 32'0x0;
-                return x3;
-            }
-            else :
-            {
-                _display("unknown register address");
-                _finish();
-            }
-        }
+        _display("error occured");
     }
+
+    func decode.reg_imm
+    {
+        _display("integer register-immediate inst: ",
+                decode.imm, decode.rs1, decode.funct3, decode.rd);
+    }
+
 }
