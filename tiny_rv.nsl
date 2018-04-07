@@ -1,23 +1,27 @@
 #include "tiny_rv.nh"
 #include "inst_fetch.nh"
+#include "execute.nh"
+#include "integer_register.nh"
 
 module tiny_rv
 {
     instruction_fetch ifetch;
+    execute exec;
+    integer_register iregs;
 
     reg pc[32] = 0x00001000; // initial address
 
     reg inst_exec[32] = 32'h0;
 
-    proc_name fetch(), execute(inst_exec);
+    proc_name p_fetch(), p_execute(inst_exec);
 
     func reset
     {
         pc := 32'0x00001000;
-        fetch();
+        p_fetch();
     }
 
-    proc fetch
+    proc p_fetch
     {
         ifetch.run();
         finish();
@@ -36,8 +40,8 @@ module tiny_rv
     func ifetch.execute
     {
         //TODO: check interlock.
-        fetch();
-        execute(ifetch.inst_out);
+        p_fetch();
+        p_execute(ifetch.inst_out);
     }
 
     func ifetch.inst_request //(address)
@@ -53,9 +57,28 @@ module tiny_rv
     /*
      * for execution
      */
-
-    proc execute
+    proc p_execute
     {
+        exec.run(inst_exec);
         finish();
     }
+
+    func exec.done
+    {
+        //TODO call write back stage
+    }
+
+    func exec.rs1_reg_read
+    {
+        //TODO consider about RAW harzard
+        return iregs.read_rs1(exec.rs1_addr);
+    }
+
+    /*
+    func exec.rs2_reg_read
+    {
+        //TODO consider about RAW harzard
+        return iregs.read_rs1(exec.rs1_addr);
+    }
+    */
 }

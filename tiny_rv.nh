@@ -11,7 +11,6 @@ declare tiny_rv
     func_in inst_enable(instruction);
 
     func_in reset();
-
 }
 
 #endif // __INCLUDED_TINY_RV_NH__

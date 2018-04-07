@@ -40,9 +40,9 @@ regs: integer_register.v integer_register_tb.nsl
 	iverilog integer_register.v integer_register_tb.v
 	./a.out
 
-tiny_rv: tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.nsl decode.v execute.v ipu.v
+tiny_rv: tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.nsl decode.v execute.v ipu.v integer_register.v
 	nsl2vl -verisim2 tiny_rv_tb.nsl -target tiny_rv_tb
-	iverilog tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.v decode.v execute.v ipu.v
+	iverilog tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.v decode.v execute.v ipu.v integer_register.v
 	./a.out
 
 build_mem: main.s
