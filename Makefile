@@ -35,9 +35,14 @@ exec: ipu.v decode.v execute.v execute_tb.nsl
 	iverilog ipu.v decode.v execute.v execute_tb.v
 	./a.out
 
-tiny_rv: tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.nsl # decode.v
+regs: integer_register.v integer_register_tb.nsl
+	nsl2vl -verisim2 integer_register_tb.nsl -target integer_register_tb
+	iverilog integer_register.v integer_register_tb.v
+	./a.out
+
+tiny_rv: tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.nsl decode.v execute.v ipu.v
 	nsl2vl -verisim2 tiny_rv_tb.nsl -target tiny_rv_tb
-	iverilog tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.v
+	iverilog tiny_rv.v inst_fetch.v test_memory.v tiny_rv_tb.v decode.v execute.v ipu.v
 	./a.out
 
 build_mem: main.s
