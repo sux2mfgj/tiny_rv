@@ -6,6 +6,11 @@ OBJDUMP := $(RV_PATH)/riscv32-unknown-elf-objdump
 .nsl.v:
 	nsl2vl $<
 
+fetch: fetch.v fetch_tb2.nsl
+	nsl2vl -verisim2 fetch_tb2.nsl -target fetch_tb2
+	iverilog fetch.v fetch_tb2.v
+	./a.out
+
 regs: integer_register.v integer_register_tb.nsl
 	nsl2vl -verisim2 integer_register_tb.nsl -target integer_register_tb
 	iverilog integer_register.v integer_register_tb.v
