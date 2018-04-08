@@ -1,0 +1,33 @@
+#include "tiny_rv.nh"
+#include "dummy_memory.nh"
+
+declare tiny_rv_tb simulation {}
+
+module tiny_rv_tb
+{
+    tiny_rv core;
+    dummy_memory ram;
+
+    reg counter[10] = 10'h0;
+    counter++;
+
+    if(counter == 10'0h4)
+    {
+        core.start();
+    }
+
+    if(counter == 10'h10)
+    {
+        _finish();
+    }
+
+    func core.request
+    {
+        ram.request(core.address);
+    }
+
+    func ram.return_value
+    {
+        core.enable(ram.value);
+    }
+}

@@ -1,0 +1,33 @@
+#include "dummy_memory.nh"
+
+module dummy_memory
+{
+    reg addr[32];
+    proc_name requested(addr);
+    reg counter[10] = 0;
+
+    mem dummy_mem[16][32];
+    _readmemh("test.mem", dummy_mem);
+
+    func request
+    {
+        // simulation for general memory bus
+        requested(address);
+
+        // simulation for bootrom, cache, etc. highest memory.
+        //return_value(dummy_mem[address >> 2]);
+    }
+
+    proc requested
+    {
+        if(counter == 10'0x3)
+        {
+            counter := 0;
+            return_value(dummy_mem[addr >> 2]);
+            finish();
+        }
+        else {
+            counter++;
+        }
+    }
+}

@@ -1,0 +1,16 @@
+#ifndef __INCLUDED_TINY_RV_NH__
+#define __INCLUDED_TINY_RV_NH__
+
+declare tiny_rv
+{
+    func_in start();
+
+    // for instruction fetch
+    output address[32];
+    input instruction[32];
+
+    func_out request(address);
+    func_in enable(instruction);
+}
+
+#endif

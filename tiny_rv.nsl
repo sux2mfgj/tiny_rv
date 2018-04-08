@@ -1,0 +1,58 @@
+#include "tiny_rv.nh"
+#include "fetch.nh"
+
+module tiny_rv
+{
+    reg pc[32];
+    fetch ifetch;
+
+    reg exec_inst[32];
+    proc_name fetch_0_stage, fetch_1_stage;
+    proc_name execute_stage(exec_inst);
+
+    func start
+    {
+        pc := 32'0h00001000;
+        fetch_0_stage();
+    }
+
+    func ifetch.request
+    {
+        request(ifetch.address);
+    }
+
+    func enable
+    {
+        ifetch.enable(instruction);
+    }
+
+    proc fetch_0_stage
+    {
+        pc := pc + 32'0h4;
+        ifetch.run(pc);
+        if(ifetch.done)
+        {
+            execute_stage(ifetch.inst_out);
+            fetch_0_stage();
+        }
+        else
+        {
+            fetch_1_stage();
+        }
+    }
+
+    proc fetch_1_stage
+    {
+        if(ifetch.done)
+        {
+            execute_stage(ifetch.inst_out);
+            fetch_0_stage();
+        }
+    }
+
+    proc execute_stage
+    {
+        // TODO next task
+        finish();
+    }
+}
