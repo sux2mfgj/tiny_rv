@@ -1,0 +1,14 @@
+#ifndef __INCLUDED_INTEGER_ARITHMETIC_LOGIC_NH__
+#define __INCLUDED_INTEGER_ARITHMETIC_LOGIC_NH__
+
+declare integer_arithmetic_logic
+{
+    input in_a[32];
+    input in_b[32];
+    input funct[3];
+    input is_alt;
+    output result[32];
+    func_in calculate(in_a, in_b, funct, is_alt) : result;
+}
+
+#endif // __INCLUDED_INTEGER_ARITHMETIC_LOGIC_NH__

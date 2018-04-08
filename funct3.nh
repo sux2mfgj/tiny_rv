@@ -1,0 +1,12 @@
+#ifndef __INCLUDED_FUNCT3_NH__
+#define __INCLUDED_FUNCT3_NH__
+
+#define FUNCT3_ADD_SUB      (3'h000)
+//#define FUNCT3_SHIFT_L      (3'h001)
+//TODO add 
+//#define FUNCT3_XOR          (3'h100)
+//#define FUNCT3_SHIFT_R      (3'h101)
+//#define FUNCT3_OR           (3'h110)
+//#define FUNCT3_AND          (3'h111)
+
+#endif
