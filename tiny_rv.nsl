@@ -33,8 +33,6 @@ module tiny_rv
 
     func start
     {
-        //pc := 32'0h00001000;
-        //pc := 32'0h00000000;
         fetch_0_stage(32'h00000000);
     }
 
@@ -53,8 +51,6 @@ module tiny_rv
         next_pc = fetch_0_inst + 32'h4;
         if(!stall)
         {
-            //pc := next_pc;
-            //pc := fetch_0_inst;
             ifetch.run(fetch_0_inst);
         }
         if(ifetch.done)
