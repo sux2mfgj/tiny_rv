@@ -50,6 +50,7 @@ module tiny_rv
 
     proc fetch_0_stage
     {
+        next_pc = fetch_0_inst + 32'h4;
         if(!stall)
         {
             //pc := next_pc;
@@ -58,8 +59,8 @@ module tiny_rv
         }
         if(ifetch.done)
         {
-            execute_stage(ifetch.inst_out, fetch_0_inst);
-            fetch_0_stage(fetch_0_inst + 32'h4);
+            execute_stage(ifetch.inst_out, next_pc);
+            fetch_0_stage(next_pc);
         }
         else if(!stall)
         {
@@ -113,6 +114,7 @@ module tiny_rv
                 source_1 = 32#{jal.imm0, jal.imm1, jal.imm2, jal.imm3};
                 source_2 = exec_pc;
                 result = ialu.calculate(source_1, source_2, FUNCT3_ADD_SUB, exec_pc);
+                fetch_0_stage(result);
                 write_back_stage(jal.rd, result, jal.opcode, exec_pc);
             }
             //TODO add behavior of other opcodes
@@ -130,9 +132,7 @@ module tiny_rv
         {
             wb_opcode == JAL:
             {
-                fetch_0_stage(wb_value);
                 reg_file.write(wb_rd, wb_pc);
-                stall();
             }
             wb_opcode == OP_IMM || wb_opcode == OP:
             {
