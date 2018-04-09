@@ -5,7 +5,7 @@ Tiny RISC-V Implementation
 #### RV32I
 list of opcodes.
 ##### Op-IMM
-- [ ] ADDI
+- [x] ADDI
 - [ ] SLTI
 - [ ] SLTIU
 - [ ] ANDI
@@ -22,7 +22,7 @@ list of opcodes.
 - [ ] AUIPC
 
 ##### OP
-- [ ] ADD
+- [x] ADD
 - [ ] SLT
 - [ ] SLTU
 - [ ] AND
@@ -34,10 +34,10 @@ list of opcodes.
 - [ ] SRA
 
 ##### JAL
-- [ ] JAL
+- [x] JAL
 
 ##### JALR
-- [ ] JALR
+- [x] JALR
 
 ##### BRANCH
 - [ ] BEQ
