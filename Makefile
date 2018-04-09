@@ -18,7 +18,9 @@ regs: integer_register.v integer_register_tb.nsl
 
 build_mem: main.s
 	$(CC) -c $<
-	$(OBJDUMP) -D main.o | awk '{if(NR>=8){ print $$2} }' > test.mem
+#$(OBJDUMP) -D main.o | awk '{if(NR>=8){ print $$2} }' > test.mem
+	$(OBJDUMP) -D main.o | awk '{if($$2 ~/^[0-f]+$$/) print $$2}' > test.mem
+
 
 ialu: integer_arithmetic_logic.v integer_arithmetic_logic_tb.nsl
 	nsl2vl -verisim2 integer_arithmetic_logic_tb.nsl -target integer_arithmetic_logic_tb
