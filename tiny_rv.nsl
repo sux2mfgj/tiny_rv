@@ -12,9 +12,11 @@ module tiny_rv
     integer_register reg_file;
     integer_arithmetic_logic ialu;
 
-    reg exec_inst[32];
     proc_name fetch_0_stage, fetch_1_stage;
+    reg exec_inst[32];
     proc_name execute_stage(exec_inst);
+    reg wb_rd[5], wb_value[32];
+    proc_name write_back_stage(wb_rd, wb_value);
 
     wire source_1[32];
     wire source_2[32];
@@ -22,6 +24,7 @@ module tiny_rv
 
     op_imm_t wire op_imm;
     op_t wire op;
+    jal_t wire jal;
 
     func start
     {
@@ -72,28 +75,46 @@ module tiny_rv
             {
                 op_imm = exec_inst;
                 source_1 = 32#op_imm.imm;
+                //TODO: you have to check data hazard
+                //when rs1 is equal to wb_rd, the value have to be bypassed.
                 source_2 = reg_file.read_rs1(op_imm.rs1);
                 result = ialu.calculate(
                         source_1, source_2,
                         op_imm.funct3, 0);
-                reg_file.write(op_imm.rd, result);
+                write_back_stage(op_imm.rd, result);
             }
             exec_inst[6:0] == OP:
             {
                 op = exec_inst;
+                //TODO: you have to check data hazard
+                //when rs1 or rs2 is equal to wb_rd,
+                //          the value have to be bypassed.
                 source_1 = reg_file.read_rs1(op.rs1);
                 source_2 = reg_file.read_rs2(op.rs2);
                 result = ialu.calculate(
                         source_1, source_2,
                         op.funct3, op.funct7[5]);
-                reg_file.write(op.rd, result);
+                write_back_stage(op.rd, result);
             }
+            exec_inst[6:0] == JAL:
+            {
+                jal = exec_inst;
+                source_1 = 32#{jal.imm0, jal.imm1, jal.imm2, jal.imm3};
+                source_2 = ex_pc;
+                //WIP
+            }
+            //TODO add behavior of other opcodes
             else:
             {
                 error();
             }
         }
-        // TODO next task
+        finish();
+    }
+
+    proc write_back_stage
+    {
+        reg_file.write(wb_rd, wb_value);
         finish();
     }
 }

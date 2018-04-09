@@ -6,6 +6,8 @@
  */
 #define OP_IMM  (7'b0010011)
 #define OP      (7'b0110011)
+#define JAL     (7'b1101111)
+#define JALR    (7'b1100111)
 
 /*
  * struct for eatch instruction type
@@ -28,5 +30,16 @@ struct op_t
     rd[5];
     opcode[7];
 };
+
+struct jal_t
+{
+    imm3[1];
+    imm2[10];
+    imm1[1];
+    imm0[8];
+    rd[5];
+    opcode[7];
+};
+
 
 #endif
