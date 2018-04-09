@@ -13,10 +13,11 @@ module tiny_rv
     integer_register reg_file;
     integer_arithmetic_logic ialu;
 
-    proc_name fetch_0_stage, fetch_1_stage;
+    reg fetch_0_inst[32], fetch_1_inst[32];
+    proc_name fetch_0_stage(fetch_0_inst), fetch_1_stage(fetch_1_inst);
     reg exec_inst[32], exec_pc[32];
     proc_name execute_stage(exec_inst, exec_pc);
-    reg wb_rd[5], wb_value[32], wb_pc[32], wb_opcode[7];
+    reg wb_rd[5], wb_value[32], wb_pc[32], wb_opcode[7] = 0;
     proc_name write_back_stage(wb_rd, wb_value, wb_opcode, wb_pc);
 
     wire source_1[32];
@@ -33,8 +34,8 @@ module tiny_rv
     func start
     {
         //pc := 32'0h00001000;
-        pc := 32'0h00000000;
-        fetch_0_stage();
+        //pc := 32'0h00000000;
+        fetch_0_stage(32'h00000000);
     }
 
     func ifetch.request
@@ -49,29 +50,30 @@ module tiny_rv
 
     proc fetch_0_stage
     {
-        next_pc = pc + 32'h4;
         if(!stall)
         {
-            pc := next_pc;
-            ifetch.run(pc);
+            //pc := next_pc;
+            //pc := fetch_0_inst;
+            ifetch.run(fetch_0_inst);
         }
         if(ifetch.done)
         {
-            execute_stage(ifetch.inst_out, next_pc);
-            fetch_0_stage();
+            execute_stage(ifetch.inst_out, fetch_0_inst);
+            fetch_0_stage(fetch_0_inst + 32'h4);
         }
-        else
+        else if(!stall)
         {
-            fetch_1_stage();
+            fetch_1_stage(fetch_0_inst);
         }
     }
 
     proc fetch_1_stage
     {
+        //TODO: when called stall
         if(ifetch.done)
         {
-            execute_stage(ifetch.inst_out, pc);
-            fetch_0_stage();
+            execute_stage(ifetch.inst_out, fetch_1_inst);
+            fetch_0_stage(fetch_1_inst + 32'h4);
         }
     }
 
@@ -111,7 +113,7 @@ module tiny_rv
                 source_1 = 32#{jal.imm0, jal.imm1, jal.imm2, jal.imm3};
                 source_2 = exec_pc;
                 result = ialu.calculate(source_1, source_2, FUNCT3_ADD_SUB, exec_pc);
-                write_back_stage(op.rd, result, jal.opcode, exec_pc);
+                write_back_stage(jal.rd, result, jal.opcode, exec_pc);
             }
             //TODO add behavior of other opcodes
             else:
@@ -128,7 +130,7 @@ module tiny_rv
         {
             wb_opcode == JAL:
             {
-                pc := wb_value;
+                fetch_0_stage(wb_value);
                 reg_file.write(wb_rd, wb_pc);
                 stall();
             }
