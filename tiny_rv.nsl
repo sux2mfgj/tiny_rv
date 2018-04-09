@@ -20,7 +20,8 @@ module tiny_rv
     wire source_2[32];
     wire result[32];
 
-    wire test[7];
+    op_imm_t wire op_imm;
+    op_t wire op;
 
     func start
     {
@@ -65,14 +66,27 @@ module tiny_rv
 
     proc execute_stage
     {
-        test = exec_inst[6:0];
         any
         {
             exec_inst[6:0] == OP_IMM:
             {
-                source_1 = 32#exec_inst[31:20];
-                source_2 = reg_file.read_rs2(exec_inst[19:15]);
-                result = ialu.calculate(source_1, source_2, exec_inst[14:12], 0);
+                op_imm = exec_inst;
+                source_1 = 32#op_imm.imm;
+                source_2 = reg_file.read_rs1(op_imm.rs1);
+                result = ialu.calculate(
+                        source_1, source_2,
+                        op_imm.funct3, 0);
+                reg_file.write(op_imm.rd, result);
+            }
+            exec_inst[6:0] == OP:
+            {
+                op = exec_inst;
+                source_1 = reg_file.read_rs1(op.rs1);
+                source_2 = reg_file.read_rs2(op.rs2);
+                result = ialu.calculate(
+                        source_1, source_2,
+                        op.funct3, op.funct7[5]);
+                reg_file.write(op.rd, result);
             }
             else:
             {

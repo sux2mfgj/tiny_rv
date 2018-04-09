@@ -4,7 +4,8 @@
 /*
  * RV32I opecodes
  */
-#define OP_IMM (7'b0010011)
+#define OP_IMM  (7'b0010011)
+#define OP      (7'b0110011)
 
 /*
  * struct for eatch instruction type
@@ -15,7 +16,17 @@ struct op_imm_t
     rs1[5];
     funct3[3];
     rd[5];
-    opecode[7];
+    opcode[7];
+};
+
+struct op_t
+{
+    funct7[7];
+    rs2[5];
+    rs1[5];
+    funct3[3];
+    rd[5];
+    opcode[7];
 };
 
 #endif
