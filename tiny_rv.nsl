@@ -18,7 +18,7 @@ module tiny_rv
     reg exec_inst[32], exec_pc[32];
     proc_name execute_stage(exec_inst, exec_pc);
     reg wb_rd[5], wb_value[32], wb_pc[32], wb_opcode[7] = 0;
-    proc_name write_back_stage(wb_rd, wb_value, wb_opcode, wb_pc);
+    proc_name write_back_stage(wb_rd, wb_value, wb_opcode);
 
     wire source_1[32];
     wire source_2[32];
@@ -28,6 +28,7 @@ module tiny_rv
     op_imm_t wire op_imm;
     op_t wire op;
     jal_t wire jal;
+    jalr_t wire jalr;
 
     func_self stall();
 
@@ -88,7 +89,7 @@ module tiny_rv
                 result = ialu.calculate(
                         source_1, source_2,
                         op_imm.funct3, 0);
-                write_back_stage(op_imm.rd, result, op_imm.opcode, exec_pc);
+                write_back_stage(op_imm.rd, result, op_imm.opcode);
             }
             exec_inst[6:0] == OP:
             {
@@ -101,7 +102,7 @@ module tiny_rv
                 result = ialu.calculate(
                         source_1, source_2,
                         op.funct3, op.funct7[5]);
-                write_back_stage(op.rd, result, op.opcode, exec_pc);
+                write_back_stage(op.rd, result, op.opcode);
             }
             exec_inst[6:0] == JAL:
             {
@@ -109,9 +110,19 @@ module tiny_rv
                 jal = exec_inst;
                 source_1 = 32#{jal.imm0, jal.imm1, jal.imm2, jal.imm3};
                 source_2 = exec_pc;
-                result = ialu.calculate(source_1, source_2, FUNCT3_ADD_SUB, exec_pc);
+                result = ialu.calculate(source_1, source_2, FUNCT3_ADD_SUB, 0);
                 fetch_0_stage(result);
-                write_back_stage(jal.rd, result, jal.opcode, exec_pc);
+                write_back_stage(jal.rd, exec_pc, jal.opcode);
+            }
+            exec_inst[6:0] == JALR:
+            {
+                stall();
+                jalr = exec_inst;
+                source_1 = reg_file.read_rs1(jalr.rs1);
+                source_2 = 32#jalr.imm;
+                result = ialu.calculate(source_1, source_2, jalr.funct3, 0);
+                fetch_0_stage(result);
+                write_back_stage(jalr.rd, exec_pc, jalr.opcode);
             }
             //TODO add behavior of other opcodes
             else:
@@ -126,9 +137,9 @@ module tiny_rv
     {
         any
         {
-            wb_opcode == JAL:
+            wb_opcode == JAL || wb_opcode == JALR:
             {
-                reg_file.write(wb_rd, wb_pc);
+                reg_file.write(wb_rd, wb_value);
             }
             wb_opcode == OP_IMM || wb_opcode == OP:
             {
