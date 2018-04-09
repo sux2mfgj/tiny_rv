@@ -2,7 +2,7 @@
 
 module integer_register
 {
-    mem registers[31][32];
+    mem registers[31][32] = {32'h0};
     integer i;
 
     func read_rs1
@@ -26,6 +26,7 @@ module integer_register
         {
             return 32'h0;
         }
+
         generate(i = 1; i<=31; i++)
         {
             if(read_address_2 == i)

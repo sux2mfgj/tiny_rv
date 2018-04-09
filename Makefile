@@ -20,9 +20,19 @@ build_mem: main.s
 	$(CC) -c $<
 	$(OBJDUMP) -D main.o | awk '{if(NR>=8){ printf "32\x27h%s, ",$$2} }' > test.mem
 
-tiny_rv: tiny_rv.v dummy_memory.v tiny_rv_tb.nsl fetch.v
+ialu: integer_arithmetic_logic.v integer_arithmetic_logic_tb.nsl
+	nsl2vl -verisim2 integer_arithmetic_logic_tb.nsl -target integer_arithmetic_logic_tb
+	iverilog integer_arithmetic_logic.v integer_arithmetic_logic_tb.v
+	./a.out
+
+dummy_mem: dummy_memory.v dummy_memory_tb.nsl
+	nsl2vl -verisim2 dummy_memory_tb.nsl -target dummy_memory_tb
+	iverilog dummy_memory.v dummy_memory_tb.v
+	./a.out
+
+tiny_rv: tiny_rv.v dummy_memory.v tiny_rv_tb.nsl fetch.v integer_arithmetic_logic.v integer_register.v
 	nsl2vl -verisim2 tiny_rv_tb.nsl -target tiny_rv_tb
-	iverilog tiny_rv.v dummy_memory.v tiny_rv_tb.v fetch.v
+	iverilog tiny_rv.v dummy_memory.v tiny_rv_tb.v fetch.v integer_arithmetic_logic.v integer_register.v
 	./a.out
 
 

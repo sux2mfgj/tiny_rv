@@ -1,18 +1,31 @@
 #include "tiny_rv.nh"
 #include "fetch.nh"
+#include "format.nh"
+#include "integer_register.nh"
+#include "integer_arithmetic_logic.nh"
 
 module tiny_rv
 {
     reg pc[32];
     fetch ifetch;
+    //decode idecode;
+    integer_register reg_file;
+    integer_arithmetic_logic ialu;
 
     reg exec_inst[32];
     proc_name fetch_0_stage, fetch_1_stage;
     proc_name execute_stage(exec_inst);
 
+    wire source_1[32];
+    wire source_2[32];
+    wire result[32];
+
+    wire test[7];
+
     func start
     {
-        pc := 32'0h00001000;
+        //pc := 32'0h00001000;
+        pc := 32'0h00000000;
         fetch_0_stage();
     }
 
@@ -52,6 +65,20 @@ module tiny_rv
 
     proc execute_stage
     {
+        test = exec_inst[6:0];
+        any
+        {
+            exec_inst[6:0] == OP_IMM:
+            {
+                source_1 = 32#exec_inst[31:20];
+                source_2 = reg_file.read_rs2(exec_inst[19:15]);
+                result = ialu.calculate(source_1, source_2, exec_inst[14:12], 0);
+            }
+            else:
+            {
+                error();
+            }
+        }
         // TODO next task
         finish();
     }

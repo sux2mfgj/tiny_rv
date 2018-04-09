@@ -16,7 +16,7 @@ module tiny_rv_tb
         core.start();
     }
 
-    if(counter == 10'h10)
+    if(counter == 10'h20)
     {
         _finish();
     }

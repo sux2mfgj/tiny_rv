@@ -11,6 +11,8 @@ declare tiny_rv
 
     func_out request(address);
     func_in enable(instruction);
+
+    func_out error();
 }
 
 #endif

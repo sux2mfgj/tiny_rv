@@ -1,0 +1,30 @@
+#include "dummy_memory.nh"
+
+declare dummy_memory_tb simulation {}
+
+module dummy_memory_tb
+{
+    dummy_memory memory;
+    reg count[10] = 10'h0;
+    reg pc[32] = 10'h0;
+    wire next_pc[32];
+    count++;
+
+    if(count == 10'h4)
+    {
+        memory.request(pc);
+    }
+
+    if(count == 10'h20)
+    {
+        _finish();
+    }
+
+    func memory.return_value
+    {
+        _display("done", memory.value);
+        next_pc = pc + 32'h4;
+        pc := next_pc;
+        memory.request(next_pc);
+    }
+}

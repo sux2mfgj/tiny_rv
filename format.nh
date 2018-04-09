@@ -1,0 +1,21 @@
+#ifndef __INCLUDED_FORMAT_NH__
+#define __INCLUDED_FORMAT_NH__
+
+/*
+ * RV32I opecodes
+ */
+#define OP_IMM (7'b0010011)
+
+/*
+ * struct for eatch instruction type
+ */
+struct op_imm_t
+{
+    imm[12];
+    rs1[5];
+    funct3[3];
+    rd[5];
+    opecode[7];
+};
+
+#endif
