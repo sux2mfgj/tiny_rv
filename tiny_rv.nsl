@@ -58,14 +58,12 @@ module tiny_rv
         }
         if(ifetch.done)
         {
-            //execute_stage(ifetch.inst_out, next_pc);
             execute_stage(ifetch.inst_out, fetch_0_inst);
             fetch_0_stage(next_pc);
         }
         else if(!stall)
         {
             fetch_1_stage(fetch_0_inst);
-            //fetch_1_stage(next_pc);
         }
     }
 
@@ -75,8 +73,7 @@ module tiny_rv
         if(ifetch.done)
         {
             execute_stage(ifetch.inst_out, fetch_1_inst);
-            fetch_0_stage(fetch_1_inst + 32'h4);
-            //fetch_0_stage(next_pc);
+            fetch_0_stage(fetch_1_inst + 32'h4); // is not good
         }
     }
 
@@ -146,10 +143,6 @@ module tiny_rv
                     stall();
                     fetch_0_stage(result);
                 }
-//                else
-//                {
-//                    fetch_0_stage(exec_pc);
-//                }
             }
             //TODO add behavior of other opcodes
             else:
