@@ -40,11 +40,12 @@ list of opcodes.
 - [x] JALR
 
 ##### BRANCH
-- [ ] BEQ
-- [ ] BNE
-- [ ] BLT
+- [x] BEQ
+- [x] BNE
+- [x] BLT
 - [ ] BLTU
-- [ ] BGE
+- [x] BGE
+- [ ] BGEU
 
 ##### LOAD
 - [ ] LOAD
@@ -65,12 +66,11 @@ list of opcodes.
 - [ ] PRIV(ECALL)
 - [ ] PRIV(EBREAK)
 
-
-
-
-### Build gcc for RV32I
+### Prepare gcc for RV32I
 ```
 $ make prepare_toolchain
+```  
+or
 ```
-
-
+$ docker pull himaaaatti/rv32i_tools
+```

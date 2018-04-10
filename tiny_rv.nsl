@@ -73,7 +73,9 @@ module tiny_rv
         if(ifetch.done)
         {
             execute_stage(ifetch.inst_out, fetch_1_inst);
-            fetch_0_stage(fetch_1_inst + 32'h4); // is not good
+
+            //XXX is not good
+            fetch_0_stage(fetch_1_inst + 32'h4);
         }
     }
 
