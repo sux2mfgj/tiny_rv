@@ -11,11 +11,10 @@ declare integer_arithmetic_logic
 
     input comp_a[32], comp_b[32];
     input comp_funct[3];
-    input is_unsigned;
     output comp_result;
 
     func_in calculate(in_a, in_b, funct, is_alt) : result;
-    func_in compare(comp_a, comp_b, comp_funct, is_unsigned) : comp_result;
+    func_in compare(comp_a, comp_b, comp_funct) : comp_result;
 }
 
 #endif // __INCLUDED_INTEGER_ARITHMETIC_LOGIC_NH__

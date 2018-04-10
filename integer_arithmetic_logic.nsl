@@ -3,6 +3,7 @@
 
 module integer_arithmetic_logic
 {
+    wire tmp_result;
 
     func calculate
     {
@@ -28,15 +29,23 @@ module integer_arithmetic_logic
     {
         any
         {
-            comp_funct == FUNCT3_BRANCH_EQ:
+            comp_funct[2] == 0: // BEQ or BNE
             {
-                return comp_a == comp_b;
+                tmp_result = comp_a == comp_b;
             }
-            comp_funct == FUNCT3_BRANCH_LT:
+            comp_funct[2] == 1: // BLT or BGE
             {
-                return (comp_a < comp_b);
+                tmp_result = comp_a < comp_b;
             }
-            //TODO: add behavior for unsigned value
+            //TODO BLTU, BGEU
+        }
+        if(comp_funct[0])
+        {
+            return !tmp_result;
+        }
+        else
+        {
+            return tmp_result;
         }
     }
 }
