@@ -8,6 +8,7 @@
 #define OP      (7'b0110011)
 #define JAL     (7'b1101111)
 #define JALR    (7'b1100111)
+#define BRANCH  (7'b1100011)
 
 /*
  * struct for eatch instruction type
@@ -50,5 +51,16 @@ struct jalr_t
     opcode[7];
 };
 
+struct branch_t
+{
+    imm12;
+    imm10_5[6];
+    rs2[5];
+    rs1[5];
+    funct3[3];
+    imm4_1[4];
+    imm11;
+    opcode[7];
+};
 
 #endif

@@ -11,7 +11,17 @@ module integer_arithmetic_logic_tb
 
     if(counter == 10'h4)
     {
-        _display("val", ialu.calculate(32'hff, 32'h02, 3'h000, 1'h0));
+        _display("calculate 0x%x", ialu.calculate(32'hff, 32'h02, 3'b000, 1'b0));   // 0xff + 0x02  (0x101)
+        _display("compare 0b%x", ialu.compare(32'h01, 32'h01, 3'b000, 1'b0));       // 0x01 == 0x01 (1)
+    }
+    if(counter == 10'h5)
+    {
+        _display("calculate 0x%x", ialu.calculate(32'hff, 32'h02, 3'b000, 1'b1));   // 0xff + 0x02  (0x101)
+        _display("compare 0b%x", ialu.compare(32'h03, 32'h01, 3'b100, 1'b0));       // 0x01 < 0x01 (1)
+    }
+    if(counter == 10'h6)
+    {
+        _display("compare 0b%x", ialu.compare(32'h07, 32'h13, 3'b100, 1'b0));       // 0x01 < 0x01 (0)
     }
 
     if(counter == 10'h10)

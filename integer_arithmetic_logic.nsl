@@ -24,4 +24,19 @@ module integer_arithmetic_logic
 
     }
 
+    func compare
+    {
+        any
+        {
+            comp_funct == FUNCT3_BRANCH_EQ:
+            {
+                return comp_a == comp_b;
+            }
+            comp_funct == FUNCT3_BRANCH_LT:
+            {
+                return (comp_a < comp_b);
+            }
+            //TODO: add behavior for unsigned value
+        }
+    }
 }
