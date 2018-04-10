@@ -24,11 +24,13 @@ module tiny_rv
     wire source_2[32];
     wire result[32];
     wire next_pc[32];
+    wire comp_result;
 
     op_imm_t wire op_imm;
     op_t wire op;
     jal_t wire jal;
     jalr_t wire jalr;
+    branch_t wire branch;
 
     func_self stall();
 
@@ -56,12 +58,14 @@ module tiny_rv
         }
         if(ifetch.done)
         {
-            execute_stage(ifetch.inst_out, next_pc);
+            //execute_stage(ifetch.inst_out, next_pc);
+            execute_stage(ifetch.inst_out, fetch_0_inst);
             fetch_0_stage(next_pc);
         }
         else if(!stall)
         {
             fetch_1_stage(fetch_0_inst);
+            //fetch_1_stage(next_pc);
         }
     }
 
@@ -72,6 +76,7 @@ module tiny_rv
         {
             execute_stage(ifetch.inst_out, fetch_1_inst);
             fetch_0_stage(fetch_1_inst + 32'h4);
+            //fetch_0_stage(next_pc);
         }
     }
 
@@ -108,7 +113,7 @@ module tiny_rv
             {
                 stall();
                 jal = exec_inst;
-                source_1 = 32#{jal.imm0, jal.imm1, jal.imm2, jal.imm3};
+                source_1 = 32#{jal.imm0, jal.imm1, jal.imm2, jal.imm3, 1'b0};
                 source_2 = exec_pc;
                 result = ialu.calculate(source_1, source_2, FUNCT3_ADD_SUB, 0);
                 fetch_0_stage(result);
@@ -123,6 +128,28 @@ module tiny_rv
                 result = ialu.calculate(source_1, source_2, jalr.funct3, 0);
                 fetch_0_stage(result);
                 write_back_stage(jalr.rd, exec_pc, jalr.opcode);
+            }
+            exec_inst[6:0] == BRANCH:
+            {
+                branch = exec_inst;
+                source_1 = reg_file.read_rs1(branch.rs1);
+                source_2 = reg_file.read_rs2(branch.rs2);
+                comp_result = ialu.compare(source_1, source_1, branch.opcode);
+                result = ialu.calculate(
+                            exec_pc,
+                            32#{branch.imm12, branch.imm11, branch.imm10_5,
+                                branch.imm4_1, 1'b0},
+                            FUNCT3_ADD_SUB,
+                            1'b0);
+                if(comp_result)
+                {
+                    stall();
+                    fetch_0_stage(result);
+                }
+//                else
+//                {
+//                    fetch_0_stage(exec_pc);
+//                }
             }
             //TODO add behavior of other opcodes
             else:
