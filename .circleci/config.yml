@@ -1,0 +1,14 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: himaaaatti/nsl_docker
+        auth:
+          username: himaaaatti
+          password: $DOCKER_HUB_PW
+    steps:
+      - checkout
+      - run:
+        name: Greeting
+        command: echo Hello, world.
+
