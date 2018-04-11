@@ -8,7 +8,5 @@ jobs:
           password: $DOCKER_HUB_PW
     steps:
       - checkout
-      - run:
-        name: Greeting
-        command: echo Hello, world.
+      - run: echo "hello world"
 
