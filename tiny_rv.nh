@@ -6,11 +6,25 @@ declare tiny_rv
     func_in start();
 
     // for instruction fetch
-    output address[32];
+    output i_address[32];
     input instruction[32];
 
-    func_out request(address);
+    // for data read & write
+    output d_address[32];
+    input load_data[32];
+    output store_data[32];
+
+    func_out request(i_address);
     func_in enable(instruction);
+
+    func_out load_b(d_address);
+    func_out load_h(d_address);
+    func_out load_w(d_address);
+    func_in load_done(load_data);
+    //func_out store_b(d_address, store_data);
+    //func_out store_h(d_address, store_data);
+    //func_out store_w(d_address, store_data);
+    //func_in store_done();
 
     func_out error();
 }

@@ -23,7 +23,7 @@ module tiny_rv_tb
 
     func core.request
     {
-        ram.request(core.address);
+        ram.request(core.i_address);
     }
 
     func ram.return_value
