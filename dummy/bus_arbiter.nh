@@ -1,0 +1,9 @@
+#ifndef __INCLUDED_BUS_ARBITER_NH__
+#define __INCLUDED_BUS_ARBITER_NH__
+
+declare bus_arbiter
+{
+
+}
+
+#endif

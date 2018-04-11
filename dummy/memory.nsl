@@ -1,6 +1,6 @@
-#include "dummy_memory.nh"
+#include "../memory.nh"
 
-module dummy_memory
+module memory
 {
     reg addr[32];
     proc_name requested(addr);

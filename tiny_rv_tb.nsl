@@ -1,12 +1,13 @@
 #include "tiny_rv.nh"
-#include "dummy_memory.nh"
+#include "dummy/memory.nh"
+
 
 declare tiny_rv_tb simulation {}
 
 module tiny_rv_tb
 {
     tiny_rv core;
-    dummy_memory ram;
+    memory ram;
 
     reg counter[10] = 10'h0;
     counter++;

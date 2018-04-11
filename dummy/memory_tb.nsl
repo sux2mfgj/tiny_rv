@@ -1,10 +1,10 @@
-#include "dummy_memory.nh"
+#include "../memory.nh"
 
-declare dummy_memory_tb simulation {}
+declare memory_tb simulation {}
 
-module dummy_memory_tb
+module memory_tb
 {
-    dummy_memory memory;
+    memory memory;
     reg count[10] = 10'h0;
     reg pc[32] = 10'h0;
     wire next_pc[32];

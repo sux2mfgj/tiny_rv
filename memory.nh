@@ -1,7 +1,7 @@
 #ifndef __INCLUDED_TEST_MEMORY_NH__
 #define __INCLUDED_TEST_MEMORY_NH__
 
-declare dummy_memory
+declare memory
 {
     input address[32];
     output value[32];
