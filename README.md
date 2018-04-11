@@ -74,3 +74,7 @@ or
 ```
 $ docker pull himaaaatti/rv32i_tools
 ```
+
+### TODO
+- [ ] test
+- [ ] CI for test

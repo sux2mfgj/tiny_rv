@@ -31,8 +31,10 @@ module tiny_rv
     jal_t wire jal;
     jalr_t wire jalr;
     branch_t wire branch;
+    load_t wire load;
 
     func_self stall();
+    func_self interlock();
 
     func start
     {
@@ -92,7 +94,7 @@ module tiny_rv
                 source_2 = reg_file.read_rs1(op_imm.rs1);
                 result = ialu.calculate(
                         source_1, source_2,
-                        op_imm.funct3, 0);
+                        op_imm.funct3, 1'b0);
                 write_back_stage(op_imm.rd, result, op_imm.opcode);
             }
             exec_inst[6:0] == OP:
@@ -146,6 +148,14 @@ module tiny_rv
                     fetch_0_stage(result);
                 }
             }
+            exec_inst[6:0] == LOAD:
+            {
+                load = exec_inst;
+                source_1 = reg_file.read_rs1(load.rs1);
+                source_2 = 32#{load.imm};
+                result = ialu.calculate(source_1, source_2, FUNCT3_ADD_SUB, 1'b0);
+                write_back_stage(load.rd, result, load.opcode);
+            }
             //TODO add behavior of other opcodes
             else:
             {
@@ -166,6 +176,10 @@ module tiny_rv
             wb_opcode == OP_IMM || wb_opcode == OP:
             {
                 reg_file.write(wb_rd, wb_value);
+            }
+            wb_opcode == LOAD:
+            {
+                // read memory and interlock
             }
             else:
             {

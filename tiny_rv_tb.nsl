@@ -11,7 +11,7 @@ module tiny_rv_tb
     reg counter[10] = 10'h0;
     counter++;
 
-    if(counter == 10'0h4)
+    if(counter == 10'h4)
     {
         core.start();
     }
