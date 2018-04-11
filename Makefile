@@ -21,8 +21,10 @@ regs: integer_register.v integer_register_tb.nsl
 	./a.out
 
 build_mem_docker: main.s
-	$(RV32I_DOCKER) $(RVGCC) -c main.s
-	$(RV32I_DOCKER) $(RVOBJDUMP) -D main.o
+	$(RV32I_DOCKER) $(RVGCC) main.s -o a.out -T linker.ld -nostdlib -nostdinc
+
+dump_docker:
+	$(RV32I_DOCKER) $(RVOBJDUMP) -D a.out #-D a.out
 
 build_mem: main.s
 	$(CC) -c $<
