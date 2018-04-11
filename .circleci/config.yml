@@ -2,13 +2,13 @@ version: 2
 jobs:
   build:
     docker:
-      - image: debian:stretch
+      - image: himaaaatti/nsl_docker
+        auth:
+          username: himaaaatti
+          password: $DOCKER_HUB_PW
     steps:
       - checkout
       - run:
         name: Greeting
         command: echo Hello, world.
-      - run:
-        name: Print the Current Time
-        command: date
 
