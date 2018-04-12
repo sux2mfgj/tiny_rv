@@ -1,5 +1,6 @@
 Tiny RISC-V Implementation
 ---
+[![CircleCI](https://circleci.com/gh/sux2mfgj/tiny_rv/tree/master.svg?style=svg)](https://circleci.com/gh/sux2mfgj/tiny_rv/tree/master)
 
 ### Instructions
 #### RV32I
