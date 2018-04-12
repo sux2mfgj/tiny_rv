@@ -76,6 +76,9 @@ or
 $ docker pull himaaaatti/rv32i_tools
 ```
 
+### Generate memory dump for readmemh (for verilog)
+using [elf_dump](https://github.com/sux2mfgj/elf_dump)
+
 ### TODO
 - [ ] test
-- [ ] CI for test
+- [x] CI for test
