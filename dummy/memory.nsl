@@ -6,8 +6,24 @@ module memory
     proc_name requested(addr);
     reg counter[10] = 0;
 
-    mem dummy_mem[32][32];
-    _readmemh("test.mem", dummy_mem);
+    mem dummy_mem[0x30][8];
+
+    reg i[10];
+    func_self dump();
+
+    func dump seq
+    {
+        for(i := 0,32)
+        {
+            _display("0x%08x: 0x%02x", i, dummy_mem[i]);
+        }
+    }
+
+    func init seq
+    {
+        _readmemh("test.mem", dummy_mem);
+        //dump();
+    }
 
     func request
     {
@@ -23,7 +39,13 @@ module memory
         if(counter == 10'0x3)
         {
             counter := 0;
-            return_value(dummy_mem[addr >> 2]);
+            return_value(
+                    {
+                        dummy_mem[addr + 3],
+                        dummy_mem[addr + 2],
+                        dummy_mem[addr + 1],
+                        dummy_mem[addr + 0]
+                    });
             finish();
         }
         else {

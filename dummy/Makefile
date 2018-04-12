@@ -2,6 +2,8 @@ RVGCC       := riscv32-unknown-elf-gcc
 RVOBJDUMP   := riscv32-unknown-elf-objdump
 CC_DOCKER   := himaaaatti/rv32i_tools
 RV32I_DOCKER := docker run -v $(shell pwd):/work $(CC_DOCKER)
+DUMP        := elf_dump
+DUMP_URL    := https://github.com/sux2mfgj/elf_dump/releases/download/v0.1.0/elf_dump
 
 .SUFFIXES: .nsl .v
 .nsl.v:
@@ -20,12 +22,17 @@ mem: memory_tb.nsl memory.v
 	iverilog $(addsuffix .v, $(basename $^))
 	./a.out
 
-build_mem: test.mem
-test.mem: build_obj dump_obj
-build_obj: main.s
-	$(RV32I_DOCKER) $(RVGCC) main.s -o main.o -T linker.ld -nostdlib -nostdinc
+test.mem: build_mem
+build_mem: main.s $(DUMP)
+	$(RV32I_DOCKER) $(RVGCC) main.s -o main.elf -T linker.ld -nostdlib -nostdinc
+	./$(DUMP) main.elf > test.mem
+
 dump_obj:
-	$(RV32I_DOCKER) $(RVOBJDUMP) -D main.o #TODO write hex
+	$(RV32I_DOCKER) $(RVOBJDUMP) -D main.elf
+
+$(DUMP):
+	wget $(DUMP_URL)
+	chmod +x $@
 
 clean:
 	rm -rf a.out *.v *.vcd *.o

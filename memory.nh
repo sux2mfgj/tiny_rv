@@ -8,6 +8,8 @@ declare memory
 
     func_in request(address);
     func_out return_value(value);
+
+    func_in init();
 }
 
 #endif
