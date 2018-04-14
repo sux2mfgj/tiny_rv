@@ -1,8 +1,8 @@
 #include "fetch.nh"
 
-declare fetch_tb2 simulation {}
+declare fetch_tb simulation {}
 
-module fetch_tb2
+module fetch_tb
 {
     reg pc[32];
 
