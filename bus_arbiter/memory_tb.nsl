@@ -24,9 +24,9 @@ module memory_tb
         _finish();
     }
 
-    func memory.return_value
+    func memory.data_enable
     {
-        _display("done 0x%08x", memory.value);
+        _display("done 0x%08x", memory.data);
         next_pc = pc + 32'h4;
         pc := next_pc;
         memory.request(next_pc);

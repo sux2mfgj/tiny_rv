@@ -39,7 +39,7 @@ module memory
         if(counter == 10'0x2)
         {
             counter := 0;
-            return_value(
+            data_enable(
                     {
                         dummy_mem[addr + 3],
                         dummy_mem[addr + 2],

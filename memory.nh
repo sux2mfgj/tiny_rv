@@ -4,10 +4,10 @@
 declare memory
 {
     input address[32];
-    output value[32];
+    output data[32];
 
     func_in request(address);
-    func_out return_value(value);
+    func_out data_enable(data);
 
     func_in init();
 }
