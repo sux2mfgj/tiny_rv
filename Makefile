@@ -5,6 +5,7 @@ CC      := $(RV_PATH)/$(RVGCC)
 OBJDUMP := $(RV_PATH)/$(RVOBJDUMP)
 CC_DOCKER   := himaaaatti/rv32i_tools
 RV32I_DOCKER := docker run -v $(shell pwd):/work $(CC_DOCKER)
+ELF_DUMP    := $(shell pwd)/elf_dump/target/release/elf_dump
 
 .SUFFIXES: .nsl .v
 .nsl.v:

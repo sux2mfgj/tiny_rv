@@ -16,7 +16,7 @@ struct queue_content
 
 module bus_arbiter
 {
-    state_name waiting, request_inst, request_byte, request_half, request_word;
+    state_name idle, waiting;
 
     reg request_queue_head[3] = 3'h0;
     reg request_queue_last[3] = 3'h0;
@@ -35,11 +35,11 @@ module bus_arbiter
         request_queue[request_queue_head++] := insert_data;
     }
 
-    state waiting
+    state idle
     {
         func i_request
         {
-            goto request_inst;
+            goto waiting;
             any
             {
                 i_address < 0x400:
@@ -62,23 +62,11 @@ module bus_arbiter
         }*/
     }
 
-    state request_inst
+    state waiting
     {
-
-    }
-
-    state request_byte
-    {
-
-    }
-
-    state request_half
-    {
-
-    }
-
-    state request_word
-    {
-
+        func boot_mem_data_enable
+        {
+            i_enable(bootmem_data);
+        }
     }
 }

@@ -15,16 +15,16 @@ declare bus_arbiter
     input i_address[32];
     output instruction[32];
 
-    input d_address[32];
-    output b_value[8];
-    output h_value[16];
-    output w_value[32];
+    //input d_address[32];
+    //output b_value[8];
+    //output h_value[16];
+    //output w_value[32];
 
     /*
      * data lines for boot memory
      */
     output bootmem_address[32];
-    input bootmem_data[8];
+    input bootmem_data[32];
 
     /*
      * control for core
@@ -32,12 +32,12 @@ declare bus_arbiter
     func_in i_request(i_address);
     func_out i_enable(instruction);
 
-    func_in load_b(d_address);
-    func_in load_h(d_address);
-    func_in load_w(d_address);
-    func_out d_enable_b(b_value);
-    func_out d_enable_h(h_value);
-    func_out d_enable_w(w_value);
+    //func_in load_b(d_address);
+    //func_in load_h(d_address);
+    //func_in load_w(d_address);
+    //func_out d_enable_b(b_value);
+    //func_out d_enable_h(h_value);
+    //func_out d_enable_w(w_value);
 
     /*
      * for boot memory

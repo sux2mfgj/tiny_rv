@@ -19,7 +19,7 @@ module memory_tb
         memory.request(pc);
     }
 
-    if(count == 10'h20)
+    if(count == 10'h40)
     {
         _finish();
     }
