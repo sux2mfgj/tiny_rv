@@ -1,0 +1,84 @@
+#include "bus_arbiter.nh"
+
+#define REQUEST_TYPE_INSTRUCTION    (3'b000)
+#define REQUEST_TYPE_LOAD_B         (3'b001)
+#define REQUEST_TYPE_LOAD_H         (3'b010)
+#define REQUEST_TYPE_LOAD_W         (3'b011)
+#define REQUEST_TYPE_STORE_B        (3'b100)
+#define REQUEST_TYPE_STORE_H        (3'b101)
+#define REQUEST_TYPE_STORE_W        (3'b110)
+
+struct queue_content
+{
+    instruction[32];
+    request_type[3];
+};
+
+module bus_arbiter
+{
+    state_name waiting, request_inst, request_byte, request_half, request_word;
+
+    reg request_queue_head[3] = 3'h0;
+    reg request_queue_last[3] = 3'h0;
+    mem request_queue[8][35] = {35'h0};
+
+    wire save_inst[32];
+    wire save_type[3];
+    func_self save_request(save_inst, save_type);
+    queue_content wire insert_data;
+
+    func save_request
+    {
+        insert_data.instruction = save_inst;
+        insert_data.request_type = save_type;
+
+        request_queue[request_queue_head++] := insert_data;
+    }
+
+    state waiting
+    {
+        func i_request
+        {
+            goto request_inst;
+            any
+            {
+                i_address < 0x400:
+                {
+                    save_request(i_address, REQUEST_TYPE_INSTRUCTION);
+                    boot_mem_read_request(i_address);
+                }
+                else:
+                {
+                    //TODO: send request to axi bus
+                    error();
+                }
+            }
+        }
+
+        /*
+        func load_b
+        {
+            if i_request
+        }*/
+    }
+
+    state request_inst
+    {
+
+    }
+
+    state request_byte
+    {
+
+    }
+
+    state request_half
+    {
+
+    }
+
+    state request_word
+    {
+
+    }
+}

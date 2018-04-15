@@ -10,16 +10,6 @@ RV32I_DOCKER := docker run -v $(shell pwd):/work $(CC_DOCKER)
 .nsl.v:
 	nsl2vl $<
 
-fetch: fetch.v fetch_tb2.nsl
-	nsl2vl -verisim2 fetch_tb2.nsl -target fetch_tb2
-	iverilog fetch.v fetch_tb2.v
-	./a.out
-
-regs: integer_register.v integer_register_tb.nsl
-	nsl2vl -verisim2 integer_register_tb.nsl -target integer_register_tb
-	iverilog integer_register.v integer_register_tb.v
-	./a.out
-
 build_mem_docker: main.s
 	$(RV32I_DOCKER) $(RVGCC) main.s -o a.out -T linker.ld -nostdlib -nostdinc
 
@@ -30,11 +20,6 @@ build_mem: main.s
 	$(CC) -c $<
 #$(OBJDUMP) -D main.o | awk '{if(NR>=8){ print $$2} }' > test.mem
 	$(OBJDUMP) -D main.o | awk '{if($$2 ~/^[0-f]+$$/) print $$2}' > test.mem
-
-ialu: integer_arithmetic_logic.v integer_arithmetic_logic_tb.nsl
-	nsl2vl -verisim2 integer_arithmetic_logic_tb.nsl -target integer_arithmetic_logic_tb
-	iverilog integer_arithmetic_logic.v integer_arithmetic_logic_tb.v
-	./a.out
 
 dummies:
 	make -C dummy all
