@@ -1,0 +1,50 @@
+#include "core/tiny_rv.nh"
+#include "bus_arbiter/bus_arbiter.nh"
+#include "memory.nh"
+
+declare system_tb simulation {}
+
+module system_tb
+{
+    tiny_rv core;
+    bus_arbiter arbiter;
+    memory dummy_mem;
+
+    reg counter[10] = 10'h0;
+    counter++;
+
+    _init {
+        dummy_mem.init();
+    }
+
+    if(counter == 10'h10)
+    {
+        core.start(32'h10);
+    }
+
+    if(counter > 10'h40)
+    {
+        _finish();
+    }
+
+    // connections
+    func core.request
+    {
+        arbiter.i_request(core.i_address);
+    }
+
+    func arbiter.boot_mem_read_request
+    {
+        dummy_mem.request(arbiter.bootmem_address);
+    }
+
+    func dummy_mem.data_enable
+    {
+        arbiter.boot_mem_data_enable(dummy_mem.data);
+    }
+
+    func arbiter.i_enable
+    {
+        core.enable(arbiter.instruction);
+    }
+}

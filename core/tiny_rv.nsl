@@ -42,7 +42,8 @@ module tiny_rv
 
     func start
     {
-        fetch_0_stage(32'h00000000);
+        //fetch_0_stage(32'h00000000);
+        fetch_0_stage(start_address);
     }
 
     func ifetch.request

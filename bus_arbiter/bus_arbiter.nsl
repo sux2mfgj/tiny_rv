@@ -1,13 +1,13 @@
 #include "bus_arbiter.nh"
 
-#define REQUEST_TYPE_INSTRUCTION    (3'b000)
-#define REQUEST_TYPE_LOAD_B         (3'b001)
-#define REQUEST_TYPE_LOAD_H         (3'b010)
-#define REQUEST_TYPE_LOAD_W         (3'b011)
-#define REQUEST_TYPE_STORE_B        (3'b100)
-#define REQUEST_TYPE_STORE_H        (3'b101)
-#define REQUEST_TYPE_STORE_W        (3'b110)
-#define REQUEST_TYPE_EMPTY          (3'b111)
+#define REQUEST_TYPE_EMPTY          (3'b000)
+#define REQUEST_TYPE_INSTRUCTION    (3'b001)
+#define REQUEST_TYPE_LOAD_B         (3'b010)
+#define REQUEST_TYPE_LOAD_H         (3'b011)
+#define REQUEST_TYPE_LOAD_W         (3'b100)
+#define REQUEST_TYPE_STORE_B        (3'b101)
+#define REQUEST_TYPE_STORE_H        (3'b110)
+#define REQUEST_TYPE_STORE_W        (3'b111)
 
 struct request_content
 {

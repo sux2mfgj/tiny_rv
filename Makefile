@@ -9,7 +9,7 @@ ELF_DUMP    := $(shell pwd)/elf_dump/target/release/elf_dump
 
 .SUFFIXES: .nsl .v
 .nsl.v:
-	nsl2vl $<
+	nsl2vl $< -o $@
 
 build_mem_docker: main.s
 	$(RV32I_DOCKER) $(RVGCC) main.s -o a.out -T linker.ld -nostdlib -nostdinc
@@ -22,12 +22,15 @@ build_mem: main.s
 #$(OBJDUMP) -D main.o | awk '{if(NR>=8){ print $$2} }' > test.mem
 	$(OBJDUMP) -D main.o | awk '{if($$2 ~/^[0-f]+$$/) print $$2}' > test.mem
 
-dummies:
-	make -C dummy all
+system: system_tb.nsl bus_arbiter/bus_arbiter.v bus_arbiter/memory.v core/fetch.v core/integer_arithmetic_logic.v core/integer_register.v core/tiny_rv.v
+	nsl2vl -verisim2 $< -target $(basename $<)
+	iverilog $(addsuffix .v, $(basename $^)) $(REQUIRE_MODULES) -o $@.vcd
+	./$@.vcd
+
 
 tiny_rv: tiny_rv.v tiny_rv_tb.nsl fetch.v integer_arithmetic_logic.v integer_register.v dummies
 	nsl2vl -verisim2 tiny_rv_tb.nsl -target tiny_rv_tb
-	iverilog tiny_rv.v tiny_rv_tb.v fetch.v integer_arithmetic_logic.v integer_register.v dummy/memory.v
+	iverilog tiny_rv.v tiny_rv_tb.v fetch.v integer_arithmetic_logic.v integer_register.v
 	./a.out
 
 prepare_toolchain: $(CC)
@@ -39,4 +42,3 @@ $(CC):
 
 clean:
 	rm -fr *.v *.vcd a.out build *.o
-	make -C dummy clean
