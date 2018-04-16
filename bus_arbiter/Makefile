@@ -6,7 +6,7 @@ include ../riscv.mk
 
 %.nsl: %.nh
 
-bus_arbiter: bus_arbiter_tb.nsl bus_arbiter.v ../dummy/memory.v
+bus_arbiter: bus_arbiter_tb.nsl bus_arbiter.v memory.v
 	nsl2vl -verisim2 $< -target $(basename $<)
 	iverilog $(addsuffix .v, $(basename $^)) $(REQUIRE_MODULES) -o $@.vvp
 	./$@.vvp

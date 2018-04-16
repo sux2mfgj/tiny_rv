@@ -7,66 +7,107 @@
 #define REQUEST_TYPE_STORE_B        (3'b100)
 #define REQUEST_TYPE_STORE_H        (3'b101)
 #define REQUEST_TYPE_STORE_W        (3'b110)
+#define REQUEST_TYPE_EMPTY          (3'b111)
 
-struct queue_content
+struct request_content
 {
-    instruction[32];
-    request_type[3];
+    address[32];
+    type[3];
 };
 
 module bus_arbiter
 {
-    state_name idle, waiting;
+    request_content reg brom_req_content;
+    proc_name brom_request(brom_req_content);
+    request_content reg brom_req_wait = 35'h0;
+    request_content wire brom_req_inst, brom_req_data;
 
-    reg request_queue_head[3] = 3'h0;
-    reg request_queue_last[3] = 3'h0;
-    mem request_queue[8][35] = {35'h0};
-
-    wire save_inst[32];
-    wire save_type[3];
-    func_self save_request(save_inst, save_type);
-    queue_content wire insert_data;
-
-    func save_request
+    func i_request
     {
-        insert_data.instruction = save_inst;
-        insert_data.request_type = save_type;
-
-        request_queue[request_queue_head++] := insert_data;
-    }
-
-    state idle
-    {
-        func i_request
+        if (i_address < 32'h400)
         {
-            goto waiting;
-            any
+            brom_req_inst.address = i_address;
+            brom_req_inst.type = REQUEST_TYPE_INSTRUCTION;
+            if(!brom_request)
             {
-                i_address < 0x400:
-                {
-                    save_request(i_address, REQUEST_TYPE_INSTRUCTION);
-                    boot_mem_read_request(i_address);
-                }
-                else:
-                {
-                    //TODO: send request to axi bus
-                    error();
-                }
+                brom_request(brom_req_inst);
+                boot_mem_read_request(i_address);
+            }
+            else
+            {
+                brom_req_wait := brom_req_inst;
             }
         }
-
-        /*
-        func load_b
+        else
         {
-            if i_request
-        }*/
+            error();
+        }
     }
 
-    state waiting
+    func load_b
+    {
+        if(d_address < 32'h400)
+        {
+            brom_req_data.address = d_address;
+            brom_req_data.type = REQUEST_TYPE_LOAD_B;
+            if(!(brom_request|i_request))
+            {
+                brom_request(brom_req_data);
+                boot_mem_read_request(d_address);
+            }
+            else
+            {
+                brom_req_wait := brom_req_data;
+            }
+        }
+    }
+
+    proc brom_request
     {
         func boot_mem_data_enable
         {
-            i_enable(bootmem_data);
+            any
+            {
+                brom_req_content.type == REQUEST_TYPE_INSTRUCTION:
+                {
+                    i_enable(bootmem_data);
+                    if (brom_req_wait.type == REQUEST_TYPE_EMPTY)
+                    {
+                        finish();
+                    }
+                    else
+                    {
+                        boot_mem_read_request(brom_req_wait.address);
+                        brom_request(brom_req_wait);
+                        if (!(load_b | i_request))
+                        {
+                            brom_req_wait.type := REQUEST_TYPE_EMPTY;
+                        }
+                    }
+                }
+                brom_req_content.type == REQUEST_TYPE_LOAD_B:
+                {
+                    d_enable(bootmem_data);
+                    if(brom_req_wait.type == REQUEST_TYPE_EMPTY)
+                    {
+                        finish();
+                    }
+                    else
+                    {
+                        boot_mem_read_request(brom_req_wait.address);
+                        brom_request(brom_req_wait);
+                        if (!(load_b | i_request))
+                        {
+                            brom_req_wait.type := REQUEST_TYPE_EMPTY;
+                        }
+
+                    }
+                }
+                else:
+                {
+                    error();
+                }
+            }
         }
     }
 }
