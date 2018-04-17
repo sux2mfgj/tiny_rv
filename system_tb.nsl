@@ -1,3 +1,4 @@
+#include "debug.nh"
 #include "core/tiny_rv.nh"
 #include "bus_arbiter/bus_arbiter.nh"
 #include "memory.nh"
@@ -22,10 +23,21 @@ module system_tb
         core.start(32'h10);
     }
 
-    if(counter > 10'h40)
+    if(counter == 10'h40)
+    {
+#ifdef DEBUG
+        core.register_dump();
+#else
+        _finish();
+#endif
+    }
+
+#ifdef DEBUG
+    func core.register_dump_done
     {
         _finish();
     }
+#endif
 
     // connections
     func core.request
