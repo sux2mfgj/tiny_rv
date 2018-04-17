@@ -49,10 +49,16 @@ RV32I
 - [ ] BGEU
 
 ##### LOAD
-- [ ] LOAD
+- [ ] LB
+- [ ] LH
+- [x] LW
+- [ ] LBU
+- [ ] LHU
 
 ##### STORE
-- [ ] STORE
+- [ ] SB
+- [ ] SH
+- [ ] SW
 
 ##### MISC-MEM
 - [ ] FENCE.I
