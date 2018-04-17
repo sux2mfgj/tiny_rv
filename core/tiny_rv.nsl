@@ -15,9 +15,9 @@ module tiny_rv
 
     reg current_pc[32];
     reg next_pc[32];
-    reg fetch_0_addr[32], fetch_1_addr[32], fetch_2_addr[32];
+    reg fetch_0_addr[32];
     reg fetch_2_inst[32];
-    proc_name fetch_0_stage(fetch_0_addr), fetch_1_stage();//fetch_1_stage(fetch_1_addr);
+    proc_name fetch_0_stage(fetch_0_addr), fetch_1_stage();
     proc_name fetch_2_stage(fetch_2_inst);
     reg exec_inst[32], exec_pc[32];
     proc_name execute_stage(exec_inst, exec_pc);
@@ -27,12 +27,10 @@ module tiny_rv
     proc_name write_back_stage_load(wb_rd, wb_value, wb_funct3);
     //proc_name write_back_stage_store(wb_rd, wb_value, wb_funct3);
     state_name load_store_idle, load_store_waiting;
-    state_name fetch_request_sending, fetch_request_waiting;
 
     wire source_1[32];
     wire source_2[32];
     wire result[32];
-    //wire next_pc[32];
     wire comp_result;
 
     op_imm_t wire op_imm;
@@ -47,7 +45,6 @@ module tiny_rv
 
     func start
     {
-        //fetch_0_stage(32'h00000000);
         fetch_0_stage(start_address);
     }
 
@@ -68,7 +65,6 @@ module tiny_rv
         if(!stall && !interlock)
         {
             ifetch.run(fetch_0_addr);
-            //fetch_1_stage(fetch_0_addr);
             fetch_1_stage();
             current_pc := fetch_0_addr;
         }
@@ -76,7 +72,6 @@ module tiny_rv
 
     proc fetch_1_stage
     {
-        //TODO: when called stall
         if(ifetch.done)
         {
             if(!interlock)
@@ -85,7 +80,6 @@ module tiny_rv
                 execute_stage(ifetch.inst_out, current_pc);
 
                 //XXX is not good
-                //fetch_0_stage(fetch_1_addr + 32'h4);
                 fetch_0_stage(next_pc);
             }
             else
@@ -160,7 +154,8 @@ module tiny_rv
                     branch = exec_inst;
                     source_1 = reg_file.read_rs1(branch.rs1);
                     source_2 = reg_file.read_rs2(branch.rs2);
-                    comp_result = ialu.compare(source_1, source_1, branch.opcode);
+                    //comp_result = ialu.compare(source_1, source_1, branch.opcode);
+                    comp_result = ialu.compare(source_1, source_1, branch.funct3);
                     result = ialu.calculate(
                                 exec_pc,
                                 32#{branch.imm12, branch.imm11, branch.imm10_5,

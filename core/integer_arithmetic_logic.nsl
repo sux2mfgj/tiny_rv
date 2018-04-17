@@ -22,7 +22,6 @@ module integer_arithmetic_logic
             }
             //TODO another processing
         }
-
     }
 
     func compare
