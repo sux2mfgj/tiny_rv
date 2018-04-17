@@ -23,10 +23,11 @@ module tiny_rv
     proc_name execute_stage(exec_inst, exec_pc);
     reg wb_rd[5], wb_value[32], wb_pc[32], wb_opcode[7] = 0;
     reg wb_funct3[3];
+    reg wb_rd_waiting[5];
     proc_name write_back_stage(wb_rd, wb_value, wb_opcode);
     proc_name write_back_stage_load(wb_rd, wb_value, wb_funct3);
+    proc_name write_back_stage_load_waiting(wb_rd_waiting);
     //proc_name write_back_stage_store(wb_rd, wb_value, wb_funct3);
-    state_name load_store_idle, load_store_waiting;
 
     wire source_1[32];
     wire source_2[32];
@@ -209,35 +210,31 @@ module tiny_rv
 
     proc write_back_stage_load
     {
-        state load_store_idle
+        interlock();
+        any
         {
-            any
+            wb_funct3 == WIDTH_W:
             {
-                wb_funct3 == WIDTH_B:
-                {
-                    load_b(wb_value);
-                    goto load_store_waiting;
-                    interlock();
-                }
-                else:
-                {
-                    error();
-                }
+                load_w(wb_value);
+                write_back_stage_load_waiting(wb_rd);
+            }
+            else:
+            {
+                error();
             }
         }
+    }
 
-        state load_store_waiting
+    proc write_back_stage_load_waiting
+    {
+        if(load_done)
         {
-            if(load_done)
-            {
-                reg_file.write(wb_rd, load_data);
-                finish();
-                goto load_store_idle;
-            }
-            else
-            {
-                interlock();
-            }
+            reg_file.write(wb_rd_waiting, load_data);
+            finish();
+        }
+        else
+        {
+            interlock();
         }
     }
 

@@ -44,12 +44,12 @@ module bus_arbiter
         }
     }
 
-    func load_b
+    func load_w
     {
         if(d_address < 32'h400)
         {
             brom_req_data.address = d_address;
-            brom_req_data.type = REQUEST_TYPE_LOAD_B;
+            brom_req_data.type = REQUEST_TYPE_LOAD_W;
             if(!(brom_request|i_request))
             {
                 brom_request(brom_req_data);
@@ -79,13 +79,13 @@ module bus_arbiter
                     {
                         boot_mem_read_request(brom_req_wait.address);
                         brom_request(brom_req_wait);
-                        if (!(load_b | i_request))
+                        if (!(load_w | i_request))
                         {
                             brom_req_wait.type := REQUEST_TYPE_EMPTY;
                         }
                     }
                 }
-                brom_req_content.type == REQUEST_TYPE_LOAD_B:
+                brom_req_content.type == REQUEST_TYPE_LOAD_W:
                 {
                     d_enable(bootmem_data);
                     if(brom_req_wait.type == REQUEST_TYPE_EMPTY)
@@ -96,7 +96,7 @@ module bus_arbiter
                     {
                         boot_mem_read_request(brom_req_wait.address);
                         brom_request(brom_req_wait);
-                        if (!(load_b | i_request))
+                        if (!(load_w | i_request))
                         {
                             brom_req_wait.type := REQUEST_TYPE_EMPTY;
                         }

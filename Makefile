@@ -27,6 +27,9 @@ system: system_tb.nsl bus_arbiter/bus_arbiter.v bus_arbiter/memory.v core/fetch.
 	iverilog $(addsuffix .v, $(basename $^)) $(REQUIRE_MODULES) -o $@.vcd
 	./$@.vcd
 
+system_vcd: system
+	gtkwave system_tb.vcd
+
 
 tiny_rv: tiny_rv.v tiny_rv_tb.nsl fetch.v integer_arithmetic_logic.v integer_register.v dummies
 	nsl2vl -verisim2 tiny_rv_tb.nsl -target tiny_rv_tb

@@ -39,7 +39,7 @@ module system_tb
     }
 #endif
 
-    // connections
+    // connections for instruction
     func core.request
     {
         arbiter.i_request(core.i_address);
@@ -58,5 +58,16 @@ module system_tb
     func arbiter.i_enable
     {
         core.enable(arbiter.instruction);
+    }
+
+    // for load
+    func core.load_w
+    {
+        arbiter.load_w(core.d_address);
+    }
+
+    func arbiter.d_enable
+    {
+        core.load_done(arbiter.d_value);
     }
 }

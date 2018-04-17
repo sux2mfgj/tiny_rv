@@ -8,7 +8,7 @@ SECTIONS
         *(.text)
     }
 
-    . = 0x20;
+    . = 0x40;
     .data :
     {
         *(.data)
