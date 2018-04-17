@@ -1,5 +1,6 @@
 #ifndef __INCLUDED_TINY_RV_NH__
 #define __INCLUDED_TINY_RV_NH__
+#include "../debug.nh"
 
 declare tiny_rv
 {
@@ -29,6 +30,11 @@ declare tiny_rv
     //func_in store_done();
 
     func_out error();
+
+#ifdef DEBUG
+    func_in register_dump();
+    func_out register_dump_done();
+#endif
 }
 
 #endif

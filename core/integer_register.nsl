@@ -4,6 +4,9 @@ module integer_register
 {
     mem registers[31][32] = {32'h0};
     integer i;
+#ifdef DEBUG
+    reg debug_counter[10];
+#endif
 
     func read_rs1
     {
@@ -46,4 +49,16 @@ module integer_register
             registers[write_address - 1] := write_data;
         }
     }
+
+#ifdef DEBUG
+    func dump seq
+    {
+        _display("register");
+        for(debug_counter := 0, 30)
+        {
+            _display("0x%2x: 0x%08x", i, registers[debug_counter]);
+        }
+        dump_done();
+    }
+#endif
 }

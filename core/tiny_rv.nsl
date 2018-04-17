@@ -245,4 +245,16 @@ module tiny_rv
             }
         }
     }
+
+#ifdef DEBUG
+    func register_dump
+    {
+        reg_file.dump();
+    }
+
+    func reg_file.dump_done
+    {
+        register_dump_done();
+    }
+#endif
 }
