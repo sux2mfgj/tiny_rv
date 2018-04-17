@@ -14,7 +14,7 @@ module tiny_rv
     integer_arithmetic_logic ialu;
 
     reg fetch_0_inst[32], fetch_1_inst[32];
-    proc_name fetch_0_stage(fetch_0_inst), fetch_1_stage(fetch_1_inst);
+    proc_name fetch_0_stage(fetch_0_inst);//, fetch_1_stage(fetch_1_inst);
     reg exec_inst[32], exec_pc[32];
     proc_name execute_stage(exec_inst, exec_pc);
     reg wb_rd[5], wb_value[32], wb_pc[32], wb_opcode[7] = 0;
@@ -23,6 +23,7 @@ module tiny_rv
     proc_name write_back_stage_load(wb_rd, wb_value, wb_funct3);
     //proc_name write_back_stage_store(wb_rd, wb_value, wb_funct3);
     state_name load_store_idle, load_store_waiting;
+    state_name fetch_request_sending, fetch_request_waiting;
 
     wire source_1[32];
     wire source_2[32];
@@ -59,10 +60,26 @@ module tiny_rv
     proc fetch_0_stage
     {
         next_pc = fetch_0_inst + 32'h4;
-        if(!stall)
+
+        state fetch_request_sending
         {
-            ifetch.run(fetch_0_inst);
+            if(!stall && !interlock)
+            {
+                ifetch.run(fetch_0_inst);
+                goto fetch_request_waiting;
+            }
         }
+
+        state fetch_request_waiting
+        {
+            if(ifetch.done)
+            {
+                execute_stage(ifetch.inst_out, fetch_0_inst);
+                fetch_0_inst := next_pc;
+                goto fetch_request_sending;
+            }
+        }
+        /*
         if(ifetch.done)
         {
             execute_stage(ifetch.inst_out, fetch_0_inst);
@@ -70,10 +87,11 @@ module tiny_rv
         }
         else if(!stall)
         {
-            fetch_1_stage(fetch_0_inst);
         }
+        */
     }
 
+    /*
     proc fetch_1_stage
     {
         //TODO: when called stall
@@ -85,90 +103,94 @@ module tiny_rv
             fetch_0_stage(fetch_1_inst + 32'h4);
         }
     }
+    */
 
     proc execute_stage
     {
-        any
+        if(!interlock)
         {
-            exec_inst[6:0] == OP_IMM:
+            any
             {
-                op_imm = exec_inst;
-                source_1 = 32#op_imm.imm;
-                //TODO: you have to check data hazard
-                //when rs1 is equal to wb_rd, the value have to be bypassed.
-                source_2 = reg_file.read_rs1(op_imm.rs1);
-                result = ialu.calculate(
-                        source_1, source_2,
-                        op_imm.funct3, 1'b0);
-                write_back_stage(op_imm.rd, result, op_imm.opcode);
-            }
-            exec_inst[6:0] == OP:
-            {
-                op = exec_inst;
-                //TODO: you have to check data hazard
-                //when rs1 or rs2 is equal to wb_rd,
-                //          the value have to be bypassed.
-                source_1 = reg_file.read_rs1(op.rs1);
-                source_2 = reg_file.read_rs2(op.rs2);
-                result = ialu.calculate(
-                        source_1, source_2,
-                        op.funct3, op.funct7[5]);
-                write_back_stage(op.rd, result, op.opcode);
-            }
-            exec_inst[6:0] == JAL:
-            {
-                stall();
-                jal = exec_inst;
-                source_1 = 32#{jal.imm0, jal.imm1, jal.imm2, jal.imm3, 1'b0};
-                source_2 = exec_pc;
-                result = ialu.calculate(source_1, source_2, FUNCT3_ADD_SUB, 0);
-                fetch_0_stage(result);
-                write_back_stage(jal.rd, exec_pc, jal.opcode);
-            }
-            exec_inst[6:0] == JALR:
-            {
-                stall();
-                jalr = exec_inst;
-                source_1 = reg_file.read_rs1(jalr.rs1);
-                source_2 = 32#jalr.imm;
-                result = ialu.calculate(source_1, source_2, jalr.funct3, 0);
-                fetch_0_stage(result);
-                write_back_stage(jalr.rd, exec_pc, jalr.opcode);
-            }
-            exec_inst[6:0] == BRANCH:
-            {
-                branch = exec_inst;
-                source_1 = reg_file.read_rs1(branch.rs1);
-                source_2 = reg_file.read_rs2(branch.rs2);
-                comp_result = ialu.compare(source_1, source_1, branch.opcode);
-                result = ialu.calculate(
-                            exec_pc,
-                            32#{branch.imm12, branch.imm11, branch.imm10_5,
-                                branch.imm4_1, 1'b0},
-                            FUNCT3_ADD_SUB,
-                            1'b0);
-                if(comp_result)
+                exec_inst[6:0] == OP_IMM:
+                {
+                    op_imm = exec_inst;
+                    source_1 = 32#op_imm.imm;
+                    //TODO: you have to check data hazard
+                    //when rs1 is equal to wb_rd, the value have to be bypassed.
+                    source_2 = reg_file.read_rs1(op_imm.rs1);
+                    result = ialu.calculate(
+                            source_1, source_2,
+                            op_imm.funct3, 1'b0);
+                    write_back_stage(op_imm.rd, result, op_imm.opcode);
+                }
+                exec_inst[6:0] == OP:
+                {
+                    op = exec_inst;
+                    //TODO: you have to check data hazard
+                    //when rs1 or rs2 is equal to wb_rd,
+                    //          the value have to be bypassed.
+                    source_1 = reg_file.read_rs1(op.rs1);
+                    source_2 = reg_file.read_rs2(op.rs2);
+                    result = ialu.calculate(
+                            source_1, source_2,
+                            op.funct3, op.funct7[5]);
+                    write_back_stage(op.rd, result, op.opcode);
+                }
+                exec_inst[6:0] == JAL:
                 {
                     stall();
+                    jal = exec_inst;
+                    source_1 = 32#{jal.imm0, jal.imm1, jal.imm2, jal.imm3, 1'b0};
+                    source_2 = exec_pc;
+                    result = ialu.calculate(source_1, source_2, FUNCT3_ADD_SUB, 0);
                     fetch_0_stage(result);
+                    write_back_stage(jal.rd, exec_pc, jal.opcode);
+                }
+                exec_inst[6:0] == JALR:
+                {
+                    stall();
+                    jalr = exec_inst;
+                    source_1 = reg_file.read_rs1(jalr.rs1);
+                    source_2 = 32#jalr.imm;
+                    result = ialu.calculate(source_1, source_2, jalr.funct3, 0);
+                    fetch_0_stage(result);
+                    write_back_stage(jalr.rd, exec_pc, jalr.opcode);
+                }
+                exec_inst[6:0] == BRANCH:
+                {
+                    branch = exec_inst;
+                    source_1 = reg_file.read_rs1(branch.rs1);
+                    source_2 = reg_file.read_rs2(branch.rs2);
+                    comp_result = ialu.compare(source_1, source_1, branch.opcode);
+                    result = ialu.calculate(
+                                exec_pc,
+                                32#{branch.imm12, branch.imm11, branch.imm10_5,
+                                    branch.imm4_1, 1'b0},
+                                FUNCT3_ADD_SUB,
+                                1'b0);
+                    if(comp_result)
+                    {
+                        stall();
+                        fetch_0_stage(result);
+                    }
+                }
+                exec_inst[6:0] == LOAD:
+                {
+                    load = exec_inst;
+                    source_1 = reg_file.read_rs1(load.rs1);
+                    source_2 = 32#{load.imm};
+                    result = ialu.calculate(source_1, source_2,
+                                FUNCT3_ADD_SUB, 1'b0);
+                    write_back_stage_load(load.rd, result, load.funct3);
+                }
+                //TODO add behavior of other opcodes
+                else:
+                {
+                    error();
                 }
             }
-            exec_inst[6:0] == LOAD:
-            {
-                load = exec_inst;
-                source_1 = reg_file.read_rs1(load.rs1);
-                source_2 = 32#{load.imm};
-                result = ialu.calculate(source_1, source_2,
-                            FUNCT3_ADD_SUB, 1'b0);
-                write_back_stage_load(load.rd, result, load.funct3);
-            }
-            //TODO add behavior of other opcodes
-            else:
-            {
-                error();
-            }
+            finish();
         }
-        finish();
     }
 
     proc write_back_stage

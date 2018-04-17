@@ -42,3 +42,5 @@ $(CC):
 
 clean:
 	rm -fr *.v *.vcd a.out build *.o
+	make -C core clean
+	make -C bus_arbiter clean
