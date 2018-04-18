@@ -7,7 +7,6 @@
 
 module tiny_rv
 {
-    reg pc[32];
     fetch ifetch;
     //decode idecode;
     integer_register reg_file;
@@ -21,7 +20,7 @@ module tiny_rv
     proc_name fetch_2_stage(fetch_2_inst);
     reg exec_inst[32], exec_pc[32];
     proc_name execute_stage(exec_inst, exec_pc);
-    reg wb_rd[5], wb_value[32], wb_pc[32], wb_opcode[7] = 0;
+    reg wb_rd[5], wb_value[32], wb_opcode[7] = 0;
     reg wb_funct3[3];
     reg wb_rd_waiting[5];
     proc_name write_back_stage(wb_rd, wb_value, wb_opcode);
@@ -40,6 +39,12 @@ module tiny_rv
     jalr_t wire jalr;
     branch_t wire branch;
     load_t wire load;
+
+    // for hazard (bypass)
+    wire rs1[5], rs1_value[32];
+    wire rs2[5], rs2_value[32];
+    func_self read_register_1(rs1) : rs1_value;
+    func_self read_register_2(rs2) : rs2_value;
 
     func_self stall();
     func_self interlock();
@@ -99,6 +104,30 @@ module tiny_rv
         }
     }
 
+    func read_register_1
+    {
+        // 他のwb stageではstall or interlockしているので問題ない
+        if(write_back_stage & rs1 == wb_rd)
+        {
+            return wb_value;
+        }
+        else {
+            return reg_file.read_rs1(rs1);
+        }
+    }
+
+    func read_register_2
+    {
+        // 他のwb stageではstall or interlockしているので問題ない
+        if(write_back_stage & rs1 == wb_rd)
+        {
+            return wb_value;
+        }
+        else {
+            return reg_file.read_rs2(rs2);
+        }
+    }
+
     proc execute_stage
     {
         if(!interlock)
@@ -109,9 +138,7 @@ module tiny_rv
                 {
                     op_imm = exec_inst;
                     source_1 = 32#op_imm.imm;
-                    //TODO: you have to check data hazard
-                    //when rs1 is equal to wb_rd, the value have to be bypassed.
-                    source_2 = reg_file.read_rs1(op_imm.rs1);
+                    source_2 = read_register_1(op_imm.rs1);
                     result = ialu.calculate(
                             source_1, source_2,
                             op_imm.funct3, 1'b0);
@@ -120,11 +147,8 @@ module tiny_rv
                 exec_inst[6:0] == OP:
                 {
                     op = exec_inst;
-                    //TODO: you have to check data hazard
-                    //when rs1 or rs2 is equal to wb_rd,
-                    //          the value have to be bypassed.
-                    source_1 = reg_file.read_rs1(op.rs1);
-                    source_2 = reg_file.read_rs2(op.rs2);
+                    source_1 = read_register_1(op.rs1);
+                    source_2 = read_register_2(op.rs2);
                     result = ialu.calculate(
                             source_1, source_2,
                             op.funct3, op.funct7[5]);
@@ -144,7 +168,7 @@ module tiny_rv
                 {
                     stall();
                     jalr = exec_inst;
-                    source_1 = reg_file.read_rs1(jalr.rs1);
+                    source_1 = read_register_1(jalr.rs1);
                     source_2 = 32#jalr.imm;
                     result = ialu.calculate(source_1, source_2, jalr.funct3, 0);
                     fetch_0_stage(result);
@@ -153,9 +177,8 @@ module tiny_rv
                 exec_inst[6:0] == BRANCH:
                 {
                     branch = exec_inst;
-                    source_1 = reg_file.read_rs1(branch.rs1);
-                    source_2 = reg_file.read_rs2(branch.rs2);
-                    //comp_result = ialu.compare(source_1, source_1, branch.opcode);
+                    source_1 = read_register_1(branch.rs1);
+                    source_2 = read_register_2(branch.rs2);
                     comp_result = ialu.compare(source_1, source_1, branch.funct3);
                     result = ialu.calculate(
                                 exec_pc,
@@ -172,7 +195,7 @@ module tiny_rv
                 exec_inst[6:0] == LOAD:
                 {
                     load = exec_inst;
-                    source_1 = reg_file.read_rs1(load.rs1);
+                    source_1 = read_register_1(load.rs1);
                     source_2 = 32#{load.imm};
                     result = ialu.calculate(source_1, source_2,
                                 FUNCT3_ADD_SUB, 1'b0);

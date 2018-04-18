@@ -8,14 +8,14 @@ module memory
 
     mem dummy_mem[0x80][8];
 
-    reg i[10];
+    reg i[32];
     func_self dump();
 
     func dump seq
     {
         for(i := 0,32)
         {
-            _display("0x%08x: 0x%02x", i, dummy_mem[i]);
+            _display("0x%08x: 0x%x", i, dummy_mem[i]);
         }
     }
 
