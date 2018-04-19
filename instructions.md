@@ -72,5 +72,3 @@ RV32I
 - [ ] CSRRCI
 - [ ] PRIV(ECALL)
 - [ ] PRIV(EBREAK)
-
-
