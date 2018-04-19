@@ -18,6 +18,16 @@ module system_tb
         dummy_mem.init();
     }
 
+    func core.error
+    {
+        _display("error occured in core");
+#ifdef DEBUG
+        core.register_dump();
+#else
+        _finish();
+#endif
+    }
+
     if(counter == 10'h10)
     {
         core.start(32'h10);
@@ -47,7 +57,7 @@ module system_tb
 
     func arbiter.boot_mem_read_request
     {
-        dummy_mem.request(arbiter.bootmem_address);
+        dummy_mem.request(arbiter.bootmem_read_address);
     }
 
     func dummy_mem.data_enable
@@ -69,5 +79,22 @@ module system_tb
     func arbiter.d_enable
     {
         core.load_done(arbiter.d_value);
+    }
+
+    // for store
+    func core.store_w
+    {
+        arbiter.store_w(core.d_address, core.store_data);
+    }
+
+    func arbiter.boot_mem_write_request
+    {
+        dummy_mem.request(arbiter.d_address, arbiter.d_write_value);
+    }
+
+
+    func arbiter.store_done
+    {
+        core.store_done();
     }
 }

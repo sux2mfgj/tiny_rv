@@ -10,6 +10,7 @@
 #define JALR    (7'b1100111)
 #define BRANCH  (7'b1100011)
 #define LOAD    (7'b0000011)
+#define STORE   (7'b0100011)
 
 /*
  * struct for eatch instruction type
@@ -70,6 +71,16 @@ struct load_t
     rs1[5];
     funct3[3];
     rd[5];
+    opcode[7];
+};
+
+struct store_t
+{
+    offset_11_5[7];
+    rs2[5];
+    rs1[5];
+    width[3];
+    offset_4_0[5];
     opcode[7];
 };
 

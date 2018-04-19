@@ -21,12 +21,14 @@ module tiny_rv
     reg exec_inst[32], exec_pc[32];
     proc_name execute_stage(exec_inst, exec_pc);
     reg wb_rd[5], wb_value[32], wb_opcode[7] = 0;
+    reg wb_src[5];
     reg wb_funct3[3];
     reg wb_rd_waiting[5];
     proc_name write_back_stage(wb_rd, wb_value, wb_opcode);
     proc_name write_back_stage_load(wb_rd, wb_value, wb_funct3);
     proc_name write_back_stage_load_waiting(wb_rd_waiting);
-    //proc_name write_back_stage_store(wb_rd, wb_value, wb_funct3);
+    proc_name write_back_stage_store(wb_value, wb_src, wb_funct3);
+    proc_name write_back_stage_store_waiting();
 
     wire source_1[32];
     wire source_2[32];
@@ -39,6 +41,7 @@ module tiny_rv
     jalr_t wire jalr;
     branch_t wire branch;
     load_t wire load;
+    store_t wire store;
 
     // for hazard (bypass)
     wire rs1[5], rs1_value[32];
@@ -201,10 +204,18 @@ module tiny_rv
                                 FUNCT3_ADD_SUB, 1'b0);
                     write_back_stage_load(load.rd, result, load.funct3);
                 }
+                exec_inst[6:0] == STORE:
+                {
+                    store = exec_inst;
+                    source_1 = read_register_1(store.rs1);
+                    source_2 = 32#{store.offset_11_5, store.offset_4_0};
+                    result = ialu.calculate(source_1, source_2, FUNCT3_ADD_SUB, 1'b0);
+                    write_back_stage_store(result, read_register_2(store.rs2), store.width);
+                }
                 //TODO add behavior of other opcodes
                 else:
                 {
-                    error();
+                    error(8'h0);
                 }
             }
             finish();
@@ -225,7 +236,7 @@ module tiny_rv
             }
             else:
             {
-                error();
+                error(8'h1);
             }
         }
         finish();
@@ -243,7 +254,7 @@ module tiny_rv
             }
             else:
             {
-                error();
+                error(8'h2);
             }
         }
     }
@@ -258,6 +269,32 @@ module tiny_rv
         else
         {
             interlock();
+        }
+    }
+
+    proc write_back_stage_store
+    {
+        interlock();
+        any
+        {
+            wb_funct3 == WIDTH_W:
+            {
+                store_w(wb_value, wb_src);
+                write_back_stage_store_waiting();
+            }
+            else:
+            {
+                error(8'h3);
+            }
+        }
+    }
+
+    proc write_back_stage_store_waiting
+    {
+        interlock();
+        if(store_done)
+        {
+            _finish();
         }
     }
 

@@ -22,6 +22,8 @@ module bus_arbiter
     request_content reg brom_req_wait = 35'h0;
     request_content wire brom_req_inst, brom_req_data;
 
+    proc_name brom_write();
+
     func i_request
     {
         if (i_address < 32'h400)
@@ -108,6 +110,21 @@ module bus_arbiter
                     error();
                 }
             }
+        }
+    }
+
+    func store_w
+    {
+        boot_mem_write_request(d_address, d_write_value);
+        brom_write(d_address);
+    }
+
+    proc brom_write
+    {
+        //counter を作って、byte, harf, wordを行けるようにしたい
+        if(boot_mem_write_done)
+        {
+            store_done();
         }
     }
 }

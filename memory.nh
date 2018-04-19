@@ -5,9 +5,15 @@ declare memory
 {
     input address[32];
     output data[32];
+    input d_address[32];
+    input d_value[8];
 
     func_in request(address);
     func_out data_enable(data);
+
+    // only byte
+    func_in write_request(d_address, d_value);
+    func_out write_done();
 
     func_in init();
 }

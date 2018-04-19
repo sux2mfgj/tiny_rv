@@ -6,6 +6,10 @@ module memory
     proc_name requested(addr);
     reg counter[10] = 0;
 
+    reg write_addr[32];
+    reg write_value[32];
+    proc_name write(write_addr, write_value);
+
     mem dummy_mem[0x80][8];
 
     reg i[32];
@@ -51,5 +55,16 @@ module memory
         else {
             counter++;
         }
+    }
+
+    func write_request
+    {
+        write(d_address, d_value);
+    }
+
+    proc write
+    {
+        dummy_mem[d_address] := d_value;
+        write_done();
     }
 }

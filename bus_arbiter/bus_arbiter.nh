@@ -17,14 +17,17 @@ declare bus_arbiter
 
     input d_address[32];
     output d_value[32];
+    input d_write_value[32];
     //output h_value[16];
     //output w_value[32];
 
     /*
      * data lines for boot memory
      */
-    output bootmem_address[32];
+    output bootmem_read_address[32];
+    output bootmem_write_address[32];
     input bootmem_data[32];
+    output bootmem_write_data[32];
 
     /*
      * control for core
@@ -39,11 +42,20 @@ declare bus_arbiter
     //func_out d_enable_h(h_value);
     //func_out d_enable_w(w_value);
 
+    //func_in store_b(d_address);
+    //func_in store_h(d_address);
+    func_in store_w(d_address, d_write_value);
+    func_out store_done();
+
+
     /*
      * for boot memory
      */
-    func_out boot_mem_read_request(bootmem_address);
+    func_out boot_mem_read_request(bootmem_read_address);
     func_in boot_mem_data_enable(bootmem_data);
+    func_out boot_mem_write_request(
+            bootmem_write_address, bootmem_write_data);
+    func_in boot_mem_write_done();
 
     func_out error();
 }
