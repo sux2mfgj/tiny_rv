@@ -22,10 +22,14 @@ build_mem: main.s
 #$(OBJDUMP) -D main.o | awk '{if(NR>=8){ print $$2} }' > test.mem
 	$(OBJDUMP) -D main.o | awk '{if($$2 ~/^[0-f]+$$/) print $$2}' > test.mem
 
-system: system_tb.nsl bus_arbiter/bus_arbiter.v bus_arbiter/memory.v core/fetch.v core/integer_arithmetic_logic.v core/integer_register.v core/tiny_rv.v
+system: system_tb.nsl bus_arbiter/bus_arbiter.v bus_arbiter/memory.v core/fetch.v core/integer_arithmetic_logic.v core/integer_register.v core/tiny_rv.v test.mem
 	nsl2vl -verisim2 $< -target $(basename $<)
 	iverilog $(addsuffix .v, $(basename $^)) $(REQUIRE_MODULES) -o $@.vcd
 	./$@.vcd
+
+test.mem: bus_arbiter/main.s bus_arbiter/linker.ld
+	make -C bus_arbiter test.mem
+	cp bus_arbiter/test.mem .
 
 system_vcd: system
 	gtkwave system_tb.vcd
@@ -44,6 +48,6 @@ $(CC):
 	cd build; make -j $(shell nproc)
 
 clean:
-	rm -fr *.v *.vcd a.out build *.o
+	rm -fr *.v *.vcd a.out build *.o *.mem
 	make -C core clean
 	make -C bus_arbiter clean

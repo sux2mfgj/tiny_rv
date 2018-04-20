@@ -10,8 +10,5 @@ ELF_DUMP    := elf_dump/target/release/elf_dump
 
 %.mem: %.elf $(ELF_DUMP)
 
-objdump:
-	
-
 $(ELF_DUMP):
 	make -C elf_dump release
