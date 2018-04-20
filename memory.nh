@@ -16,6 +16,8 @@ declare memory
     func_out write_done();
 
     func_in init();
+    func_in dump();
+    func_out dump_done();
 }
 
 #endif

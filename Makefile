@@ -22,7 +22,7 @@ build_mem: main.s
 #$(OBJDUMP) -D main.o | awk '{if(NR>=8){ print $$2} }' > test.mem
 	$(OBJDUMP) -D main.o | awk '{if($$2 ~/^[0-f]+$$/) print $$2}' > test.mem
 
-system: system_tb.nsl bus_arbiter/bus_arbiter.v bus_arbiter/memory.v core/fetch.v core/integer_arithmetic_logic.v core/integer_register.v core/tiny_rv.v test.mem
+system: system_tb.nsl bus_arbiter/bus_arbiter.v bus_arbiter/memory.v core/fetch.v core/integer_arithmetic_logic.v core/integer_register.v core/tiny_rv.v
 	nsl2vl -verisim2 $< -target $(basename $<)
 	iverilog $(addsuffix .v, $(basename $^)) $(REQUIRE_MODULES) -o $@.vcd
 	./$@.vcd

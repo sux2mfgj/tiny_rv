@@ -22,7 +22,11 @@ module bus_arbiter
     request_content reg brom_req_wait = 35'h0;
     request_content wire brom_req_inst, brom_req_data;
 
-    proc_name brom_write();
+    reg write_address[32];
+    reg write_size[4];
+    reg write_value[32];
+    proc_name brom_write(write_size, write_address, write_value);
+    wire new_write_address[32], new_write_value[32];
 
     func i_request
     {
@@ -113,18 +117,33 @@ module bus_arbiter
         }
     }
 
-    func store_w
+    func store_b
     {
-        boot_mem_write_request(d_address, d_write_value);
-        brom_write(d_address);
+        boot_mem_write_request(d_write_address, d_write_value);
+        brom_write(1, d_address, d_write_value);
     }
 
+    //proc_name brom_write(write_size, write_address, write_value);
     proc brom_write
     {
-        //counter を作って、byte, harf, wordを行けるようにしたい
         if(boot_mem_write_done)
         {
-            store_done();
+            if((write_size - 4'h1) == 0)
+            {
+                store_done();
+                finish();
+            }
+            else
+            {
+                write_size--;
+                new_write_address = write_address + 32'h1;
+                new_write_value = write_value >> 8;
+                write_address := new_write_address;
+                write_value := new_write_value;
+                boot_mem_write_request(
+                        new_write_address,
+                        new_write_value[7:0]);
+            }
         }
     }
 }

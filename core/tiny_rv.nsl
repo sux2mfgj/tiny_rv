@@ -24,10 +24,11 @@ module tiny_rv
     reg wb_src[5];
     reg wb_funct3[3];
     reg wb_rd_waiting[5];
+    reg wb_value2[32];
     proc_name write_back_stage(wb_rd, wb_value, wb_opcode);
     proc_name write_back_stage_load(wb_rd, wb_value, wb_funct3);
     proc_name write_back_stage_load_waiting(wb_rd_waiting);
-    proc_name write_back_stage_store(wb_value, wb_src, wb_funct3);
+    proc_name write_back_stage_store(wb_value, wb_value2, wb_funct3);
     proc_name write_back_stage_store_waiting();
 
     wire source_1[32];
@@ -277,9 +278,9 @@ module tiny_rv
         interlock();
         any
         {
-            wb_funct3 == WIDTH_W:
+            wb_funct3 == WIDTH_B:
             {
-                store_w(wb_value, wb_src);
+                store_b(wb_value, 32#{wb_value2[7:0]});
                 write_back_stage_store_waiting();
             }
             else:
@@ -294,7 +295,7 @@ module tiny_rv
         interlock();
         if(store_done)
         {
-            _finish();
+            finish();
         }
     }
 

@@ -45,6 +45,10 @@ module system_tb
 #ifdef DEBUG
     func core.register_dump_done
     {
+        dummy_mem.dump();
+    }
+    func dummy_mem.dump_done
+    {
         _finish();
     }
 #endif
@@ -82,16 +86,22 @@ module system_tb
     }
 
     // for store
-    func core.store_w
+    func core.store_b
     {
-        arbiter.store_w(core.d_address, core.store_data);
+        arbiter.store_b(core.d_address, core.store_data);
     }
 
     func arbiter.boot_mem_write_request
     {
-        dummy_mem.request(arbiter.d_address, arbiter.d_write_value);
+        dummy_mem.write_request(
+                arbiter.bootmem_write_address,
+                arbiter.bootmem_write_data);
     }
 
+    func dummy_mem.write_done
+    {
+        arbiter.boot_mem_write_done();
+    }
 
     func arbiter.store_done
     {

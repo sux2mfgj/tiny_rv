@@ -2,7 +2,7 @@
 hello:
     .word 0x12345678
 to_store:
-    .word 0x87654321
+    .word 0x0
 
 .text
 .globl _start
@@ -12,6 +12,6 @@ _start:
     add a1, x0, a0
     add a2, a0, a1
     la a5, to_store
-    sw a0, 0(a5)
+    sb a0, 0(a5)
 finish:
     jal a4, finish

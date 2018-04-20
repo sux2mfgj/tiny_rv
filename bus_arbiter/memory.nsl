@@ -7,20 +7,21 @@ module memory
     reg counter[10] = 0;
 
     reg write_addr[32];
-    reg write_value[32];
+    reg write_value[8];
     proc_name write(write_addr, write_value);
 
     mem dummy_mem[0x80][8];
 
     reg i[32];
-    func_self dump();
 
     func dump seq
     {
-        for(i := 0,32)
+        _display("memory dump");
+        for(i := 0, 0x60)
         {
             _display("0x%08x: 0x%x", i, dummy_mem[i]);
         }
+        dump_done();
     }
 
     func init seq
@@ -64,7 +65,8 @@ module memory
 
     proc write
     {
-        dummy_mem[d_address] := d_value;
+        dummy_mem[write_addr] := write_value;
         write_done();
+        finish();
     }
 }
