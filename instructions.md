@@ -56,7 +56,7 @@ RV32I
 - [ ] LHU
 
 ##### STORE
-- [ ] SB
+- [x] SB
 - [ ] SH
 - [ ] SW
 
