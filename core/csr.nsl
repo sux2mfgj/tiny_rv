@@ -1,0 +1,23 @@
+#include "csr.nh"
+
+module control_state_registers
+{
+    //func_in read(address): read_result;
+    func read
+    {
+        any
+        {
+            // mhartid
+            address == 0xf14:
+            {
+                return 32'h0;
+            }
+            else:
+            {
+                error();
+            }
+        }
+    }
+
+    //func_in write(address, write_value);
+}

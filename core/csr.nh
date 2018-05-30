@@ -1,0 +1,16 @@
+#ifndef __INCLUDED_CSR_NH__
+#define __INCLUDED_CSR_NH__
+
+declare control_state_registers
+{
+    input address[12];
+    input write_value[32];
+    output read_result[32];
+
+    func_in read(address): read_result;
+    func_in write(address, write_value);
+
+    func_out error();
+}
+
+#endif // __INCLUDED_CSR_NH__
