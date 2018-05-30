@@ -22,3 +22,12 @@ using [elf_dump](https://github.com/sux2mfgj/elf_dump)
 - [ ] test
 - [x] CI for test
 - [ ] [riscv-test](https://github.com/riscv/riscv-tests)
+
+
+### Memo
+```
+$ git submodule update --init --recursive
+$ make test.mem
+$ make system
+$ make system_vcd
+```

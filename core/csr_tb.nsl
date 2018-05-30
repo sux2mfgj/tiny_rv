@@ -15,7 +15,7 @@ module csr_tb
 
     if(counter == 10'h5)
     {
-        _display("mhartid 0x%x", csr.read(0xf14));
+        _display("mhartid 0x%x", csr.read_write(0xf14, 0x0));
     }
 
     if(counter == 10'h6)

@@ -17,7 +17,10 @@ memory: memory_tb.nsl memory.v
 	iverilog $(addsuffix .v, $(basename $^)) $(REQUIRE_MODULES) -o $@.vvp
 	./$@.vvp
 
-test.mem: main.elf
+$(ELF_DUMP):
+	make -C ../elf_dump release
+
+test.mem: main.elf $(ELF_DUMP)
 	../$(ELF_DUMP) $< > $@
 
 dump: main.elf

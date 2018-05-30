@@ -7,6 +7,7 @@ to_store:
 .text
 .globl _start
 _start:
+    csrr a0,mhartid
     lw a0, hello
     addi a0, a0, 1
     add a1, x0, a0

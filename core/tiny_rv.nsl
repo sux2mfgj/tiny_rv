@@ -4,6 +4,7 @@
 #include "integer_register.nh"
 #include "integer_arithmetic_logic.nh"
 #include "funct3.nh"
+#include "csr.nh"
 
 module tiny_rv
 {
@@ -11,6 +12,7 @@ module tiny_rv
     //decode idecode;
     integer_register reg_file;
     integer_arithmetic_logic ialu;
+    control_state_registers csr;
 
     reg current_pc[32];
     reg next_pc[32];
@@ -30,6 +32,9 @@ module tiny_rv
     proc_name write_back_stage_load_waiting(wb_rd_waiting);
     proc_name write_back_stage_store(wb_value, wb_value2, wb_funct3);
     proc_name write_back_stage_store_waiting();
+    reg wb_csr[12];
+    reg wb_csr_funct[2];
+    proc_name write_back_stage_csr(wb_csr, wb_value, wb_rd, wb_csr_funct);
 
     wire source_1[32];
     wire source_2[32];
@@ -43,6 +48,7 @@ module tiny_rv
     branch_t wire branch;
     load_t wire load;
     store_t wire store;
+    system_t wire system;
 
     // for hazard (bypass)
     wire rs1[5], rs1_value[32];
@@ -111,7 +117,7 @@ module tiny_rv
     func read_register_1
     {
         // 他のwb stageではstall or interlockしているので問題ない
-        if(write_back_stage & rs1 == wb_rd)
+        if((write_back_stage | write_back_stage_load_waiting | write_back_stage_csr) & rs1 == wb_rd)
         {
             return wb_value;
         }
@@ -123,7 +129,7 @@ module tiny_rv
     func read_register_2
     {
         // 他のwb stageではstall or interlockしているので問題ない
-        if(write_back_stage & rs1 == wb_rd)
+        if((write_back_stage | write_back_stage_load_waiting | write_back_stage_csr) & rs1 == wb_rd)
         {
             return wb_value;
         }
@@ -213,6 +219,19 @@ module tiny_rv
                     result = ialu.calculate(source_1, source_2, FUNCT3_ADD_SUB, 1'b0);
                     write_back_stage_store(result, read_register_2(store.rs2), store.width);
                 }
+                exec_inst[6:0] == SYSTEM:
+                {
+                    system = exec_inst;
+                    if(system.is_imm)
+                    {
+                        source_1 = read_register_1(system.rs1);
+                    }
+                    else
+                    {
+                        source_1 = 32#{system.rs1};
+                    }
+                    write_back_stage_csr(system.csr, source_1, system.rd, system.funct);
+                }
                 //TODO add behavior of other opcodes
                 else:
                 {
@@ -296,6 +315,25 @@ module tiny_rv
         if(store_done)
         {
             finish();
+        }
+    }
+
+    //proc_name write_back_stage_csr(wb_csr, wb_value, wb_rd, wb_csr_funct);
+    proc write_back_stage_csr
+    {
+        wire csr_result[32];
+        any
+        {
+            wb_csr_funct == CSR_FUNCT_RS:
+            {
+                csr_result = csr.read_write(wb_csr, wb_value);
+                reg_file.write(wb_rd, csr_result);
+                finish();
+            }
+            else:
+            {
+                error(8'h4);
+            }
         }
     }
 

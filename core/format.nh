@@ -11,6 +11,7 @@
 #define BRANCH  (7'b1100011)
 #define LOAD    (7'b0000011)
 #define STORE   (7'b0100011)
+#define SYSTEM  (7'b1110011)
 
 /*
  * struct for eatch instruction type
@@ -81,6 +82,16 @@ struct store_t
     rs1[5];
     width[3];
     offset_4_0[5];
+    opcode[7];
+};
+
+struct system_t
+{
+    csr[12];
+    rs1[5];
+    is_imm;
+    funct[2];
+    rd[5];
     opcode[7];
 };
 

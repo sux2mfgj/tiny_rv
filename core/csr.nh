@@ -1,14 +1,19 @@
 #ifndef __INCLUDED_CSR_NH__
 #define __INCLUDED_CSR_NH__
 
+#define CSR_FUNCT_RW    (2'b01)
+#define CSR_FUNCT_RS    (2'b10)
+#define CSR_FUNCT_RC    (2'b11)
+
 declare control_state_registers
 {
     input address[12];
     input write_value[32];
     output read_result[32];
 
-    func_in read(address): read_result;
-    func_in write(address, write_value);
+    // CSRRW
+    func_in read_write(address, write_value): read_result;
+    //TODO add another functions for CSRRS and CSRRC
 
     func_out error();
 }
