@@ -1,6 +1,0 @@
-#ifndef __INCLUDED_DEBUG_NH__
-#define __INCLUDED_DEBUG_NH__
-
-#define DEBUG
-
-#endif
