@@ -44,8 +44,15 @@ prepare_toolchain: $(CC)
 $(CC):
 	mkdir -p toolchain
 	mkdir -p build
-	cd build; ../riscv-gnu-toolchain/configure --prefix=$(shell pwd)/toolchain --with-arch=rv32i --with-guile=no
+#	cd build; ../riscv-gnu-toolchain/configure --prefix=$(shell pwd)/toolchain --with-arch=rv32i --with-guile=no
+	cd build; ../riscv-gnu-toolchain/configure --prefix=$(shell pwd)/toolchain --with-guile=no
 	cd build; make -j $(shell nproc)
+
+riscv_test: clean
+	mkdir test_build
+	cd test_build; CC=../toolchain/bin/riscv64-unknown-elf-gcc ../riscv-tests/configure --prefix=/home/hima/work/tiny_rv/build/../toolchain/
+	cd test_build; make -j $(shell nproc)
+
 
 clean:
 	rm -fr *.v *.vcd a.out build *.o *.mem

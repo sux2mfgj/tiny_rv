@@ -10,7 +10,7 @@ module memory
     reg write_value[8];
     proc_name write(write_addr, write_value);
 
-    mem dummy_mem[0x80][8];
+    mem dummy_mem[0x1050][8];
 
     reg i[32];
 
@@ -26,7 +26,7 @@ module memory
 
     func init seq
     {
-        _readmemh("test.mem", dummy_mem);
+        _readmemh("memory.hex", dummy_mem);
         //dump();
     }
 
