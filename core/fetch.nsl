@@ -1,0 +1,35 @@
+#include "fetch.nh"
+
+module fetch
+{
+    state_name idle, waiting;
+
+    state idle
+    {
+        if(request)
+        {
+            request_to_bus(next_pc);
+            goto waiting;
+        }
+    }
+
+    func enable
+    {
+        done(data);
+    }
+
+    state waiting
+    {
+        if(enable)
+        {
+            if(request)
+            {
+                request_to_bus(next_pc);
+            }
+            else {
+                goto idle;
+            }
+        }
+    }
+}
+

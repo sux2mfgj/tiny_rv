@@ -1,0 +1,76 @@
+#include "fetch.nh"
+
+declare fetch_tb simulation {}
+
+module fetch_tb
+{
+    reg pc[32];
+
+    fetch ifetch;
+
+    reg exec_inst[32];
+    reg request_addr[32];
+    proc_name fetch_request_stage(request_addr);
+    proc_name fetch_wait_stage();
+    proc_name execute_stage(exec_inst);
+
+    func_self start;
+
+    //for simulation
+    reg read_mem_addr[32];
+    proc_name read_mem(read_mem_addr);
+
+    reg counter[10] = 10'h0;
+    counter++;
+
+
+    if(counter == 10'0h4)
+    {
+        start();
+    }
+
+    if(counter == 10'h10)
+    {
+        _finish();
+    }
+
+    func start
+    {
+        fetch_request_stage(32'h00001000);
+    }
+
+    proc fetch_request_stage
+    {
+        ifetch.request(request_addr);
+        fetch_wait_stage();
+    }
+
+    proc fetch_wait_stage
+    {
+        if(ifetch.done)
+        {
+            execute_stage(ifetch.instruction);
+        }
+    }
+
+    proc execute_stage
+    {
+        _display("execute_stage", exec_inst);
+        finish();
+    }
+
+    // for memory
+    func ifetch.request_to_bus
+    {
+        read_mem(ifetch.address);
+    }
+
+    proc read_mem
+    {
+        if(counter[0] & counter[2])
+        {
+            ifetch.enable(32'h00000793); // li a5, 0
+            finish();
+        }
+    }
+}
