@@ -4,8 +4,6 @@ declare fetch_tb simulation {}
 
 module fetch_tb
 {
-    reg pc[32];
-
     fetch ifetch;
 
     reg exec_inst[32];
@@ -69,8 +67,15 @@ module fetch_tb
     {
         if(counter[0] & counter[2])
         {
+            _display("requested: ", read_mem_addr);
             ifetch.enable(32'h00000793); // li a5, 0
             finish();
         }
+    }
+
+    func ifetch.error
+    {
+        //_display("error occured: ", ifetch.error_num);
+        _finish("error occured: ", ifetch.error_num);
     }
 }

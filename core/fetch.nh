@@ -1,11 +1,15 @@
 #ifndef __INCLUDED_INST_FETCH_NH__
 #define __INCLUDED_INST_FETCH_NH__
 
+#include "error.nh"
+
 declare fetch
 {
     // for memory;
     output address[32];
     input data[32];
+
+    output error_num[ERROR_NUM_BIT_WIDTH];
 
     // for internal
     output instruction[32];
@@ -18,6 +22,8 @@ declare fetch
     // for internal
     func_in request(next_pc);
     func_out done(instruction);
+
+    func_out error(error_num);
 }
 
 #endif

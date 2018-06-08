@@ -30,6 +30,13 @@ module fetch
                 goto idle;
             }
         }
+        else
+        {
+            if(request)
+            {
+                error(ERROR_FETCH);
+            }
+        }
     }
 }
 

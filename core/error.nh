@@ -1,0 +1,10 @@
+#ifndef __INCLUDED_ERROR_NH__
+#define __INCLUDED_ERROR_NH__
+
+#define ERROR_NUM_BIT_WIDTH 8
+
+#define ERROR_OK    (ERROR_NUM_BIT_WIDTH'h0)
+
+#define ERROR_FETCH (ERROR_NUM_BIT_WIDTH'h1)
+
+#endif
