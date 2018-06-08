@@ -1,0 +1,21 @@
+#ifndef __INCLUDED_FUNCT3_NH__
+#define __INCLUDED_FUNCT3_NH__
+
+#define FUNCT3_ADD_SUB      (3'b000)
+//#define FUNCT3_SHIFT_L      (3'b001)
+//TODO add
+//#define FUNCT3_XOR          (3'b100)
+//#define FUNCT3_SHIFT_R      (3'b101)
+//#define FUNCT3_OR           (3'b110)
+//#define FUNCT3_AND          (3'b111)
+
+#define FUNCT3_BRANCH_EQ    (3'b000)
+#define FUNCT3_BRANCH_LT    (3'b100)
+
+#define WIDTH_B (3'b000)
+#define WIDTH_H (3'b001)
+#define WIDTH_W (3'b010)
+#define WIDTH_LBU (3'b100)
+#define WIDTH_LHU (3'b101)
+
+#endif

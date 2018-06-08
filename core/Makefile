@@ -4,7 +4,7 @@ clean:
 TARGET  :=
 
 ifeq ($(TARGET), tiny_rv)
-    REQUIRE_MODULES := fetch.v
+    REQUIRE_MODULES := fetch.v integer_register.v
 endif
 
 ifdef TARGET

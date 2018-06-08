@@ -1,0 +1,50 @@
+#include "integer_arithmetic_logic.nh"
+#include "funct3.nh"
+
+module integer_arithmetic_logic
+{
+    wire tmp_result;
+
+    func calculate
+    {
+        any
+        {
+            funct == FUNCT3_ADD_SUB:
+            {
+                if(!is_alt)
+                {
+                    return in_a + in_b;
+                }
+                else
+                {
+                    return in_a - in_b;
+                }
+            }
+            //TODO another processing
+        }
+    }
+
+    func compare
+    {
+        any
+        {
+            comp_funct[2] == 0: // BEQ or BNE
+            {
+                tmp_result = comp_a == comp_b;
+            }
+            comp_funct[2] == 1: // BLT or BGE
+            {
+                tmp_result = comp_a < comp_b;
+            }
+            //TODO BLTU, BGEU
+        }
+        if(comp_funct[0])
+        {
+            return !tmp_result;
+        }
+        else
+        {
+            return tmp_result;
+        }
+    }
+}

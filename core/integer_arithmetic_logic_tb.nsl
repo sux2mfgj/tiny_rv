@@ -1,0 +1,49 @@
+#include "integer_arithmetic_logic.nh"
+
+declare integer_arithmetic_logic_tb simulation
+{
+    output error_num[ERROR_NUM_BIT_WIDTH];
+    func_out error(error_num);
+}
+
+module integer_arithmetic_logic_tb
+{
+    integer_arithmetic_logic ialu;
+
+    reg counter[10] = 10'h0;
+    counter++;
+
+    if(counter == 10'h4)
+    {
+        // 0xff + 0x02  (0x101)
+        _display("calculate 0x%x",
+                ialu.calculate(32'hff, 32'h02, 3'b000, 1'b0));
+
+        // 0x01 == 0x01 (1)
+        _display("compare 0b%x",
+                ialu.compare(32'h01, 32'h01, 3'b000));
+    }
+
+    if(counter == 10'h5)
+    {
+        // 0xff + 0x02  (0x101)
+        _display("calculate 0x%x",
+                ialu.calculate(32'hff, 32'h02, 3'b000, 1'b1));
+
+        // 0x01 < 0x01 (1)
+        _display("compare 0b%x",
+                ialu.compare(32'h03, 32'h01, 3'b100));
+    }
+
+    if(counter == 10'h6)
+    {
+        // 0x01 < 0x01 (0)
+        _display("compare 0b%x",
+                ialu.compare(32'h07, 32'h13, 3'b100));
+    }
+
+    if(counter == 10'h10)
+    {
+        _finish();
+    }
+}

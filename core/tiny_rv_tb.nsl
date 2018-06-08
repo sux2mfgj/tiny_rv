@@ -40,6 +40,8 @@ module tiny_rv_tb
     proc return_inst
     {
         _display("requested: ", i_address);
+        //01028293  addi    t0,t0,16 # 80000064 <reset_vector+0x18>
+
         rv_core.inst_done(32'h01028293);
         finish();
     }
