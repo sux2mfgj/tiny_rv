@@ -1,14 +1,18 @@
 #include "tiny_rv.nh"
 
-declare tiny_rv_tb simulation {}
+declare tiny_rv_tb simulation
+{
+    output error_num[ERROR_NUM_BIT_WIDTH];
+    func_out error(error_num);
+}
 
 module tiny_rv_tb
 {
     tiny_rv rv_core;
     reg counter[10] = 0;
 
-    wire error_num[ERROR_NUM_BIT_WIDTH];
-    func_self finish_simulation(error_num);
+    wire e_num[ERROR_NUM_BIT_WIDTH];
+    func_self finish_simulation(e_num);
 
     reg i_address[32];
     proc_name return_inst(i_address);
@@ -43,10 +47,11 @@ module tiny_rv_tb
     func rv_core.error
     {
         finish_simulation(rv_core.error_num);
+        error(rv_core.error_num);
     }
 
     func finish_simulation
     {
-        _finish("finish: ", error_num);
+        _finish("finish: ", e_num);
     }
 }

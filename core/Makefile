@@ -1,4 +1,4 @@
-ifndef
+ifndef TARGET
     $(error Please set TARGET variable. ex. make vcd TARGET=fetch)
 endif
 
