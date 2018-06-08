@@ -1,3 +1,5 @@
 *.v
 *.vcd
 *.vvp
+core/obj_dir/
+*.hpp

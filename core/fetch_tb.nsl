@@ -1,6 +1,10 @@
 #include "fetch.nh"
 
-declare fetch_tb simulation {}
+declare fetch_tb simulation
+{
+    output error_num[ERROR_NUM_BIT_WIDTH];
+    func_out error(error_num);
+}
 
 module fetch_tb
 {
@@ -20,7 +24,6 @@ module fetch_tb
 
     reg counter[10] = 10'h0;
     counter++;
-
 
     if(counter == 10'0h4)
     {
@@ -53,7 +56,7 @@ module fetch_tb
 
     proc execute_stage
     {
-        _display("execute_stage", exec_inst);
+        _display("execute_stage: ", exec_inst);
         finish();
     }
 
@@ -76,6 +79,7 @@ module fetch_tb
     func ifetch.error
     {
         //_display("error occured: ", ifetch.error_num);
-        _finish("error occured: ", ifetch.error_num);
+        //_finish("error occured: ", ifetch.error_num);
+        error(ifetch.error_num);
     }
 }
