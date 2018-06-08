@@ -1,0 +1,99 @@
+#ifndef __INCLUDED_FORMAT_NH__
+#define __INCLUDED_FORMAT_NH__
+
+/*
+ * RV32I opecodes
+ */
+#define OP_IMM  (7'b0010011)
+#define OP      (7'b0110011)
+#define JAL     (7'b1101111)
+#define JALR    (7'b1100111)
+#define BRANCH  (7'b1100011)
+#define LOAD    (7'b0000011)
+#define STORE   (7'b0100011)
+#define SYSTEM  (7'b1110011)
+
+/*
+ * struct for eatch instruction type
+ */
+struct op_imm_t
+{
+    imm[12];
+    rs1[5];
+    funct3[3];
+    rd[5];
+    opcode[7];
+};
+
+struct op_t
+{
+    funct7[7];
+    rs2[5];
+    rs1[5];
+    funct3[3];
+    rd[5];
+    opcode[7];
+};
+
+struct jal_t
+{
+    imm0[1];
+    imm3[10];
+    imm2[1];
+    imm1[8];
+    rd[5];
+    opcode[7];
+};
+
+struct jalr_t
+{
+    imm[12];
+    rs1[5];
+    funct3[3];
+    rd[5];
+    opcode[7];
+};
+
+struct branch_t
+{
+    imm12;
+    imm10_5[6];
+    rs2[5];
+    rs1[5];
+    funct3[3];
+    imm4_1[4];
+    imm11;
+    opcode[7];
+};
+
+struct load_t
+{
+    imm[12];
+    rs1[5];
+    funct3[3];
+    rd[5];
+    opcode[7];
+};
+
+struct store_t
+{
+    offset_11_5[7];
+    rs2[5];
+    rs1[5];
+    width[3];
+    offset_4_0[5];
+    opcode[7];
+};
+
+struct system_t
+{
+    csr[12];
+    rs1[5];
+    is_imm;
+    funct[2];
+    rd[5];
+    opcode[7];
+};
+
+
+#endif

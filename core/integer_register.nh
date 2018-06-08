@@ -1,0 +1,24 @@
+#ifndef __INCLUDED_INTEGER_REGISTER_NH__
+#define __INCLUDED_INTEGER_REGISTER_NH__
+
+#include "error.nh"
+
+declare integer_register
+{
+    input read_address_1[5];
+    input read_address_2[5];
+    input write_address[5];
+    input write_data[32];
+    output read_data_1[32];
+    output read_data_2[32];
+
+    output error_num[ERROR_NUM_BIT_WIDTH];
+
+    func_in read_rs1(read_address_1): read_data_1;
+    func_in read_rs2(read_address_2): read_data_2;
+    func_in write(write_address, write_data);
+
+    func_out error(error_num);
+}
+
+#endif // __INCLUDED_INTEGER_REGISTER_NH__

@@ -1,0 +1,45 @@
+#include "integer_register.nh"
+
+declare integer_register_tb simulation
+{
+    output error_num[ERROR_NUM_BIT_WIDTH];
+    func_out error(error_num);
+}
+
+module integer_register_tb
+{
+    integer_register regs;
+
+    reg counter[10] = 10'h0;
+    counter++;
+
+    if(counter == 10'h4)
+    {
+        regs.write(5'h2, 32'h1234);
+        regs.read_rs1(5'h0);
+        //regs.read_rs2(5'h2);
+    }
+
+    if(counter == 10'h5)
+    {
+        regs.read_rs1(5'h2);
+        regs.read_rs2(5'h2);
+        regs.write(5'h3, 32'h12340000);
+    }
+
+    if(counter == 10'h7)
+    {
+        regs.read_rs1(5'h3);
+        regs.read_rs2(5'h3);
+    }
+
+    func regs.error
+    {
+        error(regs.error_num);
+    }
+
+    if(counter == 10'h20)
+    {
+        _finish();
+    }
+}

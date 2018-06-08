@@ -3,3 +3,5 @@
 *.vvp
 core/obj_dir/
 *.hpp
+test_build/
+toolchain/

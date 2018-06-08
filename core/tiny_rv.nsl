@@ -1,5 +1,6 @@
 #include "tiny_rv.nh"
 #include "fetch.nh"
+#include "format.nh"
 
 module tiny_rv
 {
@@ -10,6 +11,15 @@ module tiny_rv
     proc_name fetch_request_stage(request_addr);
     proc_name fetch_wait_stage();
     proc_name execute_stage(exec_inst);
+
+    wire exec_op_code[7];
+    op_imm_t wire op_imm;
+    //op_t wire op;
+
+    wire sourece_1[32];
+    wire sourece_2[32];
+    wire result[32];
+    //wire comp_result;
 
     //func_in start(instruction);
     func start
@@ -29,6 +39,19 @@ module tiny_rv
         ifetch.enable(instruction);
     }
 
+    /*
+     * read register
+     */
+    func read_register_1
+    {
+        //TODO
+    }
+
+    func read_register_2
+    {
+        //TODO
+    }
+
 	proc fetch_request_stage
 	{
         ifetch.request(request_addr);
@@ -45,7 +68,21 @@ module tiny_rv
 
     proc execute_stage
     {
-        error(ERROR_OK);
+        exec_op_code = exec_inst[6:0];
+        any
+        {
+            exec_op_code == OP_IMM:
+            {
+                op_imm = exec_inst;
+                sourece_1 = 32#op_imm.imm;
+                //sourece_2 = read_
+                //TODO
+            }
+            else:
+            {
+                error(ERROR_EXEC_ERROR_OPCODE);
+            }
+        }
     }
 
     /*

@@ -40,7 +40,7 @@ module tiny_rv_tb
     proc return_inst
     {
         _display("requested: ", i_address);
-        rv_core.inst_done(32'h12345678);
+        rv_core.inst_done(32'h01028293);
         finish();
     }
 
