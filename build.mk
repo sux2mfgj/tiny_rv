@@ -12,6 +12,7 @@ VVP     := $(TARGET).vvp
 
 %.nsl: %.nh
 
+
 .PHONY: $(TARGET)
 $(TARGET): $(VCD)
 
