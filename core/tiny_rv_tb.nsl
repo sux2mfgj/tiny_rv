@@ -1,0 +1,52 @@
+#include "tiny_rv.nh"
+
+declare tiny_rv_tb simulation {}
+
+module tiny_rv_tb
+{
+    tiny_rv rv_core;
+    reg counter[10] = 0;
+
+    wire error_num[ERROR_NUM_BIT_WIDTH];
+    func_self finish_simulation(error_num);
+
+    reg i_address[32];
+    proc_name return_inst(i_address);
+
+    counter++;
+
+    if(counter == 10'h02)
+    {
+        rv_core.start(32'h00000000);
+    }
+
+    if(counter == 10'h10)
+    {
+        finish_simulation(ERROR_OK);
+    }
+
+    /*
+     * memory
+     */
+    func rv_core.inst_request
+    {
+        return_inst(rv_core.i_address);
+    }
+
+    proc return_inst
+    {
+        _display("requested: ", i_address);
+        rv_core.inst_done(32'h12345678);
+        finish();
+    }
+
+    func rv_core.error
+    {
+        finish_simulation(rv_core.error_num);
+    }
+
+    func finish_simulation
+    {
+        _finish("finish: ", error_num);
+    }
+}

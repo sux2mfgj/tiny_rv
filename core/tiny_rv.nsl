@@ -1,0 +1,58 @@
+#include "tiny_rv.nh"
+#include "fetch.nh"
+
+module tiny_rv
+{
+    fetch ifetch;
+
+    reg exec_inst[32];
+    reg request_addr[32];
+    proc_name fetch_request_stage(request_addr);
+    proc_name fetch_wait_stage();
+    proc_name execute_stage(exec_inst);
+
+    //func_in start(instruction);
+    func start
+    {
+        fetch_request_stage(instruction);
+    }
+    /*
+     * instruction fetch
+     */
+    func ifetch.request_to_bus
+    {
+        inst_request(ifetch.address);
+    }
+
+    func inst_done
+    {
+        ifetch.enable(instruction);
+    }
+
+	proc fetch_request_stage
+	{
+        ifetch.request(request_addr);
+        fetch_wait_stage();
+    }
+
+    proc fetch_wait_stage
+    {
+        if(ifetch.done)
+        {
+            execute_stage(ifetch.instruction);
+        }
+    }
+
+    proc execute_stage
+    {
+        error(ERROR_OK);
+    }
+
+    /*
+     * errors
+     */
+    func ifetch.error
+    {
+        error(ifetch.error_num);
+    }
+}

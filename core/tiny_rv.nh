@@ -1,0 +1,20 @@
+#ifndef __INCLUDED_TINY_RV_NH__
+#define __INCLUDED_TINY_RV_NH__
+#include "error.nh"
+
+declare tiny_rv
+{
+    input instruction[32];
+    output error_num[ERROR_NUM_BIT_WIDTH];
+
+    output i_address[32];
+
+    func_in start(instruction);
+
+    func_out inst_request(i_address);
+    func_in inst_done(instruction);
+
+    func_out error(error_num);
+}
+
+#endif

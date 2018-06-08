@@ -1,5 +1,5 @@
 TARGET  :=
-REQUIRE_MODULES :=
+#REQUIRE_MODULES :=
 
 .SUFFIXES: .nsl .v
 .nsl.v:
@@ -8,12 +8,19 @@ REQUIRE_MODULES :=
 %.nsl: %.nh
 
 .PHONY: $(TARGET)
-$(TARGET): $(TARGET)_tb.nsl $(TARGET).v
+$(TARGET): $(TARGET).vcd
+
+vcd: $(TARGET)_tb.vcd
+$(TARGET)_tb.vcd: $(TARGET).vvp
+	./$<
+
+vvp: $(TARGET).vvp
+$(TARGET).vvp: $(TARGET)_tb.nsl $(TARGET).v $(REQUIRE_MODULES)
 	nsl2vl -verisim2 $< -target $(basename $<)
-#nsl2vl -verisim2 $< -target $(TARGET)_tb -o $(TARGET)_tb.v
-	iverilog $(addsuffix .v, $(basename $^)) $(REQUIRE_MODULES) -o $@.vcd
-#iverilog $< $(REQUIRE_MODULES) -o $@.vcd
-	./$@.vcd
+	iverilog $(addsuffix .v, $(basename $^)) -o $@
+
+waveform: $(TARGET)_tb.vcd
+	gtkwave $<
 
 clean:
 	rm -rf *.v *.vcd
