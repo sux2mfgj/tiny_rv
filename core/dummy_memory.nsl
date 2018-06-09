@@ -20,7 +20,7 @@ module dummy_memory
     func request_read
     {
         read_proc();
-        access_base := 0x80000000 - address;
+        access_base := address - 0x80000000;
     }
     proc read_proc
     {
