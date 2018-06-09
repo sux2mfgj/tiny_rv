@@ -1,0 +1,59 @@
+#include "test_system.nh"
+#include "tiny_rv.nh"
+#include "dummy_arbiter.nh"
+
+module test_system
+{
+    tiny_rv rv_core;
+    dummy_arbiter arbiter;
+
+    func init
+    {
+        arbiter.init();
+    }
+
+    func start
+    {
+        rv_core.start(reset_vector_addr);
+    }
+
+    func rv_core.inst_request
+    {
+        arbiter.request_inst(rv_core.i_address);
+    }
+
+    func arbiter.inst_done
+    {
+        rv_core.inst_done(arbiter.instruction);
+    }
+
+    func rv_core.load_w
+    {
+        arbiter.load(rv_core.d_address);
+    }
+
+    func arbiter.load_done
+    {
+        rv_core.load_done(arbiter.d_out_data);
+    }
+
+    func rv_core.store_w
+    {
+        arbiter.store(rv_core.d_address, rv_core.store_data);
+    }
+
+    func arbiter.store_done
+    {
+        rv_core.store_done();
+    }
+
+    func rv_core.error
+    {
+        error(rv_core.error_num);
+    }
+
+    func arbiter.error
+    {
+        error(arbiter.error_num);
+    }
+}

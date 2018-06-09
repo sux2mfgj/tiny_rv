@@ -1,5 +1,5 @@
 clean:
-	rm -rf *.v *.vcd *.vvp
+	rm -rf *.v *.vcd *.vvp obj_dir/
 
 TARGET  :=
 
@@ -9,6 +9,10 @@ endif
 
 ifeq ($(TARGET), dummy_arbiter)
     REQUIRE_MODULES := dummy_memory.v
+endif
+
+ifeq ($(TARGET), test_system)
+    REQUIRE_MODULES := tiny_rv.v fetch.v integer_register.v integer_arithmetic_logic.v dummy_arbiter.v dummy_memory.v
 endif
 
 ifdef TARGET

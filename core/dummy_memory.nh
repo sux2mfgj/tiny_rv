@@ -10,8 +10,8 @@ declare dummy_memory
     func_in request_read(address);
     func_out read_done(read_data);
 
-    func_in request_write(address, write_data);
-    func_out write_done();
+    //func_in request_write(address, write_data);
+    //func_out write_done();
 
     func_in init();
 }
