@@ -5,14 +5,29 @@
 declare tiny_rv
 {
     input instruction[32];
-    output error_num[ERROR_NUM_BIT_WIDTH];
-
     output i_address[32];
+
+    output d_address[32];
+    input loaded_data[32];
+    output store_data[32];
+
+    output error_num[ERROR_NUM_BIT_WIDTH];
 
     func_in start(instruction);
 
+    // for instruction memory
     func_out inst_request(i_address);
     func_in inst_done(instruction);
+
+    // for data memory
+    //func_out load_b(d_address);
+    //func_out load_h(d_address);
+    func_out load_w(d_address);
+    func_in load_done(loaded_data);
+    //func_out store_b(d_address, store_data);
+    //func_out store_h(d_address, store_data);
+    func_out store_w(d_address, store_data);
+    func_in store_done();
 
     func_out error(error_num);
 }

@@ -1,32 +1,59 @@
 #include "tiny_rv.nh"
 #include "fetch.nh"
-#include "format.nh"
 #include "integer_register.nh"
+#include "integer_arithmetic_logic.nh"
+
+#include "format.nh"
+#include "funct3.nh"
 
 module tiny_rv
 {
     fetch ifetch;
     integer_register int_regs;
+    integer_arithmetic_logic int_alu;
 
-    reg exec_inst[32];
     reg request_addr[32];
+    wire pc_plus_4[32];
     proc_name fetch_request_stage(request_addr);
     proc_name fetch_wait_stage();
-    proc_name execute_stage(exec_inst);
+    reg waiting_inst[32];
+    proc_name fetch_stage_interlocked(waiting_inst);
 
+    reg exec_inst[32], exec_pc[32];
     wire exec_op_code[7];
-    op_imm_t wire op_imm;
-    //op_t wire op;
+    proc_name execute_stage(exec_inst, exec_pc);
 
+    op_imm_t wire op_imm;
+    op_t wire op;
+    jal_t wire jal;
+    jalr_t wire jalr;
+    branch_t wire branch;
+    load_t wire load;
+    store_t wire store;
+    system_t wire system;
     wire sourece_1[32];
     wire sourece_2[32];
     wire result[32];
-    //wire comp_result;
+    wire comp_result;
 
     wire rs1[5], rs1_value[32];
     wire rs2[5], rs2_value[32];
     func_self read_register_1(rs1) : rs1_value;
     func_self read_register_2(rs2) : rs2_value;
+
+    reg wb_rd[5], wb_value[32], wb_opcode[7];
+    proc_name write_back_stage(wb_rd, wb_value, wb_opcode);
+
+    reg wb_funct3[3];
+    proc_name write_back_stage_load(wb_rd, wb_value, wb_funct3);
+    proc_name write_back_stage_load_waiting();
+
+    reg wb_address[32];
+    proc_name write_back_stage_store(wb_address, wb_value, wb_funct3);
+    proc_name write_back_stage_store_waiting();
+
+    func_self stall();
+    func_self interlock();
 
 
     //func_in start(instruction);
@@ -62,36 +89,214 @@ module tiny_rv
         return int_regs.read_rs2(rs2);
     }
 
+    /*
+     * Pipeline
+     */
+    // --- Instructio Fetch ---
+    pc_plus_4 = request_addr + 32'h4;
 	proc fetch_request_stage
 	{
-        ifetch.request(request_addr);
-        fetch_wait_stage();
+        if(!stall)
+        {
+            ifetch.request(request_addr);
+            fetch_wait_stage();
+        }
     }
 
     proc fetch_wait_stage
     {
         if(ifetch.done)
         {
-            execute_stage(ifetch.instruction);
+            if(interlock)
+            {
+                fetch_stage_interlocked(ifetch.instruction);
+            }
+            else
+            {
+                execute_stage(ifetch.instruction, pc_plus_4);
+                fetch_request_stage(pc_plus_4);
+            }
         }
     }
 
+    proc fetch_stage_interlocked
+    {
+        if(!interlock)
+        {
+            execute_stage(waiting_inst, pc_plus_4);
+            fetch_request_stage(pc_plus_4);
+        }
+    }
+
+    // --- Execute ---
     proc execute_stage
     {
         exec_op_code = exec_inst[6:0];
+        if(!interlock)
+        {
+            any
+            {
+                exec_op_code == OP_IMM:
+                {
+                    op_imm = exec_inst;
+                    sourece_1 = 32#op_imm.imm;
+                    sourece_2 = read_register_1(op_imm.rs1);
+                    result = int_alu.calculate(
+                            sourece_1, sourece_2, op_imm.funct3, 1'b0);
+                    write_back_stage(op_imm.rd, result, op_imm.opcode);
+                }
+                exec_op_code == OP:
+                {
+                    op = exec_inst;
+                    sourece_1 = read_register_1(op.rs1);
+                    sourece_2 = read_register_2(op.rs2);
+                    result = int_alu.calculate(
+                            sourece_1, sourece_2, op.funct3, op.funct7[5]);
+                    write_back_stage(op.rd, result, op.opcode);
+                }
+                exec_op_code == JAL:
+                {
+                    stall();
+                    jal = exec_inst;
+                    sourece_1 = 32#{jal.imm0, jal.imm1, jal.imm2, jal.imm3, 1'b0};
+                    sourece_2 = exec_pc;
+                    result = int_alu.calculate(sourece_1, sourece_2, FUNCT3_ADD_SUB, 0);
+                    fetch_request_stage(result);
+                    write_back_stage(jal.rd, exec_pc, jal.opcode);
+                }
+                exec_op_code == JALR:
+                {
+                    stall();
+                    jalr = exec_inst;
+                    sourece_1 = read_register_1(jalr.rs1);
+                    sourece_2 = 32#jalr.imm;
+                    result = int_alu.calculate(sourece_1, sourece_2, jalr.funct3, 0);
+                    fetch_request_stage(result);
+                    write_back_stage(jalr.rd, exec_pc, jalr.opcode);
+                }
+                exec_op_code == BRANCH:
+                {
+                    branch = exec_inst;
+                    sourece_1 = read_register_1(branch.rs1);
+                    sourece_2 = read_register_2(branch.rs2);
+                    comp_result = int_alu.compare(sourece_1, sourece_2, branch.funct3);
+                    result = int_alu.calculate(
+                                exec_pc,
+                                32#{branch.imm12, branch.imm11,
+                                    branch.imm10_5, branch.imm4_1, 1'b0},
+                                FUNCT3_ADD_SUB,
+                                1'b0);
+                    if(comp_result)
+                    {
+                        stall();
+                        fetch_request_stage(result);
+                    }
+                }
+                exec_op_code == LOAD:
+                {
+                    load = exec_inst;
+                    sourece_1 = read_register_1(load.rs1);
+                    sourece_2 = 32#{load.imm};
+                    result = int_alu.calculate(sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
+                    write_back_stage_load(load.rd, result, load.funct3);
+                }
+                exec_op_code == STORE:
+                {
+                    store = exec_inst;
+                    sourece_1 = read_register_1(store.rs1);
+                    sourece_2 = 32#{store.offset_11_5, store.offset_4_0};
+                    result = int_alu.calculate(sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
+                    write_back_stage_store(result, read_register_2(store.rs2), store.width);
+                }
+                /*
+                exec_op_code == SYSTEM:
+                {
+                    system = exec_inst;
+                }
+                */
+                else:
+                {
+                    error(ERROR_EXEC_ERROR_OPCODE);
+                }
+            }
+        }
+    }
+
+    // --- Write Back ---
+    proc write_back_stage
+    {
         any
         {
-            exec_op_code == OP_IMM:
+            wb_opcode == JAL || wb_opcode == JALR
+                || wb_opcode == OP_IMM || wb_opcode == OP:
             {
-                op_imm = exec_inst;
-                sourece_1 = 32#op_imm.imm;
-                sourece_2 = read_register_1(op_imm.rs1);
-                //TODO
+                int_regs.write(wb_rd, wb_value);
             }
             else:
             {
-                error(ERROR_EXEC_ERROR_OPCODE);
+                error(ERROR_WB_UNKNOWN_OPCODE);
             }
+        }
+        finish();
+    }
+
+    proc write_back_stage_load
+    {
+        interlock();
+        any
+        {
+            wb_funct3 == WIDTH_W:
+            {
+                //TODO
+                load_w(wb_value);
+                write_back_stage_load_waiting();
+            }
+            else:
+            {
+                error(ERROR_WB_UNKNOWN_FUNCT3);
+            }
+        }
+    }
+
+    proc write_back_stage_load_waiting
+    {
+        if(load_done)
+        {
+            int_regs.write(wb_rd, loaded_data);
+            finish();
+        }
+        else
+        {
+            interlock();
+        }
+    }
+
+    proc write_back_stage_store
+    {
+        interlock();
+        any
+        {
+            wb_funct3 == WIDTH_W:
+            {
+                store_w(wb_address, wb_value);
+                write_back_stage_store_waiting();
+            }
+            else:
+            {
+                error(ERROR_WB_UNKNOWN_FUNCT3);
+            }
+        }
+    }
+
+    proc write_back_stage_store_waiting
+    {
+        if(store_done)
+        {
+            finish();
+        }
+        else
+        {
+            interlock();
         }
     }
 

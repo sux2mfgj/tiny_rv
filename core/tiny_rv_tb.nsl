@@ -16,7 +16,9 @@ module tiny_rv_tb
 
     reg i_address[32];
     proc_name return_inst(i_address);
-
+    reg d_address[32], store_data[32];
+    proc_name return_load_data(d_address);
+    proc_name return_store_done(d_address, store_data);
     counter++;
 
     if(counter == 10'h02)
@@ -50,6 +52,28 @@ module tiny_rv_tb
     {
         finish_simulation(rv_core.error_num);
         error(rv_core.error_num);
+    }
+
+    func rv_core.load_w
+    {
+        return_load_data(rv_core.d_address);
+    }
+
+    proc return_load_data
+    {
+        _display("load_w: 0x", d_address);
+        rv_core.load_done(32'h76543210);
+    }
+
+    func rv_core.store_w
+    {
+        return_store_done(rv_core.d_address, rv_core.store_data);
+    }
+
+    proc return_store_done
+    {
+        _display("store: 0x", d_address, store_data);
+        rv_core.store_done();
     }
 
     func finish_simulation
