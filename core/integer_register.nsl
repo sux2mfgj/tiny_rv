@@ -38,11 +38,8 @@ module integer_register
 
     func write
     {
-        if(write_address == 5'h0)
+        if(write_address != 5'h0)
         {
-            error(ERROR_I_REG_WRITE_ERROR);
-        }
-        else {
             registers[write_address - 1] := write_data;
         }
     }

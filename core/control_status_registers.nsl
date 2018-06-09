@@ -29,10 +29,13 @@ struct machine_trap_setup
 module control_status_registers
 {
     machine_info_registers reg m_info = 0;
-    machine_trop_setup reg m_trap = 0;
+    machine_trap_setup reg m_trap = 0;
 
-    wire update_funct[2], update_value[32], update_source[32], update_result[32];
-    func_self update(update_funct, update_value, update_source) : update_result;
+    wire update_funct[2], update_value[32],
+         update_source[32], update_result[32];
+
+    func_self update(update_funct, update_value, update_source)
+        : update_result;
 
     func update
     {
@@ -55,21 +58,28 @@ module control_status_registers
 
     func read_update
     {
-        any
+        if(address[9:8] != 2'b11)
         {
-            address == CSR_MHARTID:
+            trap(m_trap.mtvec);
+        }
+        else
+        {
+            any
             {
-                m_info.mhartid := update(funct, m_info.mhartid, source);
-                return m_info.mhartid;
-            }
-            address == CSR_MTVEC:
-            {
-                m_trap.mtvec := update(funct, m_trap.mtvec, source);
-                return m_trap.mtvec;
-            }
-            else:
-            {
-                error(ERROR_CSR_UNKNWON_ADDR);
+                address == CSR_MHARTID:
+                {
+                    m_info.mhartid := update(funct, m_info.mhartid, source);
+                    return m_info.mhartid;
+                }
+                address == CSR_MTVEC:
+                {
+                    m_trap.mtvec := update(funct, m_trap.mtvec, source);
+                    return m_trap.mtvec;
+                }
+                else:
+                {
+                    error(ERROR_CSR_UNKNWON_ADDR);
+                }
             }
         }
     }

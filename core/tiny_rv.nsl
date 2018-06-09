@@ -20,6 +20,8 @@ module tiny_rv
     proc_name fetch_wait_stage();
     reg waiting_inst[32];
     proc_name fetch_stage_interlocked(waiting_inst);
+    reg next_address[32];
+    proc_name fetch_cancel_stage(next_address);
 
     reg exec_inst[32], exec_pc[32];
     wire exec_op_code[7];
@@ -61,7 +63,8 @@ module tiny_rv
 
     func_self stall();
     func_self interlock();
-
+    wire trap_next_pc[32];
+    func_self trap(trap_next_pc);
 
     //func_in start(instruction);
     func start
@@ -96,6 +99,11 @@ module tiny_rv
         return int_regs.read_rs2(rs2);
     }
 
+    func csr.trap
+    {
+        trap(csr.trap_vector);
+    }
+
     /*
      * Pipeline
      */
@@ -103,7 +111,7 @@ module tiny_rv
     pc_plus_4 = request_addr + 32'h4;
 	proc fetch_request_stage
 	{
-        if(!stall)
+        if(!stall && !trap)
         {
             ifetch.request(request_addr);
             fetch_wait_stage();
@@ -114,15 +122,38 @@ module tiny_rv
     {
         if(ifetch.done)
         {
-            if(interlock)
+            if(!trap)
             {
-                fetch_stage_interlocked(ifetch.instruction);
+                if(interlock)
+                {
+                    fetch_stage_interlocked(ifetch.instruction);
+                }
+                else
+                {
+                    execute_stage(ifetch.instruction, request_addr);
+                    fetch_request_stage(pc_plus_4);
+                }
             }
             else
             {
-                execute_stage(ifetch.instruction, request_addr);
-                fetch_request_stage(pc_plus_4);
+                fetch_request_stage(trap_next_pc);
             }
+        }
+        else
+        {
+            if(trap)
+            {
+                fetch_cancel_stage(trap_next_pc);
+            }
+        }
+    }
+
+    // for trap
+    proc fetch_cancel_stage
+    {
+        if(ifetch.done)
+        {
+            fetch_request_stage(next_address);
         }
     }
 
@@ -141,132 +172,132 @@ module tiny_rv
         exec_op_code = exec_inst[6:0];
         if(!interlock)
         {
-            any
+            if(trap)
             {
-                exec_op_code == OP_IMM:
+                finish();
+            }
+            else
+            {
+                any
                 {
-                    op_imm = exec_inst;
-                    sourece_1 = 32#op_imm.imm;
-                    sourece_2 = read_register_1(op_imm.rs1);
-                    result = int_alu.calculate(
-                            sourece_1, sourece_2, op_imm.funct3, 1'b0);
-                    write_back_stage(op_imm.rd, result, op_imm.opcode);
-                }
-                exec_op_code == OP:
-                {
-                    op = exec_inst;
-                    sourece_1 = read_register_1(op.rs1);
-                    sourece_2 = read_register_2(op.rs2);
-                    result = int_alu.calculate(
-                            sourece_1, sourece_2, op.funct3, op.funct7[5]);
-                    write_back_stage(op.rd, result, op.opcode);
-                }
-                exec_op_code == JAL:
-                {
-                    stall();
-                    jal = exec_inst;
-                    sourece_1 = 32#{
-                        jal.imm0, jal.imm1, jal.imm2, jal.imm3, 1'b0};
-                    sourece_2 = exec_pc;
-                    result = int_alu.calculate(
-                            sourece_1, sourece_2, FUNCT3_ADD_SUB, 0);
-                    fetch_request_stage(result);
-
-                    //Plain unconditional jumps (assembler pseudo-op J)
-                    //      are encoded as a JAL with rd=x0.
-                    if(jal.rd != 5'h0)
+                    exec_op_code == OP_IMM:
                     {
-                        write_back_stage(jal.rd, exec_pc, jal.opcode);
+                        op_imm = exec_inst;
+                        sourece_1 = 32#op_imm.imm;
+                        sourece_2 = read_register_1(op_imm.rs1);
+                        result = int_alu.calculate(
+                                sourece_1, sourece_2, op_imm.funct3, 1'b0);
+                        write_back_stage(op_imm.rd, result, op_imm.opcode);
                     }
-                }
-                exec_op_code == JALR:
-                {
-                    stall();
-                    jalr = exec_inst;
-                    sourece_1 = read_register_1(jalr.rs1);
-                    sourece_2 = 32#jalr.imm;
-                    result = int_alu.calculate(
-                            sourece_1, sourece_2, jalr.funct3, 0);
-                    fetch_request_stage(result);
-                    write_back_stage(jalr.rd, exec_pc, jalr.opcode);
-                }
-                exec_op_code == BRANCH:
-                {
-                    branch = exec_inst;
-                    sourece_1 = read_register_1(branch.rs1);
-                    sourece_2 = read_register_2(branch.rs2);
-                    comp_result = int_alu.compare(
-                            sourece_1, sourece_2, branch.funct3);
-                    result = int_alu.calculate(
-                                exec_pc,
-                                32#{branch.imm12, branch.imm11,
-                                    branch.imm10_5, branch.imm4_1, 1'b0},
-                                FUNCT3_ADD_SUB,
-                                1'b0);
-                    if(comp_result)
+                    exec_op_code == OP:
+                    {
+                        op = exec_inst;
+                        sourece_1 = read_register_1(op.rs1);
+                        sourece_2 = read_register_2(op.rs2);
+                        result = int_alu.calculate(
+                                sourece_1, sourece_2, op.funct3, op.funct7[5]);
+                        write_back_stage(op.rd, result, op.opcode);
+                    }
+                    exec_op_code == JAL:
                     {
                         stall();
+                        jal = exec_inst;
+                        sourece_1 = 32#{
+                            jal.imm0, jal.imm1, jal.imm2, jal.imm3, 1'b0};
+                        sourece_2 = exec_pc;
+                        result = int_alu.calculate(
+                                sourece_1, sourece_2, FUNCT3_ADD_SUB, 0);
                         fetch_request_stage(result);
+
+                        write_back_stage(jal.rd, exec_pc, jal.opcode);
                     }
-                }
-				exec_op_code == AUIPC:
-                {
-                    auipc = exec_inst;
-                    sourece_1 = {auipc.imm, 12'h0};
-                    sourece_2 = exec_pc;
-                    result = int_alu.calculate(
-                            sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
-                    write_back_stage(auipc.rd, result, auipc.opcode);
-                }
-                exec_op_code == LOAD:
-                {
-                    load = exec_inst;
-                    sourece_1 = read_register_1(load.rs1);
-                    sourece_2 = 32#{load.imm};
-                    result = int_alu.calculate(
-                            sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
-                    write_back_stage_load(load.rd, result, load.funct3);
-                }
-                exec_op_code == STORE:
-                {
-                    store = exec_inst;
-                    sourece_1 = read_register_1(store.rs1);
-                    sourece_2 = 32#{store.offset_11_5, store.offset_4_0};
-                    result = int_alu.calculate(
-                            sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
-                    write_back_stage_store(
-                            result, read_register_2(store.rs2), store.width);
-                }
-                exec_op_code == SYSTEM:
-                {
-                    system = exec_inst;
-                    if(system.is_imm)
+                    exec_op_code == JALR:
                     {
-                        sourece_1 = read_register_1(system.rs1);
+                        stall();
+                        jalr = exec_inst;
+                        sourece_1 = read_register_1(jalr.rs1);
+                        sourece_2 = 32#jalr.imm;
+                        result = int_alu.calculate(
+                                sourece_1, sourece_2, jalr.funct3, 0);
+                        fetch_request_stage(result);
+                        write_back_stage(jalr.rd, exec_pc, jalr.opcode);
                     }
-                    else{
-                        sourece_1 = 32#{system.rs1};
-                    }
-                    if(system.rd != 5'h0)
+                    exec_op_code == BRANCH:
                     {
+                        branch = exec_inst;
+                        sourece_1 = read_register_1(branch.rs1);
+                        sourece_2 = read_register_2(branch.rs2);
+                        comp_result = int_alu.compare(
+                                sourece_1, sourece_2, branch.funct3);
+                        result = int_alu.calculate(
+                                    exec_pc,
+                                    32#{branch.imm12, branch.imm11,
+                                        branch.imm10_5, branch.imm4_1, 1'b0},
+                                    FUNCT3_ADD_SUB,
+                                    1'b0);
+                        if(comp_result)
+                        {
+                            stall();
+                            fetch_request_stage(result);
+                        }
+                    }
+                    exec_op_code == AUIPC:
+                    {
+                        auipc = exec_inst;
+                        sourece_1 = {auipc.imm, 12'h0};
+                        sourece_2 = exec_pc;
+                        result = int_alu.calculate(
+                                sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
+                        write_back_stage(auipc.rd, result, auipc.opcode);
+                    }
+                    exec_op_code == LOAD:
+                    {
+                        load = exec_inst;
+                        sourece_1 = read_register_1(load.rs1);
+                        sourece_2 = 32#{load.imm};
+                        result = int_alu.calculate(
+                                sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
+                        write_back_stage_load(load.rd, result, load.funct3);
+                    }
+                    exec_op_code == STORE:
+                    {
+                        store = exec_inst;
+                        sourece_1 = read_register_1(store.rs1);
+                        sourece_2 = 32#{store.offset_11_5, store.offset_4_0};
+                        result = int_alu.calculate(
+                                sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
+                        write_back_stage_store(
+                                result, read_register_2(store.rs2),
+                                store.width);
+                    }
+                    exec_op_code == SYSTEM:
+                    {
+                        system = exec_inst;
+                        if(!system.is_imm)
+                        {
+                            sourece_1 = read_register_1(system.rs1);
+                        }
+                        else{
+                            sourece_1 = 32#{system.rs1};
+                        }
                         write_back_stage_csr(
                                 system.csr, sourece_1,
                                 system.rd, system.funct);
                     }
-                }
-                exec_op_code == LUI:
-                {
-                    auipc = exec_inst;
-                    write_back_stage(
-                            auipc.rd, {auipc.imm, 12'b0}, auipc.opcode);
-                }
-                exec_op_code == MISC_MEM:
-                {
-                    finish();
-                }
-                else:
-                {
-                    error(ERROR_EXEC_ERROR_OPCODE);
+                    exec_op_code == LUI:
+                    {
+                        auipc = exec_inst;
+                        write_back_stage(
+                                auipc.rd, {auipc.imm, 12'b0}, auipc.opcode);
+                    }
+                    exec_op_code == MISC_MEM:
+                    {
+                        finish();
+                    }
+                    else:
+                    {
+                        error(ERROR_EXEC_ERROR_OPCODE);
+                    }
                 }
             }
         }

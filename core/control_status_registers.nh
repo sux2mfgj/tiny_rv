@@ -9,10 +9,12 @@ declare control_status_registers
     input source[32];
     input funct[2];
     output result[32];
+    output trap_vector[32];
 
     output error_num[ERROR_NUM_BIT_WIDTH];
 
     func_in read_update(address, source, funct) : result;
+    func_out trap(trap_vector);
 
     func_out error(error_num);
 }
