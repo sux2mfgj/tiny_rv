@@ -2,6 +2,7 @@
 #include "fetch.nh"
 #include "integer_register.nh"
 #include "integer_arithmetic_logic.nh"
+#include "control_status_registers.nh"
 
 #include "format.nh"
 #include "funct3.nh"
@@ -11,6 +12,7 @@ module tiny_rv
     fetch ifetch;
     integer_register int_regs;
     integer_arithmetic_logic int_alu;
+    control_status_registers csr;
 
     reg request_addr[32];
     wire pc_plus_4[32];
@@ -51,6 +53,9 @@ module tiny_rv
     reg wb_address[32];
     proc_name write_back_stage_store(wb_address, wb_value, wb_funct3);
     proc_name write_back_stage_store_waiting();
+
+    reg  wb_csr[12], wb_csr_funct[2];
+    proc_name write_back_stage_csr(wb_csr, wb_value, wb_rd, wb_csr_funct);
 
     func_self stall();
     func_self interlock();
@@ -214,12 +219,18 @@ module tiny_rv
                     result = int_alu.calculate(sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
                     write_back_stage_store(result, read_register_2(store.rs2), store.width);
                 }
-                /*
                 exec_op_code == SYSTEM:
                 {
                     system = exec_inst;
+                    if(system.is_imm)
+                    {
+                        sourece_1 = read_register_1(system.rs1);
+                    }
+                    else{
+                        sourece_1 = 32#{system.rs1};
+                    }
+                    write_back_stage_csr(system.csr, sourece_1, system.rd, system.funct);
                 }
-                */
                 else:
                 {
                     error(ERROR_EXEC_ERROR_OPCODE);
@@ -304,6 +315,13 @@ module tiny_rv
         {
             interlock();
         }
+    }
+
+    //proc_name write_back_stage_csr(wb_csr, wb_value, wb_rd, wb_csr_funct);
+    proc write_back_stage_csr
+    {
+        int_regs.write(wb_rd, csr.read_update(wb_csr, wb_value, wb_csr_funct));
+        finish();
     }
 
     /*

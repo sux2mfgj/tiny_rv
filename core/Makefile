@@ -4,7 +4,7 @@ clean:
 TARGET  :=
 
 ifeq ($(TARGET), tiny_rv)
-    REQUIRE_MODULES := fetch.v integer_register.v integer_arithmetic_logic.v
+    REQUIRE_MODULES := fetch.v integer_register.v integer_arithmetic_logic.v control_status_registers.v
 endif
 
 ifeq ($(TARGET), dummy_arbiter)
@@ -12,7 +12,7 @@ ifeq ($(TARGET), dummy_arbiter)
 endif
 
 ifeq ($(TARGET), test_system)
-    REQUIRE_MODULES := tiny_rv.v fetch.v integer_register.v integer_arithmetic_logic.v dummy_arbiter.v dummy_memory.v
+    REQUIRE_MODULES := tiny_rv.v fetch.v integer_register.v integer_arithmetic_logic.v dummy_arbiter.v dummy_memory.v #control_status_registers.v
 endif
 
 ifdef TARGET
