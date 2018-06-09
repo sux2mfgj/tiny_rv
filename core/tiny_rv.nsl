@@ -307,4 +307,9 @@ module tiny_rv
     {
         error(ifetch.error_num);
     }
+
+    func int_regs.error
+    {
+        error(int_regs.error_num);
+    }
 }

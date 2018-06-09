@@ -4,3 +4,6 @@
 [submodule "riscv-tests"]
 	path = riscv-tests
 	url = git@github.com:riscv/riscv-tests.git
+[submodule "elf_dump"]
+	path = elf_dump
+	url = git@github.com:sux2mfgj/elf_dump.git
