@@ -165,9 +165,11 @@ module tiny_rv
                 {
                     stall();
                     jal = exec_inst;
-                    sourece_1 = 32#{jal.imm0, jal.imm1, jal.imm2, jal.imm3, 1'b0};
+                    sourece_1 = 32#{
+                        jal.imm0, jal.imm1, jal.imm2, jal.imm3, 1'b0};
                     sourece_2 = exec_pc;
-                    result = int_alu.calculate(sourece_1, sourece_2, FUNCT3_ADD_SUB, 0);
+                    result = int_alu.calculate(
+                            sourece_1, sourece_2, FUNCT3_ADD_SUB, 0);
                     fetch_request_stage(result);
 
                     //Plain unconditional jumps (assembler pseudo-op J)
@@ -183,7 +185,8 @@ module tiny_rv
                     jalr = exec_inst;
                     sourece_1 = read_register_1(jalr.rs1);
                     sourece_2 = 32#jalr.imm;
-                    result = int_alu.calculate(sourece_1, sourece_2, jalr.funct3, 0);
+                    result = int_alu.calculate(
+                            sourece_1, sourece_2, jalr.funct3, 0);
                     fetch_request_stage(result);
                     write_back_stage(jalr.rd, exec_pc, jalr.opcode);
                 }
@@ -192,7 +195,8 @@ module tiny_rv
                     branch = exec_inst;
                     sourece_1 = read_register_1(branch.rs1);
                     sourece_2 = read_register_2(branch.rs2);
-                    comp_result = int_alu.compare(sourece_1, sourece_2, branch.funct3);
+                    comp_result = int_alu.compare(
+                            sourece_1, sourece_2, branch.funct3);
                     result = int_alu.calculate(
                                 exec_pc,
                                 32#{branch.imm12, branch.imm11,
@@ -210,7 +214,8 @@ module tiny_rv
                     auipc = exec_inst;
                     sourece_1 = {auipc.imm, 12'h0};
                     sourece_2 = exec_pc;
-                    result = int_alu.calculate(sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
+                    result = int_alu.calculate(
+                            sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
                     write_back_stage(auipc.rd, result, auipc.opcode);
                 }
                 exec_op_code == LOAD:
@@ -218,7 +223,8 @@ module tiny_rv
                     load = exec_inst;
                     sourece_1 = read_register_1(load.rs1);
                     sourece_2 = 32#{load.imm};
-                    result = int_alu.calculate(sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
+                    result = int_alu.calculate(
+                            sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
                     write_back_stage_load(load.rd, result, load.funct3);
                 }
                 exec_op_code == STORE:
@@ -226,8 +232,10 @@ module tiny_rv
                     store = exec_inst;
                     sourece_1 = read_register_1(store.rs1);
                     sourece_2 = 32#{store.offset_11_5, store.offset_4_0};
-                    result = int_alu.calculate(sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
-                    write_back_stage_store(result, read_register_2(store.rs2), store.width);
+                    result = int_alu.calculate(
+                            sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
+                    write_back_stage_store(
+                            result, read_register_2(store.rs2), store.width);
                 }
                 exec_op_code == SYSTEM:
                 {
@@ -245,6 +253,10 @@ module tiny_rv
                                 system.csr, sourece_1,
                                 system.rd, system.funct);
                     }
+                }
+                exec_op_code == MISC_MEM:
+                {
+                    finish();
                 }
                 else:
                 {
