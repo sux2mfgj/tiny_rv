@@ -1,0 +1,38 @@
+#include "dummy_arbiter.nh"
+#include "dummy_memory.nh"
+
+module dummy_arbiter
+{
+    dummy_memory memory;
+
+    func init
+    {
+        memory.init();
+    }
+
+    //func_in request_inst(i_address);
+    func request_inst
+    {
+        memory.request_read(i_address);
+    }
+
+    //func_out memry.read_done(read_data);
+    func memory.read_done
+    {
+        inst_done(memory.read_data);
+    }
+
+    //func_in load(d_address);
+    func load
+    {
+        error(ERROR_DUMMY_ARBITER);
+        //func_out load_done(d_out_data);
+    }
+
+    //func_in store(d_address, d_in_data);
+    func store
+    {
+        error(ERROR_DUMMY_ARBITER);
+        //func_out store_done();
+    }
+}

@@ -20,3 +20,6 @@ riscv_test: clean
 clean:
 	rm -fr *.v *.vcd a.out build *.o *.mem test_build
 	make -C core clean
+
+# ./elf_dump/target/release/elf_dump toolchain/share/riscv-tests/isa/rv32ui-p-addi 80000000
+

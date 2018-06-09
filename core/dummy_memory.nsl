@@ -1,0 +1,51 @@
+#include "dummy_memory.nh"
+
+module dummy_memory
+{
+    mem memory[0x1050][8];
+
+    reg value[32];
+    proc_name read_proc();
+    proc_name write_proc(value);
+
+    reg access_base[32];
+
+    //func_in init();
+    func init seq
+    {
+        _readmemh("memory.hex", memory);
+    }
+
+    //func_in request_read(address);
+    func request_read
+    {
+        read_proc();
+        access_base := 0x80000000 - address;
+    }
+    proc read_proc
+    {
+        read_done({
+                memory[access_base[12:0]+ 3], memory[access_base[12:0]+ 2],
+                memory[access_base[12:0]+ 1], memory[access_base[12:0]+ 0]});
+        finish();
+    }
+
+    //func_in request_write(address, write_data);
+    func request_write
+    {
+        write_proc(write_data);
+        access_base := 0x80000000 - address;
+    }
+
+    proc write_proc seq
+    {
+        memory[access_base[12:0]] := value[7:0];
+        memory[access_base[12:0] + 13'h1] := value[15:8];
+        memory[access_base[12:0] + 13'h2] := value[23:16];
+        memory[access_base[12:0] + 13'h3] := value[31:24];
+        {
+            write_done();
+            finish();
+        }
+    }
+}

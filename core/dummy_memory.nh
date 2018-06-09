@@ -1,0 +1,19 @@
+#ifndef __INCLUDED_MEMORY_NH__
+#define
+
+declare dummy_memory
+{
+    input address[32];
+    input write_data[32];
+    output read_data[32];
+
+    func_in request_read(address);
+    func_out read_done(read_data);
+
+    func_in request_write(address, write_data);
+    func_out write_done();
+
+    func_in init();
+}
+
+#endif
