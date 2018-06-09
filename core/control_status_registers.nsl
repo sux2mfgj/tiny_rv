@@ -60,7 +60,7 @@ module control_status_registers
     {
         if(address[9:8] != 2'b11)
         {
-            trap(m_trap.mtvec);
+            trap(m_trap.mtvec & 0xfffffffc);
         }
         else
         {
