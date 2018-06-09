@@ -15,8 +15,12 @@ declare integer_arithmetic_logic
     input comp_funct[3];
     output comp_result;
 
+    output error_num[ERROR_NUM_BIT_WIDTH];
+
     func_in calculate(in_a, in_b, funct, is_alt) : result;
     func_in compare(comp_a, comp_b, comp_funct) : comp_result;
+
+    func_out error(error_num);
 }
 
 #endif // __INCLUDED_INTEGER_ARITHMETIC_LOGIC_NH__

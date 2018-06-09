@@ -408,4 +408,9 @@ module tiny_rv
     {
         error(csr.error_num);
     }
+
+    func int_alu.error
+    {
+        error(int_alu.error_num);
+    }
 }

@@ -20,6 +20,14 @@ module integer_arithmetic_logic
                     return in_a - in_b;
                 }
             }
+            funct == FUNCT3_SHIFT_LEFT:
+            {
+                return in_b << in_a;
+            }
+            else:
+            {
+                error(ERROR_ALU_UNKNWON_FUNCT);
+            }
             //TODO another processing
         }
     }
@@ -35,6 +43,10 @@ module integer_arithmetic_logic
             comp_funct[2] == 1: // BLT or BGE
             {
                 tmp_result = comp_a < comp_b;
+            }
+            else:
+            {
+                error(ERROR_ALU_UNKNWON_FUNCT);
             }
             //TODO BLTU, BGEU
         }
