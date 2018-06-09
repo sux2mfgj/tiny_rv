@@ -254,6 +254,12 @@ module tiny_rv
                                 system.rd, system.funct);
                     }
                 }
+                exec_op_code == LUI:
+                {
+                    auipc = exec_inst;
+                    write_back_stage(
+                            auipc.rd, {auipc.imm, 12'b0}, auipc.opcode);
+                }
                 exec_op_code == MISC_MEM:
                 {
                     finish();
@@ -271,9 +277,11 @@ module tiny_rv
     {
         any
         {
+            //TODO
+            // 多分このチェックはいらない
             wb_opcode == JAL || wb_opcode == JALR
                 || wb_opcode == OP_IMM || wb_opcode == OP
-                || wb_opcode == AUIPC:
+                || wb_opcode == AUIPC || wb_opcode == LUI:
             {
                 int_regs.write(wb_rd, wb_value);
             }
