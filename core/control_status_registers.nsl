@@ -1,0 +1,50 @@
+#include "control_status_registers.nh"
+
+#define CSR_MHARTID (12'hf14)
+
+struct machine_info_registers
+{
+    mvendorid[32];
+    marchid[32];
+    mimpid[32];
+    mhartid[32];
+};
+
+module control_status_registers
+{
+    machine_info_registers reg mir = 0;
+
+    wire update_funct[2], update_value[32], update_source[32], update_result[32];
+    func_self update(update_funct, update_value, update_source) : update_result;
+
+    func update
+    {
+        any
+        {
+            update_funct == CSR_FUNCT_RS:
+            {
+                return update_value | update_source;
+            }
+            else:
+            {
+                error(ERROR_CSR_UNKNWON_FUNCT);
+            }
+        }
+    }
+
+    func read_update
+    {
+        any
+        {
+            address == CSR_MHARTID:
+            {
+                mir.mhartid := update(funct, mir.mhartid, source);
+                return mir.mhartid;
+            }
+            else:
+            {
+                error(ERROR_CSR_UNKNWON_ADDR);
+            }
+        }
+    }
+}

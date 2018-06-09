@@ -123,7 +123,6 @@ module tiny_rv
     {
         if(!interlock)
         {
-            //execute_stage(waiting_inst, pc_plus_4);
             execute_stage(waiting_inst, request_addr);
             fetch_request_stage(pc_plus_4);
         }
@@ -163,6 +162,7 @@ module tiny_rv
                     sourece_2 = exec_pc;
                     result = int_alu.calculate(sourece_1, sourece_2, FUNCT3_ADD_SUB, 0);
                     fetch_request_stage(result);
+
                     //Plain unconditional jumps (assembler pseudo-op J)
                     //      are encoded as a JAL with rd=x0.
                     if(jal.rd != 5'h0)
