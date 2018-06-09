@@ -3,10 +3,6 @@
 
 #include "error.nh"
 
-#define CSR_FUNCT_RW    (2'b01)
-#define CSR_FUNCT_RS    (2'b10)
-#define CSR_FUNCT_RC    (2'b11)
-
 declare control_status_registers
 {
     input address[12];

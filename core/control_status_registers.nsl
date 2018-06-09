@@ -1,18 +1,35 @@
 #include "control_status_registers.nh"
 
+// funct for csr
+#define CSR_FUNCT_RW    (2'b01)
+#define CSR_FUNCT_RS    (2'b10)
+#define CSR_FUNCT_RC    (2'b11)
+
+
 #define CSR_MHARTID (12'hf14)
+
+//#define CSR_MSTATUS (12'h300)
+//#define CSR_MISA    (12'h301)
+#define CSR_MTVEC   (12'h305)
 
 struct machine_info_registers
 {
-    mvendorid[32];
-    marchid[32];
-    mimpid[32];
+    //mvendorid[32];
+    //marchid[32];
+    //mimpid[32];
     mhartid[32];
+};
+
+struct machine_trap_setup
+{
+    //TODO
+    mtvec[32];
 };
 
 module control_status_registers
 {
-    machine_info_registers reg mir = 0;
+    machine_info_registers reg m_info = 0;
+    machine_trop_setup reg m_trap = 0;
 
     wire update_funct[2], update_value[32], update_source[32], update_result[32];
     func_self update(update_funct, update_value, update_source) : update_result;
@@ -24,6 +41,10 @@ module control_status_registers
             update_funct == CSR_FUNCT_RS:
             {
                 return update_value | update_source;
+            }
+            update_funct == CSR_FUNCT_RW:
+            {
+                return update_source;
             }
             else:
             {
@@ -38,8 +59,13 @@ module control_status_registers
         {
             address == CSR_MHARTID:
             {
-                mir.mhartid := update(funct, mir.mhartid, source);
-                return mir.mhartid;
+                m_info.mhartid := update(funct, m_info.mhartid, source);
+                return m_info.mhartid;
+            }
+            address == CSR_MTVEC:
+            {
+                m_trap.mtvec := update(funct, m_trap.mtvec, source);
+                return m_trap.mtvec;
             }
             else:
             {

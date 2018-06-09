@@ -12,6 +12,7 @@
 #define LOAD    (7'b0000011)
 #define STORE   (7'b0100011)
 #define SYSTEM  (7'b1110011)
+#define AUIPC   (7'b0010111)
 
 /*
  * struct for eatch instruction type
@@ -91,6 +92,13 @@ struct system_t
     rs1[5];
     is_imm;
     funct[2];
+    rd[5];
+    opcode[7];
+};
+
+struct auipc_t
+{
+    imm[20];
     rd[5];
     opcode[7];
 };

@@ -33,6 +33,8 @@ module tiny_rv
     load_t wire load;
     store_t wire store;
     system_t wire system;
+    auipc_t wire auipc;
+
     wire sourece_1[32];
     wire sourece_2[32];
     wire result[32];
@@ -203,6 +205,14 @@ module tiny_rv
                         fetch_request_stage(result);
                     }
                 }
+				exec_op_code == AUIPC:
+                {
+                    auipc = exec_inst;
+                    sourece_1 = {auipc.imm, 12'h0};
+                    sourece_2 = exec_pc;
+                    result = int_alu.calculate(sourece_1, sourece_2, FUNCT3_ADD_SUB, 1'b0);
+                    write_back_stage(auipc.rd, result, auipc.opcode);
+                }
                 exec_op_code == LOAD:
                 {
                     load = exec_inst;
@@ -229,7 +239,12 @@ module tiny_rv
                     else{
                         sourece_1 = 32#{system.rs1};
                     }
-                    write_back_stage_csr(system.csr, sourece_1, system.rd, system.funct);
+                    if(system.rd != 5'h0)
+                    {
+                        write_back_stage_csr(
+                                system.csr, sourece_1,
+                                system.rd, system.funct);
+                    }
                 }
                 else:
                 {
@@ -245,7 +260,8 @@ module tiny_rv
         any
         {
             wb_opcode == JAL || wb_opcode == JALR
-                || wb_opcode == OP_IMM || wb_opcode == OP:
+                || wb_opcode == OP_IMM || wb_opcode == OP
+                || wb_opcode == AUIPC:
             {
                 int_regs.write(wb_rd, wb_value);
             }
@@ -335,5 +351,10 @@ module tiny_rv
     func int_regs.error
     {
         error(int_regs.error_num);
+    }
+
+    func csr.error
+    {
+        error(csr.error_num);
     }
 }
