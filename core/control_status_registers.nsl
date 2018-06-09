@@ -76,6 +76,15 @@ module control_status_registers
                     m_trap.mtvec := update(funct, m_trap.mtvec, source);
                     return m_trap.mtvec;
                 }
+                //Machine Protection and Translation
+                address >= 12'h310 && address <= 12'h3bf:
+                {
+                    trap(m_trap.mtvec & 0xfffffffc);
+                }
+                address >= 12'h302 && address <= 12'h304:
+                {
+                    trap(m_trap.mtvec & 0xfffffffc);
+                }
                 else:
                 {
                     error(ERROR_CSR_UNKNWON_ADDR);
