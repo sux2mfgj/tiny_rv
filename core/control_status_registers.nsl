@@ -8,7 +8,7 @@
 
 #define CSR_MHARTID (12'hf14)
 
-//#define CSR_MSTATUS (12'h300)
+#define CSR_MSTATUS (12'h300)
 //#define CSR_MISA    (12'h301)
 #define CSR_MTVEC   (12'h305)
 
@@ -26,10 +26,36 @@ struct machine_trap_setup
     mtvec[32];
 };
 
+struct mstatus_t
+{
+    sd;
+    reserved1[8];
+    tsr;
+    tw;
+    tvm;
+    mxr;
+    sum;
+    mprev;
+    xs[2];
+    fs[2];
+    mpp[2];
+    reserved2[2];
+    spp;
+    mpie;
+    reserved3;
+    spie;
+    upie;
+    mie;
+    reserved4;
+    sie;
+    uie;
+};
+
 module control_status_registers
 {
     machine_info_registers reg m_info = 0;
     machine_trap_setup reg m_trap = 0;
+    mstatus_t reg mstatus = 0;
 
     wire update_funct[2], update_value[32],
          update_source[32], update_result[32];
@@ -75,6 +101,12 @@ module control_status_registers
                 {
                     m_trap.mtvec := update(funct, m_trap.mtvec, source);
                     return m_trap.mtvec;
+                }
+                address == CSR_MSTATUS:
+                {
+                    //TODO
+                    mstatus := update(funct, mstatus, source);
+                    return mstatus;
                 }
                 //Machine Protection and Translation
                 address >= 12'h310 && address <= 12'h3bf:
