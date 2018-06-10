@@ -1,0 +1,32 @@
+#include "opcode_system.nh"
+
+declare opcode_system_tb simulation
+{
+    output error_num[ERROR_NUM_BIT_WIDTH];
+    func_out error(error_num);
+}
+
+module opcode_system_tb
+{
+    opcode_system system;
+    wire result[32];
+    reg counter[10] = 0;
+    counter++;
+
+
+    if(counter == 10'h04)
+    {
+        //f1402573            csrr    a0,mhartid
+        result = system.execute(12'hf14, 2'b10, 32'h0);
+        _display("csrr a0,mhartid: ", result);
+    }
+
+    if(counter == 10'h10)
+    {
+        error(ERROR_OK);
+        _finish();
+    }
+}
+
+
+

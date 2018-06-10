@@ -1,0 +1,88 @@
+#include "opcode_system.nh"
+
+#define SYSTEM_FUNCT_CONTROL    (2'b00)
+#define SYSTEM_FUNCT_CSR_RW     (2'b01)
+#define SYSTEM_FUNCT_CSR_RS     (2'b10)
+#define SYSTEM_FUNCT_CSR_RC     (2'b11)
+
+#define CSR_MHARTID (12'hf14)
+
+declare control_status_registers
+{
+    output error_num[ERROR_NUM_BIT_WIDTH];
+
+    input address[12];
+    input source[32];
+    input funct[2];
+    output result[32];
+
+    func_in read_update(address, funct, source): result;
+
+    func_out error(error_num);
+}
+
+module control_status_registers
+{
+    reg mhartid[32] = 0;
+
+    wire update_funct[2], update_value[32],
+         update_source[32], update_result[32];
+    func_self update(update_funct, update_value, update_source)
+        : update_result;
+
+    func update
+    {
+        any
+        {
+            update_funct == SYSTEM_FUNCT_CSR_RS:
+            {
+                return update_value | update_source;
+            }
+            update_funct ==SYSTEM_FUNCT_CSR_RW:
+            {
+                return update_source;
+            }
+            else:
+            {
+                error(ERROR_CSR_UNKNWON_FUNCT);
+            }
+        }
+    }
+
+    func read_update
+    {
+        any
+        {
+            address == CSR_MHARTID:
+            {
+                mhartid := update(funct, mhartid, source);
+                return mhartid;
+            }
+            else:
+            {
+                error(ERROR_NOT_IMPLEMENTED);
+            }
+        }
+    }
+}
+
+module opcode_system
+{
+    control_status_registers csr;
+
+    //func_in execute(address, funct, source) : result;
+    func execute
+    {
+        any
+        {
+            funct == SYSTEM_FUNCT_CONTROL:
+            {
+                error(ERROR_NOT_IMPLEMENTED);
+            }
+            else:
+            {
+                return csr.read_update(address, funct, source);
+            }
+        }
+    }
+}

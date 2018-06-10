@@ -1,0 +1,21 @@
+#ifndef __INCLUDED_OPCODE_SYSTEM_NH__
+#define __INCLUDED_OPCODE_SYSTEM_NH__
+
+#include "error.nh"
+
+declare opcode_system
+{
+    // for error
+    output error_num[ERROR_NUM_BIT_WIDTH];
+
+    input address[12];
+    input source[32];
+    input funct[2];
+    output result[32];
+
+    func_in execute(address, funct, source) : result;
+
+    func_out error(error_num);
+}
+
+#endif

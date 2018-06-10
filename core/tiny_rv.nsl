@@ -12,7 +12,6 @@ module tiny_rv
     fetch ifetch;
     integer_register int_regs;
     integer_arithmetic_logic int_alu;
-    control_status_registers csr;
 
     reg request_addr[32];
     wire pc_plus_4[32];
@@ -58,7 +57,7 @@ module tiny_rv
     proc_name write_back_stage_store(wb_address, wb_value, wb_funct3);
     proc_name write_back_stage_store_waiting();
 
-    reg  wb_csr[12], wb_csr_funct[2];
+    reg wb_csr[12], wb_csr_funct[2];
     proc_name write_back_stage_csr(wb_csr, wb_value, wb_rd, wb_csr_funct);
 
     func_self stall();
@@ -97,11 +96,6 @@ module tiny_rv
     {
         //TODO
         return int_regs.read_rs2(rs2);
-    }
-
-    func csr.trap
-    {
-        trap(csr.trap_vector);
     }
 
     /*
@@ -272,17 +266,7 @@ module tiny_rv
                     }
                     exec_op_code == SYSTEM:
                     {
-                        system = exec_inst;
-                        if(!system.is_imm)
-                        {
-                            sourece_1 = read_register_1(system.rs1);
-                        }
-                        else{
-                            sourece_1 = 32#{system.rs1};
-                        }
-                        write_back_stage_csr(
-                                system.csr, sourece_1,
-                                system.rd, system.funct);
+                        error(ERROR_NOT_IMPLEMENTED);
                     }
                     exec_op_code == LUI:
                     {
@@ -387,7 +371,7 @@ module tiny_rv
     //proc_name write_back_stage_csr(wb_csr, wb_value, wb_rd, wb_csr_funct);
     proc write_back_stage_csr
     {
-        int_regs.write(wb_rd, csr.read_update(wb_csr, wb_value, wb_csr_funct));
+        //int_regs.write(wb_rd, csr.read_update(wb_csr, wb_value, wb_csr_funct));
         finish();
     }
 
@@ -402,11 +386,6 @@ module tiny_rv
     func int_regs.error
     {
         error(int_regs.error_num);
-    }
-
-    func csr.error
-    {
-        error(csr.error_num);
     }
 
     func int_alu.error
