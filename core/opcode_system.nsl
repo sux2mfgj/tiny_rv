@@ -85,4 +85,9 @@ module opcode_system
             }
         }
     }
+
+    func csr.error
+    {
+        error(csr.error_num);
+    }
 }

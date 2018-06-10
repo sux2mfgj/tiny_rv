@@ -13,7 +13,7 @@ declare opcode_system
     input funct[2];
     output result[32];
 
-    func_in execute(address, funct, source) : result;
+    func_in execute(address, source, funct) : result;
 
     func_out error(error_num);
 }

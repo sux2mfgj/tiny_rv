@@ -2,7 +2,7 @@
 #include "fetch.nh"
 #include "integer_register.nh"
 #include "integer_arithmetic_logic.nh"
-#include "control_status_registers.nh"
+#include "opcode_system.nh"
 
 #include "format.nh"
 #include "funct3.nh"
@@ -12,6 +12,7 @@ module tiny_rv
     fetch ifetch;
     integer_register int_regs;
     integer_arithmetic_logic int_alu;
+    opcode_system system;
 
     reg request_addr[32];
     wire pc_plus_4[32];
@@ -33,7 +34,7 @@ module tiny_rv
     branch_t wire branch;
     load_t wire load;
     store_t wire store;
-    system_t wire system;
+    system_t wire system_inst;
     auipc_t wire auipc;
 
     wire sourece_1[32];
@@ -266,7 +267,17 @@ module tiny_rv
                     }
                     exec_op_code == SYSTEM:
                     {
-                        error(ERROR_NOT_IMPLEMENTED);
+                        system_inst = exec_inst;
+                        if(system_inst.is_imm)
+                        {
+                            sourece_1 = 32#{system_inst.rs1};
+                        }
+                        else
+                        {
+                            sourece_1 = read_register_1(system_inst.rs1);
+                        }
+                        write_back_stage_csr(system_inst.csr, sourece_1,
+                                system_inst.rd, system_inst.funct);
                     }
                     exec_op_code == LUI:
                     {
@@ -371,7 +382,7 @@ module tiny_rv
     //proc_name write_back_stage_csr(wb_csr, wb_value, wb_rd, wb_csr_funct);
     proc write_back_stage_csr
     {
-        //int_regs.write(wb_rd, csr.read_update(wb_csr, wb_value, wb_csr_funct));
+        int_regs.write(wb_rd, system.execute(wb_csr, wb_value, wb_csr_funct));
         finish();
     }
 
@@ -391,5 +402,10 @@ module tiny_rv
     func int_alu.error
     {
         error(int_alu.error_num);
+    }
+
+    func system.error
+    {
+        error(system.error_num);
     }
 }

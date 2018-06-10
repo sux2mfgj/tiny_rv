@@ -12,7 +12,7 @@ ifeq ($(TARGET), dummy_arbiter)
 endif
 
 ifeq ($(TARGET), test_system)
-    REQUIRE_MODULES := tiny_rv.v fetch.v integer_register.v integer_arithmetic_logic.v dummy_arbiter.v dummy_memory.v #control_status_registers.v
+    REQUIRE_MODULES := tiny_rv.v fetch.v integer_register.v integer_arithmetic_logic.v dummy_arbiter.v dummy_memory.v opcode_system.v
 endif
 
 ifdef TARGET
