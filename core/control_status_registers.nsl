@@ -4,6 +4,7 @@
 #define CSR_FUNCT_RW    (2'b01)
 #define CSR_FUNCT_RS    (2'b10)
 #define CSR_FUNCT_RC    (2'b11)
+#define CSR_FUNCT_PREV  (2'b00)
 
 
 #define CSR_MHARTID (12'hf14)
@@ -11,20 +12,7 @@
 #define CSR_MSTATUS (12'h300)
 //#define CSR_MISA    (12'h301)
 #define CSR_MTVEC   (12'h305)
-
-struct machine_info_registers
-{
-    //mvendorid[32];
-    //marchid[32];
-    //mimpid[32];
-    mhartid[32];
-};
-
-struct machine_trap_setup
-{
-    //TODO
-    mtvec[32];
-};
+#define CSR_MEPC    (12'h341)
 
 struct mstatus_t
 {
@@ -53,9 +41,10 @@ struct mstatus_t
 
 module control_status_registers
 {
-    machine_info_registers reg m_info = 0;
-    machine_trap_setup reg m_trap = 0;
     mstatus_t reg mstatus = 0;
+    reg mhartid[32] = 0 ;
+    reg mepc[32] = 0;
+    reg mtvec[32] = 0;
 
     wire update_funct[2], update_value[32],
          update_source[32], update_result[32];
@@ -86,7 +75,21 @@ module control_status_registers
     {
         if(address[9:8] != 2'b11)
         {
-            trap(m_trap.mtvec & 0xfffffffc);
+            trap(mtvec & 0xfffffffc);
+        }
+        else if(funct == CSR_FUNCT_PREV)
+        {
+            any
+            {
+                address == 12'h302:
+                {
+                    trap(mepc);
+                }
+                else:
+                {
+                    error(ERROR_CSR_UNKNWON_ADDR);
+                }
+            }
         }
         else
         {
@@ -94,13 +97,13 @@ module control_status_registers
             {
                 address == CSR_MHARTID:
                 {
-                    m_info.mhartid := update(funct, m_info.mhartid, source);
-                    return m_info.mhartid;
+                    mhartid := update(funct, mhartid, source);
+                    return mhartid;
                 }
                 address == CSR_MTVEC:
                 {
-                    m_trap.mtvec := update(funct, m_trap.mtvec, source);
-                    return m_trap.mtvec;
+                    mtvec := update(funct, mtvec, source);
+                    return mtvec;
                 }
                 address == CSR_MSTATUS:
                 {
@@ -108,14 +111,19 @@ module control_status_registers
                     mstatus := update(funct, mstatus, source);
                     return mstatus;
                 }
-                //Machine Protection and Translation
-                address >= 12'h310 && address <= 12'h3bf:
+                address == CSR_MEPC:
                 {
-                    trap(m_trap.mtvec & 0xfffffffc);
+                    mepc := update(funct, mepc, source);
+                    return mepc;
+                }
+                //Machine Protection and Translation
+                address >= 12'h3a0 && address <= 12'h3bf:
+                {
+                    trap(mtvec & 0xfffffffc);
                 }
                 address >= 12'h302 && address <= 12'h304:
                 {
-                    trap(m_trap.mtvec & 0xfffffffc);
+                    trap(mtvec & 0xfffffffc);
                 }
                 else:
                 {
