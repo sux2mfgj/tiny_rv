@@ -42,6 +42,13 @@ module integer_arithmetic_logic_tb
                 ialu.compare(32'h07, 32'h13, 3'b100));
     }
 
+    if(counter == 10'h7)
+    {
+        //00054863            bltz    a0,800000c0 <reset_vector+0x74>
+        _display("compare 0x80000000 < 0 :",
+                ialu.compare(32'h80000000, 32'h00000000, 3'b100));
+    }
+
     if(counter == 10'h10)
     {
         _finish();

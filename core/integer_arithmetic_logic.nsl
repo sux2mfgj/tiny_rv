@@ -3,7 +3,8 @@
 
 module integer_arithmetic_logic
 {
-    wire tmp_result;
+    wire cmp_result;
+    wire tmp_result[32];
 
     func calculate
     {
@@ -38,11 +39,12 @@ module integer_arithmetic_logic
         {
             comp_funct[2] == 0: // BEQ or BNE
             {
-                tmp_result = comp_a == comp_b;
+                cmp_result = comp_a == comp_b;
             }
             comp_funct[2] == 1: // BLT or BGE
             {
-                tmp_result = comp_a < comp_b;
+                tmp_result = comp_a - comp_b;
+                cmp_result = tmp_result[31];
             }
             else:
             {
@@ -52,11 +54,11 @@ module integer_arithmetic_logic
         }
         if(comp_funct[0])
         {
-            return !tmp_result;
+            return !cmp_result;
         }
         else
         {
-            return tmp_result;
+            return cmp_result;
         }
     }
 }
