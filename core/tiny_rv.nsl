@@ -99,6 +99,11 @@ module tiny_rv
         return int_regs.read_rs2(rs2);
     }
 
+    func system.trap
+    {
+        trap(system.trap_address);
+    }
+
     /*
      * Pipeline
      */

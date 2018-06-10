@@ -6,6 +6,7 @@
 #define SYSTEM_FUNCT_CSR_RC     (2'b11)
 
 #define CSR_MHARTID (12'hf14)
+#define CSR_MTVEC   (12'h305)
 
 declare control_status_registers
 {
@@ -15,8 +16,10 @@ declare control_status_registers
     input source[32];
     input funct[2];
     output result[32];
+    output trap_address[32];
 
     func_in read_update(address, funct, source): result;
+    func_out trap(trap_address);
 
     func_out error(error_num);
 }
@@ -24,11 +27,11 @@ declare control_status_registers
 module control_status_registers
 {
     reg mhartid[32] = 0;
+    reg mtvec[32] = 0;
 
     wire update_funct[2], update_value[32],
          update_source[32], update_result[32];
-    func_self update(update_funct, update_value, update_source)
-        : update_result;
+    func_self update(update_funct, update_value, update_source): update_result;
 
     func update
     {
@@ -38,7 +41,7 @@ module control_status_registers
             {
                 return update_value | update_source;
             }
-            update_funct ==SYSTEM_FUNCT_CSR_RW:
+            update_funct == SYSTEM_FUNCT_CSR_RW:
             {
                 return update_source;
             }
@@ -57,6 +60,23 @@ module control_status_registers
             {
                 mhartid := update(funct, mhartid, source);
                 return mhartid;
+            }
+            address == CSR_MTVEC:
+            {
+                mtvec := update(funct, mtvec, source);
+                return mtvec;
+            }
+            //pmpaddr
+            address >= 12'h3a0 && address <= 12'h3bf:
+            {
+                trap(mtvec);
+                return 0;
+            }
+            //delegation
+            address == 12'h302 || address == 12'h180 || address == 12'h303:
+            {
+                trap(mtvec);
+                return 0;
             }
             else:
             {
@@ -84,6 +104,11 @@ module opcode_system
                 return csr.read_update(address, funct, source);
             }
         }
+    }
+
+    func csr.trap
+    {
+        trap(csr.trap_address);
     }
 
     func csr.error
