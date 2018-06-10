@@ -10,7 +10,8 @@
 #define CSR_MSTATUS (12'h300)
 #define CSR_MEPC    (12'h341)
 
-#define SYSTEM_INT_MRET (12'h302)
+#define SYSTEM_INST_MRET    (12'h302)
+#define SYSTEM_INST_ECALL   (12'h000)
 
 declare control_status_registers
 {
@@ -21,11 +22,12 @@ declare control_status_registers
     input funct[2];
     output result[32];
     output trap_address[32];
+    output mtvec_value[32];
 
     func_in read_update(address, funct, source): result;
     func_out trap(trap_address);
-
     func_out error(error_num);
+    func_in get_mtvec() : mtvec_value;
 }
 
 module control_status_registers
@@ -38,6 +40,11 @@ module control_status_registers
     wire update_funct[2], update_value[32],
          update_source[32], update_result[32];
     func_self update(update_funct, update_value, update_source): update_result;
+
+    func get_mtvec
+    {
+        return mtvec;
+    }
 
     func update
     {
@@ -115,15 +122,19 @@ module opcode_system
             {
                 any
                 {
-                    address == SYSTEM_INT_MRET:
+                    address == SYSTEM_INST_MRET:
                     {
                         trap(csr.read_update(CSR_MEPC, SYSTEM_FUNCT_CSR_RS, 0));
+                    }
+                    address == SYSTEM_INST_ECALL:
+                    {
+                        csr.read_update(CSR_MEPC, SYSTEM_FUNCT_CSR_RW, get_pc());
+                        trap(csr.get_mtvec());
                     }
                     else:
                     {
                         error(ERROR_NOT_IMPLEMENTED);
                     }
-
                 }
             }
             else:

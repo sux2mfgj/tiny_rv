@@ -58,13 +58,16 @@ module tiny_rv
     proc_name write_back_stage_store(wb_address, wb_value, wb_funct3);
     proc_name write_back_stage_store_waiting();
 
-    reg wb_csr[12], wb_csr_funct[2];
-    proc_name write_back_stage_csr(wb_csr, wb_value, wb_rd, wb_csr_funct);
+    reg wb_csr[12], wb_csr_funct[2], wb_pc[32];
+    proc_name write_back_stage_csr(
+            wb_csr, wb_value,
+            wb_rd, wb_csr_funct, wb_pc);
 
     func_self stall();
     func_self interlock();
     wire trap_next_pc[32];
     func_self trap(trap_next_pc);
+
 
     //func_in start(instruction);
     func start
@@ -282,7 +285,8 @@ module tiny_rv
                             sourece_1 = read_register_1(system_inst.rs1);
                         }
                         write_back_stage_csr(system_inst.csr, sourece_1,
-                                system_inst.rd, system_inst.funct);
+                                system_inst.rd, system_inst.funct,
+                                exec_pc);
                     }
                     exec_op_code == LUI:
                     {
@@ -387,6 +391,10 @@ module tiny_rv
     //proc_name write_back_stage_csr(wb_csr, wb_value, wb_rd, wb_csr_funct);
     proc write_back_stage_csr
     {
+        func system.get_pc
+        {
+            return wb_pc;
+        }
         int_regs.write(wb_rd, system.execute(wb_csr, wb_value, wb_csr_funct));
         finish();
     }

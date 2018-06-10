@@ -13,9 +13,12 @@ declare opcode_system
     input funct[2];
     output result[32];
     output trap_address[32];
+    input pc[32];
 
     func_in execute(address, source, funct) : result;
     func_out trap(trap_address);
+
+    func_out get_pc() : pc;
 
     func_out error(error_num);
 }
