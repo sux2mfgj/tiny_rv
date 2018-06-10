@@ -8,6 +8,9 @@
 #define CSR_MHARTID (12'hf14)
 #define CSR_MTVEC   (12'h305)
 #define CSR_MSTATUS (12'h300)
+#define CSR_MEPC    (12'h341)
+
+#define SYSTEM_INT_MRET (12'h302)
 
 declare control_status_registers
 {
@@ -30,6 +33,7 @@ module control_status_registers
     reg mhartid[32] = 0;
     reg mtvec[32] = 0;
     reg mstatus[32] = 0;
+    reg mepc[32] = 0;
 
     wire update_funct[2], update_value[32],
          update_source[32], update_result[32];
@@ -73,6 +77,11 @@ module control_status_registers
                 mstatus := update(funct, mstatus, source);
                 return mstatus;
             }
+            address == CSR_MEPC:
+            {
+                mepc := update(funct, mepc, source);
+                return mepc;
+            }
             //pmpaddr
             address >= 12'h3a0 && address <= 12'h3bf:
             {
@@ -104,7 +113,18 @@ module opcode_system
         {
             funct == SYSTEM_FUNCT_CONTROL:
             {
-                error(ERROR_NOT_IMPLEMENTED);
+                any
+                {
+                    address == SYSTEM_INT_MRET:
+                    {
+                        trap(csr.read_update(CSR_MEPC, SYSTEM_FUNCT_CSR_RS, 0));
+                    }
+                    else:
+                    {
+                        error(ERROR_NOT_IMPLEMENTED);
+                    }
+
+                }
             }
             else:
             {
