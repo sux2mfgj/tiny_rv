@@ -14,6 +14,10 @@
 #define CSR_MTVEC   (12'h305)
 #define CSR_MEPC    (12'h341)
 
+// mcause exception codes
+#define MCAUSE_EC_ECALL_M_MODE  (32'd11)
+#define MCAUSE_EC_ILLEGAL_INST  (32'd2)
+
 struct mstatus_t
 {
     sd;
@@ -45,6 +49,7 @@ module control_status_registers
     reg mhartid[32] = 0 ;
     reg mepc[32] = 0;
     reg mtvec[32] = 0;
+    reg mcause[32] = 0;
 
     wire update_funct[2], update_value[32],
          update_source[32], update_result[32];
@@ -76,6 +81,7 @@ module control_status_registers
         if(address[9:8] != 2'b11)
         {
             trap(mtvec & 0xfffffffc);
+            mcause := MCAUSE_EC_ILLEGAL_INST;
         }
         else if(funct == CSR_FUNCT_PREV)
         {
@@ -120,10 +126,12 @@ module control_status_registers
                 address >= 12'h3a0 && address <= 12'h3bf:
                 {
                     trap(mtvec & 0xfffffffc);
+                    mcause := MCAUSE_EC_ILLEGAL_INST;
                 }
                 address >= 12'h302 && address <= 12'h304:
                 {
                     trap(mtvec & 0xfffffffc);
+                    mcause := MCAUSE_EC_ILLEGAL_INST;
                 }
                 else:
                 {
