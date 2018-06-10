@@ -7,6 +7,7 @@
 
 #define CSR_MHARTID (12'hf14)
 #define CSR_MTVEC   (12'h305)
+#define CSR_MSTATUS (12'h300)
 
 declare control_status_registers
 {
@@ -28,6 +29,7 @@ module control_status_registers
 {
     reg mhartid[32] = 0;
     reg mtvec[32] = 0;
+    reg mstatus[32] = 0;
 
     wire update_funct[2], update_value[32],
          update_source[32], update_result[32];
@@ -65,6 +67,11 @@ module control_status_registers
             {
                 mtvec := update(funct, mtvec, source);
                 return mtvec;
+            }
+            address == CSR_MSTATUS:
+            {
+                mstatus := update(funct, mstatus, source);
+                return mstatus;
             }
             //pmpaddr
             address >= 12'h3a0 && address <= 12'h3bf:
