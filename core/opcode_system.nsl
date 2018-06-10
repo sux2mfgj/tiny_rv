@@ -9,6 +9,7 @@
 #define CSR_MTVEC   (12'h305)
 #define CSR_MSTATUS (12'h300)
 #define CSR_MEPC    (12'h341)
+#define CSR_MCAUSE  (12'h342)
 
 #define SYSTEM_INST_MRET    (12'h302)
 #define SYSTEM_INST_ECALL   (12'h000)
@@ -23,11 +24,13 @@ declare control_status_registers
     output result[32];
     output trap_address[32];
     output mtvec_value[32];
+    input mcause_value[32];
 
     func_in read_update(address, funct, source): result;
     func_out trap(trap_address);
     func_out error(error_num);
     func_in get_mtvec() : mtvec_value;
+    func_in update_mcause(mcause_value);
 }
 
 module control_status_registers
@@ -36,6 +39,7 @@ module control_status_registers
     reg mtvec[32] = 0;
     reg mstatus[32] = 0;
     reg mepc[32] = 0;
+    reg mcause[32] = 0;
 
     wire update_funct[2], update_value[32],
          update_source[32], update_result[32];
@@ -44,6 +48,11 @@ module control_status_registers
     func get_mtvec
     {
         return mtvec;
+    }
+
+    func update_mcause
+    {
+        mcause := mcause_value;
     }
 
     func update
@@ -89,6 +98,11 @@ module control_status_registers
                 mepc := update(funct, mepc, source);
                 return mepc;
             }
+            address == CSR_MCAUSE:
+            {
+                mcause := update(funct, mcause, source);
+                return mcause;
+            }
             //pmpaddr
             address >= 12'h3a0 && address <= 12'h3bf:
             {
@@ -130,6 +144,7 @@ module opcode_system
                     {
                         csr.read_update(CSR_MEPC, SYSTEM_FUNCT_CSR_RW, get_pc());
                         trap(csr.get_mtvec());
+                        csr.update_mcause(32'd11);
                     }
                     else:
                     {
