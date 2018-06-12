@@ -1,19 +1,25 @@
 #ifndef __INCLUDED_MEMORY_NH__
-#define
+#define __INCLUDED_MEMORY_NH__
+
+#include "error.nh"
 
 declare dummy_memory
 {
     input address[32];
-    input write_data[32];
+    input write_data[8];
     output read_data[32];
+
+    output error_num[ERROR_NUM_BIT_WIDTH];
 
     func_in request_read(address);
     func_out read_done(read_data);
 
-    //func_in request_write(address, write_data);
-    //func_out write_done();
+    func_in request_write(address, write_data);
+    func_out write_done();
 
     func_in init();
+
+    func_out error(error_num);
 }
 
 #endif

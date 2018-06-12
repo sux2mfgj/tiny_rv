@@ -4,7 +4,7 @@ module dummy_memory
 {
     mem memory[0x1050][8];
 
-    reg value[32];
+    reg value[8];
     proc_name read_proc();
     proc_name write_proc(value);
 
@@ -20,6 +20,10 @@ module dummy_memory
     func request_read
     {
         read_proc();
+        if(address < 0x80000000)
+        {
+            error(ERROR_DUMMY_MEM_ADDRESS);
+        }
         access_base := address - 0x80000000;
     }
     proc read_proc
@@ -31,23 +35,27 @@ module dummy_memory
     }
 
     //func_in request_write(address, write_data);
-    /*
     func request_write
     {
         write_proc(write_data);
-        access_base := 0x80000000 - address;
+        if(address < 0x80000000)
+        {
+            error(ERROR_DUMMY_MEM_ADDRESS);
+        }
+        access_base := address - 0x80000000;
     }
 
     proc write_proc seq
     {
         memory[access_base[12:0]] := value[7:0];
+        /*
         memory[access_base[12:0] + 13'h1] := value[15:8];
         memory[access_base[12:0] + 13'h2] := value[23:16];
         memory[access_base[12:0] + 13'h3] := value[31:24];
+        */
         {
             write_done();
             finish();
         }
     }
-    */
 }
