@@ -13,7 +13,7 @@ module dummy_memory
     //func_in init();
     func init seq
     {
-        _readmemh("memory.hex", memory);
+        _readmemh("memory_test.hex", memory);
     }
 
     //func_in request_read(address);
