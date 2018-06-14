@@ -5,6 +5,13 @@ module dummy_arbiter
 {
     dummy_memory memory;
 
+    reg write_address[32];
+    reg write_size[3];
+    reg write_data[32];
+    reg write_i[3];
+    proc_name store_proc(write_address, write_data, write_size);
+    reg is_wait;
+
     func init
     {
         memory.init();
@@ -22,6 +29,13 @@ module dummy_arbiter
         inst_done(memory.read_data);
     }
 
+    /*
+    func memory.write_done
+    {
+        store_done();
+    }
+    */
+
     //func_in load(d_address);
     func load
     {
@@ -30,10 +44,36 @@ module dummy_arbiter
     }
 
     //func_in store(d_address, d_in_data);
-    func store
+    func store_w
     {
-        error(ERROR_DUMMY_ARBITER);
-        store_done();
-        //func_out store_done();
+        store_proc(d_address, d_in_data, 4);
+        write_i := 0;
+        is_wait := 1'b0;
+    }
+
+    //proc_name store_proc(write_address, write_data, write_size);
+    proc store_proc
+    {
+        if(is_wait)
+        {
+            if(memory.write_done)
+            {
+                if(write_size == 1)
+                {
+                    store_done();
+                    finish();
+                }
+                else
+                {
+                    store_proc(write_address + 1, write_data >> 8, write_size - 1);
+                    is_wait := 1'b0;
+                }
+            }
+        }
+        else
+        {
+            memory.request_write(write_address, write_data[7:0]);
+            is_wait := 1'b1;
+        }
     }
 }

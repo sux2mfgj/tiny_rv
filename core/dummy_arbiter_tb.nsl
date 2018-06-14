@@ -23,6 +23,11 @@ module dummy_arbiter_tb
         arbiter.request_inst(0x8000_0000);
     }
 
+    if(counter == 10'h10)
+    {
+        arbiter.store_w(0x8000_0010, 0x12345678);
+    }
+
     if(counter == 10'h40)
     {
         _finish();
