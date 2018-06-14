@@ -76,4 +76,9 @@ module dummy_arbiter
             is_wait := 1'b1;
         }
     }
+
+    func memory.error
+    {
+        error(memory.error_num);
+    }
 }

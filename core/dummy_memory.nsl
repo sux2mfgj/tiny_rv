@@ -43,16 +43,24 @@ module dummy_memory
             error(ERROR_DUMMY_MEM_ADDRESS);
         }
         access_base := address - 0x80000000;
+
+        // for riscv-test
+        if(address == 0x80001000)
+        {
+            if(write_data == 1)
+            {
+                error(ERROR_OK);
+            }
+            else
+            {
+                error(write_data[ERROR_NUM_BIT_WIDTH - 1:0]);
+            }
+        }
     }
 
     proc write_proc seq
     {
         memory[access_base[12:0]] := value[7:0];
-        /*
-        memory[access_base[12:0] + 13'h1] := value[15:8];
-        memory[access_base[12:0] + 13'h2] := value[23:16];
-        memory[access_base[12:0] + 13'h3] := value[31:24];
-        */
         {
             write_done();
             finish();

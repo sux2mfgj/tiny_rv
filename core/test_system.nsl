@@ -39,7 +39,7 @@ module test_system
 
     func rv_core.store_w
     {
-        arbiter.store(rv_core.d_address, rv_core.store_data);
+        arbiter.store_w(rv_core.d_address, rv_core.store_data);
     }
 
     func arbiter.store_done
