@@ -9,7 +9,7 @@ tiny risc-v (rv32i) implementation written in NSL
 - verilator
 
 ##### TODO
-- fix dummy_memory for riscv-test
+- ~~fix dummy_memory for riscv-test~~
 - ふぃぼなっち
 - for FPGA
     - AXI-LED
