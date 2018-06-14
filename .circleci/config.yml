@@ -8,5 +8,5 @@ jobs:
           password: $DOCKER_HUB_PW
     steps:
       - run: echo "hello"
-      - run: pwd
+      - run: ls /
       - run: env
