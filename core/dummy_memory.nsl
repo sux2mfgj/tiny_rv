@@ -1,4 +1,5 @@
 #include "dummy_memory.nh"
+#include "hex.nh"
 
 module dummy_memory
 {
@@ -13,7 +14,7 @@ module dummy_memory
     //func_in init();
     func init seq
     {
-        _readmemh("memory_test.hex", memory);
+        _readmemh(MEMORY_HEX, memory);
     }
 
     //func_in request_read(address);

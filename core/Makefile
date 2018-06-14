@@ -1,7 +1,8 @@
 clean:
-	rm -rf *.v *.vcd *.vvp obj_dir/
+	rm -rf *.v *.vcd *.vvp obj_dir/ hex.nh
 
 TARGET  :=
+MEMORY_HEX  := ../hexs/rv32ui-p-add.hex
 
 ifeq ($(TARGET), tiny_rv)
     REQUIRE_MODULES := fetch.v integer_register.v integer_arithmetic_logic.v control_status_registers.v

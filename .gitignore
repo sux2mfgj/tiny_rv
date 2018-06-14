@@ -6,3 +6,4 @@ core/obj_dir/
 test_build/
 toolchain/
 *.hex
+!hexs/*

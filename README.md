@@ -8,7 +8,6 @@ tiny risc-v (rv32i) implementation written in NSL
 - gtkwave
 - verilator
 
-
 ##### TODO
 - fix dummy_memory for riscv-test
 - ふぃぼなっち
@@ -18,3 +17,9 @@ tiny risc-v (rv32i) implementation written in NSL
     - Linux
 - rv6 on tiny_rv
 - web interface
+
+##### MEMO
+```
+$ cd core
+$ make hex.nh TARGET=test_system MEMORY_HEX=../rv32ui-p-and.hex
+```
