@@ -14,4 +14,4 @@ jobs:
       - run: ls /
       - run: ls /work
       - run: env
-      - run: make -C /tiny_rv/core TARGET=fetch veri
+      - run: make -C /work/tiny_rv/core TARGET=fetch veri
