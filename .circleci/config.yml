@@ -7,4 +7,6 @@ jobs:
           username: $DOCKER_HUB_USER
           password: $DOCKER_HUB_PW
     steps:
-      - run: ls
+      - run: echo "hello"
+      - run: pwd
+      - run: env
