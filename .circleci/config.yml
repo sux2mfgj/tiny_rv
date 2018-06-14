@@ -7,4 +7,4 @@ jobs:
           username: $DOCKER_HUB_USER
           password: $DOCKER_HUB_PW
     steps:
-      - run: make -C tiny_rv TARGET=fetch veri
+      - run: ls
