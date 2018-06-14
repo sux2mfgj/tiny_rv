@@ -1,10 +1,11 @@
 version: 2
 jobs:
   build:
-    - image: $DOCKER_HUB_REPO
-      auth:
-        username: $DOCKER_HUB_USER
-        password: $DOCKER_HUB_PW
-  steps:
-    - run: "fetch"
-      command: make -C tiny_rv TARGET=fetch veri   
+    docker
+      - image: $DOCKER_HUB_REPO
+        auth:
+          username: $DOCKER_HUB_USER
+          password: $DOCKER_HUB_PW
+    steps:
+      - run: "fetch"
+        command: make -C tiny_rv TARGET=fetch veri   
