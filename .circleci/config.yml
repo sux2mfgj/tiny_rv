@@ -8,6 +8,7 @@ jobs:
           password: $DOCKER_HUB_PW
     working_directory: /work
     steps:
+      - run: mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
       - run: git clone $CIRCLE_REPOSITORY_URL
       - run: echo "hello"
       - run: ls /
