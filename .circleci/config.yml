@@ -9,6 +9,8 @@ jobs:
     working_directory: /work
     steps:
       - run: mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+      - run: git clone $CIRCLE_REPOSITORY_URL
+
       - run: make -C /work/tiny_rv/core TARGET=fetch veri
       - run: make -C /work/tiny_rv/core TARGET=integer_register veri
       - run: make -C /work/tiny_rv/core TARGET=integer_arithmetic_logic veri
