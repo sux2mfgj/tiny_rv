@@ -24,7 +24,7 @@ module dummy_memory_tb
 
     if(counter == 10'h0a)
     {
-        memory.request_write(0x80001000, 8'h1);
+        memory.request_write(0x80000010, 0x12);
     }
 
     if(counter == 10'h20)
