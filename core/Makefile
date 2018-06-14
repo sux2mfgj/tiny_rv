@@ -21,12 +21,12 @@ endif
 riscv-test: FORCE
 	for hex in $(HEXS); do \
         make TARGET=test_system MEMORY_HEX=$$hex veri; if [ $$? -eq 0 ]; then \
-            echo "[ passed ] $$hex" >> result; \
+            echo "[ passed ] $$hex" >> riscv_test_result; \
         else \
-            echo "[ failed ] $$hex" >> result; \
+            echo "[ failed ] $$hex" >> riscv_test_result; \
         fi \
 	done
-	cat result
+	cat riscv_test_result
 
 ifdef TARGET
     include ../build.mk

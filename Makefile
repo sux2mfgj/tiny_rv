@@ -19,6 +19,10 @@ riscv_test_build: clean
 	cd test_build; CC=../toolchain/bin/riscv64-unknown-elf-gcc ../riscv-tests/configure --prefix=/home/hima/work/tiny_rv/build/../toolchain/
 	cd test_build; make -j $(shell nproc); make install
 
+.PHONY: riscv-test
+riscv-test:
+	make -C core/ riscv-test
+
 clean:
 	rm -fr *.v *.vcd a.out build *.o *.mem test_build
 	make -C core clean

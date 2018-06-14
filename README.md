@@ -9,10 +9,13 @@ tiny risc-v (rv32i) implementation written in NSL
 - verilator
 
 ##### TODO
-- fix dummy_memory for riscv-test
+- ~~fix dummy_memory for riscv-test~~
 - ふぃぼなっち
 - for FPGA
-    - AXI-LED
+    - AXI-slave-LED
+    - AXI-master
+    - bootrom  
+        https://timetoexplore.net/blog/initialize-memory-in-verilog
     - UART
     - Linux
 - rv6 on tiny_rv
