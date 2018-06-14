@@ -8,7 +8,7 @@ jobs:
           password: $DOCKER_HUB_PW
     working_directory: /work
     steps:
-      - run: git clone $(CIRCLE_REPOSITORY_URL)
+      - run: git clone $CIRCLE_REPOSITORY_URL
       - run: echo "hello"
       - run: ls /
       - run: ls /work
