@@ -14,7 +14,7 @@ $(CC):
 	cd build; ../riscv-gnu-toolchain/configure --prefix=$(shell pwd)/toolchain --with-guile=no
 	cd build; make -j $(shell nproc)
 
-riscv_test: clean
+riscv_test_build: clean
 	mkdir test_build
 	cd test_build; CC=../toolchain/bin/riscv64-unknown-elf-gcc ../riscv-tests/configure --prefix=/home/hima/work/tiny_rv/build/../toolchain/
 	cd test_build; make -j $(shell nproc); make install

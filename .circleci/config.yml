@@ -16,3 +16,4 @@ jobs:
       - run: make -C /work/tiny_rv/core TARGET=integer_arithmetic_logic veri
       - run: make -C /work/tiny_rv/core TARGET=dummy_memory veri
       - run: make -C /work/tiny_rv/core TARGET=dummy_arbiter veri
+      - run: make -C /work/tiny_rv/core riscv-test
