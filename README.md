@@ -1,5 +1,6 @@
 tiny risc-v (rv32i) implementation written in NSL
 ---
+[![CircleCI](https://circleci.com/gh/sux2mfgj/tiny_rv/tree/master.svg?style=svg)](https://circleci.com/gh/sux2mfgj/tiny_rv/tree/master)
 
 ##### Requirements to build & test
 - NSL
