@@ -6,8 +6,11 @@ jobs:
         auth:
           username: $DOCKER_HUB_USER
           password: $DOCKER_HUB_PW
+    working_directory: /work
     steps:
+      - run: git clone $(CIRCLE_REPOSITORY_URL)
       - run: echo "hello"
       - run: ls /
       - run: ls /work
       - run: env
+      - run: make -C /tiny_rv/core TARGET=fetch veri
