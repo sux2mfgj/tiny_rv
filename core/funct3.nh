@@ -7,7 +7,7 @@
 //#define FUNCT3_XOR          (3'b100)
 //#define FUNCT3_SHIFT_RIGHT  (3'b101)
 //#define FUNCT3_OR           (3'b110)
-//#define FUNCT3_AND          (3'b111)
+#define FUNCT3_AND          (3'b111)
 
 #define FUNCT3_BRANCH_EQ    (3'b000)
 #define FUNCT3_BRANCH_LT    (3'b100)

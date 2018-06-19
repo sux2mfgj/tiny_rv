@@ -19,6 +19,7 @@ ifeq ($(TARGET), test_system)
 endif
 
 riscv-test: FORCE
+	echo '' > riscv_test_result
 	for hex in $(HEXS); do \
         make TARGET=test_system MEMORY_HEX=$$hex veri; if [ $$? -eq 0 ]; then \
             echo "[ passed ] $$hex" >> riscv_test_result; \

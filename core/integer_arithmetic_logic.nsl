@@ -25,6 +25,10 @@ module integer_arithmetic_logic
             {
                 return in_b << in_a;
             }
+            funct == FUNCT3_AND:
+            {
+                return in_a & in_b;
+            }
             else:
             {
                 error(ERROR_ALU_UNKNWON_FUNCT);
