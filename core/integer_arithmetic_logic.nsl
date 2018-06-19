@@ -29,6 +29,10 @@ module integer_arithmetic_logic
             {
                 return in_a & in_b;
             }
+            funct == FUNCT3_OR:
+            {
+                return in_a | in_b;
+            }
             funct == FUNCT3_XOR:
             {
                 return in_a ^ in_b;
