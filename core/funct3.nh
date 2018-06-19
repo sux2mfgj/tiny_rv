@@ -4,7 +4,7 @@
 #define FUNCT3_ADD_SUB      (3'b000)
 #define FUNCT3_SHIFT_LEFT   (3'b001)
 //TODO add
-//#define FUNCT3_XOR          (3'b100)
+#define FUNCT3_XOR          (3'b100)
 //#define FUNCT3_SHIFT_RIGHT  (3'b101)
 //#define FUNCT3_OR           (3'b110)
 #define FUNCT3_AND          (3'b111)
