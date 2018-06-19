@@ -186,8 +186,8 @@ module tiny_rv
                     exec_op_code == OP_IMM:
                     {
                         op_imm = exec_inst;
-                        sourece_1 = 32#op_imm.imm;
-                        sourece_2 = read_register_1(op_imm.rs1);
+                        sourece_1 = read_register_1(op_imm.rs1);
+                        sourece_2 = 32#op_imm.imm;
                         result = int_alu.calculate(
                                 sourece_1, sourece_2, op_imm.funct3, 1'b0);
                         write_back_stage(op_imm.rd, result, op_imm.opcode);
