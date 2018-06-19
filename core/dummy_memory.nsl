@@ -3,7 +3,7 @@
 
 module dummy_memory
 {
-    mem memory[0x1050][8];
+    mem memory[0x2400][8];
 
     reg value[8];
     proc_name read_proc();
