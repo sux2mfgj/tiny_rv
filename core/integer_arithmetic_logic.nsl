@@ -23,7 +23,7 @@ module integer_arithmetic_logic
             }
             funct == FUNCT3_SHIFT_LEFT:
             {
-                return in_b << in_a;
+                return in_a << in_b;
             }
             funct == FUNCT3_AND:
             {
