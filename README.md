@@ -10,7 +10,9 @@ tiny risc-v (rv32i) implementation written in NSL
 
 ##### TODO
 - ~~fix dummy_memory for riscv-test~~
+- riscv-formal
 - ふぃぼなっち
+    - libc もどき (_start and etc...)
 - for FPGA
     - AXI-slave-LED
     - AXI-master
