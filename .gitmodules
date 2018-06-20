@@ -7,3 +7,6 @@
 [submodule "elf_dump"]
 	path = elf_dump
 	url = git@github.com:sux2mfgj/elf_dump.git
+[submodule "nsl_axi4_lite"]
+	path = nsl_axi4_lite
+	url = git@github.com:sux2mfgj/nsl_axi4_lite.git
