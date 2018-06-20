@@ -52,7 +52,9 @@ module tiny_rv
 
     reg wb_funct3[3];
     proc_name write_back_stage_load(wb_rd, wb_value, wb_funct3);
-    proc_name write_back_stage_load_waiting();
+    reg wb_width[3];
+    wire wb_reg_value[32];
+    proc_name write_back_stage_load_waiting(wb_width);
 
     reg wb_address[32];
     proc_name write_back_stage_store(wb_address, wb_value, wb_funct3);
@@ -337,11 +339,16 @@ module tiny_rv
             {
                 //TODO
                 load_w(wb_value);
-                write_back_stage_load_waiting();
+                write_back_stage_load_waiting(WIDTH_W);
+            }
+            wb_funct3 == WIDTH_H:
+            {
+                load_h(wb_value);
+                write_back_stage_load_waiting(WIDTH_H);
             }
             else:
             {
-                error(ERROR_WB_UNKNOWN_FUNCT3);
+                error(ERROR_UNKNOWN_WIDTH);
             }
         }
     }
@@ -350,7 +357,22 @@ module tiny_rv
     {
         if(load_done)
         {
-            int_regs.write(wb_rd, loaded_data);
+            any
+            {
+                wb_width == WIDTH_W:
+                {
+                    wb_reg_value = loaded_data;
+                }
+                wb_width == WIDTH_H:
+                {
+                    wb_reg_value = 32#loaded_data[15:0];
+                }
+                else:
+                {
+                    error(ERROR_UNKNOWN_WIDTH);
+                }
+            }
+            int_regs.write(wb_rd, wb_reg_value);
             finish();
         }
         else
@@ -371,7 +393,7 @@ module tiny_rv
             }
             else:
             {
-                error(ERROR_WB_UNKNOWN_FUNCT3);
+                error(ERROR_UNKNOWN_WIDTH);
             }
         }
     }

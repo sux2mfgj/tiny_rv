@@ -36,8 +36,14 @@ module dummy_arbiter
     }
     */
 
-    //func_in load(d_address);
-    func load
+    //func_in load_w(d_address);
+    func load_w
+    {
+        memry.request_read(d_address);
+        load_done(0);
+    }
+
+    func load_w
     {
         error(ERROR_DUMMY_ARBITER);
         load_done(0);

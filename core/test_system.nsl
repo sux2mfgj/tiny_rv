@@ -29,7 +29,12 @@ module test_system
 
     func rv_core.load_w
     {
-        arbiter.load(rv_core.d_address);
+        arbiter.load_w(rv_core.d_address);
+    }
+
+    func rv_core.load_h
+    {
+        arbiter.load_h(rv_core.d_address);
     }
 
     func arbiter.load_done
