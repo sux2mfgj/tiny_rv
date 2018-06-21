@@ -12,3 +12,6 @@ dump:
 	$(OBJDUMP) -D led.o
 	$(OBJDUMP) -D start.o
 	$(OBJDUMP) -D led
+
+clean:
+	rm -rf led *.o
