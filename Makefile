@@ -29,6 +29,8 @@ clean:
 
 .PHONY: hex
 hex:
+	make -C ./bootrom/led build
+	cd hexs && ../elf_dump/target/release/elf_dump ../bootrom/led/led 80000000
 	for elf in $(RV_TEST_UI_P_ELF); do \
 	    (cd hexs && ../elf_dump/target/release/elf_dump $$elf 80000000); \
 	done
