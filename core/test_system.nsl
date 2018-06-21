@@ -37,6 +37,11 @@ module test_system
         arbiter.load_h(rv_core.d_address);
     }
 
+    func rv_core.load_b
+    {
+        arbiter.load_b(rv_core.d_address);
+    }
+
     func arbiter.load_done
     {
         rv_core.load_done(arbiter.d_out_data);

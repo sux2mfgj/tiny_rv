@@ -15,6 +15,7 @@ module dummy_memory
     func init seq
     {
         _readmemh(MEMORY_HEX, memory);
+        _display("memdump: 0x2000 0x", memory[0x2000]);
     }
 
     //func_in request_read(address);
@@ -30,8 +31,8 @@ module dummy_memory
     proc read_proc
     {
         read_done({
-                memory[access_base[12:0]+ 3], memory[access_base[12:0]+ 2],
-                memory[access_base[12:0]+ 1], memory[access_base[12:0]+ 0]});
+                memory[access_base[13:0]+ 3], memory[access_base[13:0]+ 2],
+                memory[access_base[13:0]+ 1], memory[access_base[13:0]+ 0]});
         finish();
     }
 

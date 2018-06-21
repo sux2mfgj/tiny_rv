@@ -94,7 +94,6 @@ module dummy_arbiter
                 requested_data := d_in_data;
                 wait_request := get_next_request();
             }
-
         }
         else if(load_or_store)
         {
@@ -129,7 +128,6 @@ module dummy_arbiter
                     || wait_request == REQUEST_WAIT_LOAD_B:
                 {
                     req_load_store(2'b00, 32'h0, 32'h0);
-                    //memory.request_read(d_address);
                     memory.request_read(request_addr);
                 }
                 store_b || wait_request == REQUEST_WAIT_STORE_B:

@@ -23,7 +23,7 @@ declare tiny_rv
     func_in inst_done(instruction);
 
     // for data memory
-    //func_out load_b(d_address);
+    func_out load_b(d_address);
     func_out load_h(d_address);
     func_out load_w(d_address);
     func_in load_done(loaded_data);

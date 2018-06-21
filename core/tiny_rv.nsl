@@ -346,6 +346,11 @@ module tiny_rv
                 load_h(wb_value);
                 write_back_stage_load_waiting(WIDTH_H);
             }
+            wb_funct3 == WIDTH_B:
+            {
+                load_b(wb_value);
+                write_back_stage_load_waiting(WIDTH_B);
+            }
             else:
             {
                 error(ERROR_UNKNOWN_WIDTH);
@@ -366,6 +371,10 @@ module tiny_rv
                 wb_width == WIDTH_H:
                 {
                     wb_reg_value = 32#loaded_data[15:0];
+                }
+                wb_width == WIDTH_B:
+                {
+                    wb_reg_value = 32#loaded_data[7:0];
                 }
                 else:
                 {
