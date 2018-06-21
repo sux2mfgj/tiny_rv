@@ -39,24 +39,26 @@ module dummy_memory
     func request_write
     {
         write_proc(write_data);
-        if(address < 0x80000000)
+        any
         {
-            error(ERROR_DUMMY_MEM_ADDRESS);
+            address < 0x80000000:
+            {
+                error(ERROR_DUMMY_MEM_ADDRESS);
+            }
+            // for riscv-test
+            address == 0x80001000:
+            {
+                if(write_data == 1)
+                {
+                    error(ERROR_OK);
+                }
+                else
+                {
+                    error(write_data[ERROR_NUM_BIT_WIDTH - 1:0]);
+                }
+            }
         }
         access_base := address - 0x80000000;
-
-        // for riscv-test
-        if(address == 0x80001000)
-        {
-            if(write_data == 1)
-            {
-                error(ERROR_OK);
-            }
-            else
-            {
-                error(write_data[ERROR_NUM_BIT_WIDTH - 1:0]);
-            }
-        }
     }
 
     proc write_proc seq

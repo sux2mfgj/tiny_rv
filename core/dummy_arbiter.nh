@@ -23,9 +23,14 @@ declare dummy_arbiter
     func_in request_inst(i_address);
     func_out inst_done(instruction);
 
-    func_in load(d_address);
+    func_in load_w(d_address);
+    func_in load_h(d_address);
+    func_in load_b(d_address);
     func_out load_done(d_out_data);
+
     func_in store_w(d_address, d_in_data);
+    func_in store_h(d_address, d_in_data);
+    func_in store_b(d_address, d_in_data);
     func_out store_done();
 
     func_in init();
