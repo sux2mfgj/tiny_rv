@@ -9,16 +9,22 @@ declare test_system_tb simulation
 module test_system_tb
 {
     test_system tsystem;
-    reg counter[10] = 0;
+    reg counter[16] = 0;
     counter++;
 
-    if(counter == 10'h02)
+    if(counter == 16'h02)
     {
         tsystem.init();
     }
-    if(counter == 10'h04)
+
+    if(counter == 16'h04)
     {
         tsystem.start(0x8000_0000);
+    }
+
+    if(counter == 16'h1000)
+    {
+        error(ERROR_TIME_OVER);
     }
 
     func tsystem.error

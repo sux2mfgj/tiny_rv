@@ -1,85 +1,213 @@
 #include "dummy_arbiter.nh"
 #include "dummy_memory.nh"
 
+#define REQUEST_WAIT_NOTHING        (7'b0000000)
+#define REQUEST_WAIT_INSTRUCTION    (7'b0000001)
+#define REQUEST_WAIT_LOAD_W         (7'b0000010)
+#define REQUEST_WAIT_LOAD_H         (7'b0000100)
+#define REQUEST_WAIT_LOAD_B         (7'b0001000)
+#define REQUEST_WAIT_STORE_W        (7'b0010000)
+#define REQUEST_WAIT_STORE_H        (7'b0100000)
+#define REQUEST_WAIT_STORE_B        (7'b1000000)
+
 module dummy_arbiter
 {
     dummy_memory memory;
 
-    reg write_address[32];
-    reg write_size[3];
-    reg write_data[32];
-    reg write_i[3];
-    proc_name store_proc(write_address, write_data, write_size);
-    reg is_wait;
+    /*
+    func_in request_inst(i_address);
+    func_out inst_done(instruction);
+
+    func_in load_w(d_address);
+    func_in load_h(d_address);
+    func_out load_done(d_out_data);
+
+    func_in store_w(d_address, d_in_data);
+    func_out store_done();
+
+    func_in init();
+    func_out error(error_num);
+    */
+
+    //state_name idle, req_inst, req_load_store;
+    reg number_of_store_byte[2], write_address[32], write_data[32];
+    proc_name idle, req_inst;
+    proc_name req_load_store(number_of_store_byte, write_address, write_data);
+    reg wait_request[7] = 0;//REQUEST_WAIT_NOTHING;
+    reg requested_address[32] = 0;
+    reg requested_data[32] = 0;
+    wire load_or_store;
+
+    wire next_request[7];
+    func_self get_next_request() : next_request;
+
+    wire request_addr[32], request_data[32];
+
+    load_or_store = load_w || load_h || load_b || store_w || store_h || store_b;
+
+    func get_next_request
+    {
+        any
+        {
+            load_w:
+            {
+                return REQUEST_WAIT_LOAD_W;
+            }
+            load_h:
+            {
+                return REQUEST_WAIT_LOAD_H;
+            }
+            load_b:
+            {
+                return REQUEST_WAIT_LOAD_B;
+            }
+            store_w:
+            {
+                return REQUEST_WAIT_STORE_W;
+            }
+            store_h:
+            {
+                return REQUEST_WAIT_STORE_H;
+            }
+            store_b:
+            {
+                return REQUEST_WAIT_STORE_B;
+            }
+        }
+    }
 
     func init
     {
         memory.init();
+        idle();
     }
 
-    //func_in request_inst(i_address);
-    func request_inst
+    proc idle
     {
-        memory.request_read(i_address);
-    }
-
-    //func_out memry.read_done(read_data);
-    func memory.read_done
-    {
-        inst_done(memory.read_data);
-    }
-
-    /*
-    func memory.write_done
-    {
-        store_done();
-    }
-    */
-
-    //func_in load_w(d_address);
-    func load_w
-    {
-        memry.request_read(d_address);
-        load_done(0);
-    }
-
-    func load_w
-    {
-        error(ERROR_DUMMY_ARBITER);
-        load_done(0);
-    }
-
-    //func_in store(d_address, d_in_data);
-    func store_w
-    {
-        store_proc(d_address, d_in_data, 4);
-        write_i := 0;
-        is_wait := 1'b0;
-    }
-
-    //proc_name store_proc(write_address, write_data, write_size);
-    proc store_proc
-    {
-        if(is_wait)
+        if(request_inst)
         {
-            if(memory.write_done)
+            req_inst();
+            memory.request_read(i_address);
+            if(load_or_store)
             {
-                if(write_size == 1)
+                requested_address := d_address;
+                requested_data := d_in_data;
+                wait_request := get_next_request();
+            }
+
+        }
+        else if(load_or_store)
+        {
+            //TODO
+            req_load_store(2'b00, 32'h0, 32'h0);
+            error(ERROR_DUMMY_ARBITER);
+        }
+    }
+
+    proc req_inst
+    {
+        if(memory.read_done)
+        {
+            inst_done(memory.read_data);
+            wait_request := REQUEST_WAIT_NOTHING;
+            if(wait_request != 7'h00)
+            {
+                request_addr = requested_address;
+                request_data = requested_data;
+            }
+            else
+            {
+                request_addr = d_address;
+                request_data = d_in_data;
+            }
+
+            any
+            {
+                load_w || load_h || load_b
+                    || wait_request == REQUEST_WAIT_LOAD_W
+                    || wait_request == REQUEST_WAIT_LOAD_H
+                    || wait_request == REQUEST_WAIT_LOAD_B:
                 {
-                    store_done();
-                    finish();
+                    req_load_store(2'b00, 32'h0, 32'h0);
+                    //memory.request_read(d_address);
+                    memory.request_read(request_addr);
                 }
-                else
+                store_b || wait_request == REQUEST_WAIT_STORE_B:
                 {
-                    store_proc(write_address + 1, write_data >> 8, write_size - 1);
-                    is_wait := 1'b0;
+                    req_load_store(2'b00, 32'h0, 32'h0);
+                    memory.request_write(request_addr, request_data[7:0]);
+                }
+                store_h || wait_request == REQUEST_WAIT_STORE_H:
+                {
+                    memory.request_write(request_addr, request_data[7:0]);
+                    req_load_store(
+                            2'b01,
+                            request_addr + 32'h1,
+                            {8'h0, request_data[31:8]});
+                }
+                store_w || wait_request == REQUEST_WAIT_STORE_W:
+                {
+                    memory.request_write(request_addr , request_data[7:0]);
+                    req_load_store(
+                            2'b11,
+                            request_addr + 32'h1,
+                            {8'h0, request_data[31:8]});
+                }
+                else:
+                {
+                    idle();
                 }
             }
         }
-        else
+    }
+
+    proc req_load_store
+    {
+
+        if(memory.read_done)
         {
-            memory.request_write(write_address, write_data[7:0]);
-            is_wait := 1'b1;
+            load_done(memory.read_data);
+        }
+        if((number_of_store_byte == 2'b00) & memory.write_done)
+        {
+            store_done();
+        }
+
+        if(memory.read_done ||
+                ((number_of_store_byte == 2'b00) & memory.write_done))
+        {
+            if(request_inst)
+            {
+                req_inst();
+                memory.request_read(i_address);
+            }
+            else if(wait_request == REQUEST_WAIT_INSTRUCTION)
+            {
+                wait_request := REQUEST_WAIT_NOTHING;
+                req_inst();
+                memory.request_read(requested_address);
+            }
+            else
+            {
+                idle();
+            }
+        }
+        else if(request_inst)
+        {
+            wait_request := REQUEST_WAIT_INSTRUCTION;
+            requested_address := i_address;
+        }
+
+        if(number_of_store_byte != 2'b00)
+        {
+            if(memory.write_done)
+            {
+                memory.request_write(write_address, write_data[7:0]);
+                req_load_store(
+                        number_of_store_byte - 2'b01,
+                        write_address + 32'h1,
+                        {8'h0, write_data[31:8]});
+            }
         }
     }
 

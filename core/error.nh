@@ -18,6 +18,7 @@
 
 #define ERROR_NOT_IMPLEMENTED   (ERROR_NUM_BIT_WIDTH'hf0)
 
+#define ERROR_TIME_OVER         (ERROR_NUM_BIT_WIDTH'hfe)
 #define ERROR_DUMMY_ARBITER     (ERROR_NUM_BIT_WIDTH'hff)
 
 #endif
