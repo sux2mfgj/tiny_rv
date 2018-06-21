@@ -400,6 +400,16 @@ module tiny_rv
                 store_w(wb_address, wb_value);
                 write_back_stage_store_waiting();
             }
+            wb_funct3 == WIDTH_H:
+            {
+                store_h(wb_address, wb_value);
+                write_back_stage_store_waiting();
+            }
+            wb_funct3 == WIDTH_B:
+            {
+                store_b(wb_address, wb_value);
+                write_back_stage_store_waiting();
+            }
             else:
             {
                 error(ERROR_UNKNOWN_WIDTH);

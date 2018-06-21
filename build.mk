@@ -1,6 +1,7 @@
 TARGET  :=
 VCD     := $(TARGET)_tb.vcd
 VVP     := $(TARGET).vvp
+DUMP_FILE   := ../toolchain/share/riscv-tests/isa/$(notdir $(MEMORY_HEX:.hex=.dump))
 
 .SUFFIXES: .nsl .v
 .nsl.v:
@@ -33,6 +34,9 @@ veri: $(TARGET)_tb.v $(TARGET).v $(REQUIRE_MODULES)
 	verilator --cc $(TARGET)_tb.v --exe $(TARGET).cpp --trace --trace-underscore
 	make -j -C obj_dir -f V$(TARGET)_tb.mk V$(TARGET)_tb
 	obj_dir/V$(TARGET)_tb
+
+dump:
+	less $(DUMP_FILE)
 
 vwave: $(TARGET).vcd
 	gtkwave $<

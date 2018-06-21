@@ -27,8 +27,8 @@ declare tiny_rv
     func_out load_h(d_address);
     func_out load_w(d_address);
     func_in load_done(loaded_data);
-    //func_out store_b(d_address, store_data);
-    //func_out store_h(d_address, store_data);
+    func_out store_b(d_address, store_data);
+    func_out store_h(d_address, store_data);
     func_out store_w(d_address, store_data);
     func_in store_done();
 

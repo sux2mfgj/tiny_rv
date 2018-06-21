@@ -52,6 +52,16 @@ module test_system
         arbiter.store_w(rv_core.d_address, rv_core.store_data);
     }
 
+    func rv_core.store_h
+    {
+        arbiter.store_h(rv_core.d_address, rv_core.store_data);
+    }
+
+    func rv_core.store_b
+    {
+        arbiter.store_b(rv_core.d_address, rv_core.store_data);
+    }
+
     func arbiter.store_done
     {
         rv_core.store_done();
