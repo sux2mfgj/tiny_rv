@@ -42,10 +42,6 @@ module dummy_memory
         write_proc(write_data);
         any
         {
-            address < 0x80000000:
-            {
-                error(ERROR_DUMMY_MEM_ADDRESS);
-            }
             // for riscv-test
             address == 0x80001000:
             {
@@ -58,6 +54,17 @@ module dummy_memory
                     error(write_data[ERROR_NUM_BIT_WIDTH - 1:0]);
                 }
             }
+            // peripheral
+            address >= 0x4000_0000 || address <= 0x4000_1000:
+            {
+                //nothing
+            }
+            /*
+            address < 0x80000000:
+            {
+                error(ERROR_DUMMY_MEM_ADDRESS);
+            }
+            */
         }
         access_base := address - 0x80000000;
     }

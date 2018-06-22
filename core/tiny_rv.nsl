@@ -214,7 +214,7 @@ module tiny_rv
                                 sourece_1, sourece_2, FUNCT3_ADD_SUB, 0);
                         fetch_request_stage(result);
 
-                        write_back_stage(jal.rd, exec_pc, jal.opcode);
+                        write_back_stage(jal.rd, exec_pc + 32'h4, jal.opcode);
                     }
                     exec_op_code == JALR:
                     {
@@ -225,7 +225,7 @@ module tiny_rv
                         result = int_alu.calculate(
                                 sourece_1, sourece_2, jalr.funct3, 0);
                         fetch_request_stage(result);
-                        write_back_stage(jalr.rd, exec_pc, jalr.opcode);
+                        write_back_stage(jalr.rd, exec_pc + 32'h4, jalr.opcode);
                     }
                     exec_op_code == BRANCH:
                     {
