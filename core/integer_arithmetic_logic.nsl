@@ -9,6 +9,7 @@ module integer_arithmetic_logic
 
     func calculate
     {
+        shift_amount = 32'in_b[4:0];
         any
         {
             funct == FUNCT3_ADD_SUB:
@@ -24,12 +25,10 @@ module integer_arithmetic_logic
             }
             funct == FUNCT3_SHIFT_LEFT:
             {
-                shift_amount = 32'in_b[5:0];
                 return in_a << shift_amount;
             }
             funct == FUNCT3_SHIFT_RIGHT:
             {
-                shift_amount = 32'in_b[5:0];
                 if(is_alt)
                 {
                     return (32#in_a[31] << (32'd32 - shift_amount)) |
