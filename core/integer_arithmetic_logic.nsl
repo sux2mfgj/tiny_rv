@@ -24,7 +24,8 @@ module integer_arithmetic_logic
             }
             funct == FUNCT3_SHIFT_LEFT:
             {
-                return in_a << in_b;
+                shift_amount = 32'in_b[5:0];
+                return in_a << shift_amount;
             }
             funct == FUNCT3_SHIFT_RIGHT:
             {
@@ -36,7 +37,7 @@ module integer_arithmetic_logic
                 }
                 else
                 {
-                    return in_a >> in_b;
+                    return in_a >> shift_amount;
                 }
             }
             funct == FUNCT3_AND:
