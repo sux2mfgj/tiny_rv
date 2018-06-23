@@ -1,15 +1,19 @@
 #include "dummy_memory.nh"
 #include "hex.nh"
 
+// memory_size = 0x2400
+// log2(memory_size)
+#define ACCESS_BIT_SIZE 13
+
 module dummy_memory
 {
     mem memory[0x2400][8];
 
     reg value[8];
-    proc_name read_proc();
+    reg access_base[32];
+    proc_name read_proc(access_base);
     proc_name write_proc(value);
 
-    reg access_base[32];
 
     //func_in init();
     func init seq
@@ -21,18 +25,19 @@ module dummy_memory
     //func_in request_read(address);
     func request_read
     {
-        read_proc();
+        read_proc(address - 0x80000000);
         if(address < 0x80000000)
         {
             error(ERROR_DUMMY_MEM_ADDRESS);
         }
-        access_base := address - 0x80000000;
     }
     proc read_proc
     {
         read_done({
-                memory[access_base[13:0]+ 3], memory[access_base[13:0]+ 2],
-                memory[access_base[13:0]+ 1], memory[access_base[13:0]+ 0]});
+                memory[access_base[ACCESS_BIT_SIZE:0]+ 3],
+                memory[access_base[ACCESS_BIT_SIZE:0]+ 2],
+                memory[access_base[ACCESS_BIT_SIZE:0]+ 1],
+                memory[access_base[ACCESS_BIT_SIZE:0]+ 0]});
         finish();
     }
 
@@ -71,7 +76,7 @@ module dummy_memory
 
     proc write_proc seq
     {
-        memory[access_base[12:0]] := value[7:0];
+        memory[access_base[ACCESS_BIT_SIZE:0]] := value[7:0];
         {
             write_done();
             finish();
