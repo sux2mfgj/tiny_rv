@@ -5,6 +5,7 @@ module integer_arithmetic_logic
 {
     wire cmp_result;
     wire tmp_result[32];
+    wire shift_amount[32];
 
     func calculate
     {
