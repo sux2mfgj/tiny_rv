@@ -14,8 +14,8 @@ tiny risc-v (rv32i) implementation written in NSL
 - ふぃぼなっち
     - libc もどき (_start and etc...)
 - for FPGA
-    - AXI-slave-LED
-    - AXI-master
+    - ~~[AXI-slave-LED](https://github.com/sux2mfgj/nsl_axi4_lite)~~
+    - ~~[AXI-master]()~~
     - bootrom  
         https://timetoexplore.net/blog/initialize-memory-in-verilog
     - UART
