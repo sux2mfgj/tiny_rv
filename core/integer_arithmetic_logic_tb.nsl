@@ -1,4 +1,5 @@
 #include "integer_arithmetic_logic.nh"
+#include "funct3.nh"
 
 declare integer_arithmetic_logic_tb simulation
 {
@@ -30,23 +31,58 @@ module integer_arithmetic_logic_tb
         _display("calculate 0x%x",
                 ialu.calculate(32'hff, 32'h02, 3'b000, 1'b1));
 
-        // 0x01 < 0x01 (1)
-        _display("compare 0b%x",
-                ialu.compare(32'h03, 32'h01, 3'b100));
     }
 
     if(counter == 10'h6)
     {
-        // 0x01 < 0x01 (0)
-        _display("compare 0b%x",
-                ialu.compare(32'h07, 32'h13, 3'b100));
+        if(1'b0 == ialu.compare(32'h00, 32'h01, FUNCT3_COMP_BLT))
+        {
+            error(ERROR_NUM_BIT_WIDTH'b1);
+            _display("[ failed ] 0 < 1 (blt)");
+        }
+        else
+        {
+            _display("[ passed ] 0 < 1 (blt)");
+        }
     }
 
     if(counter == 10'h7)
     {
-        //00054863            bltz    a0,800000c0 <reset_vector+0x74>
-        _display("compare 0x80000000 < 0 :",
-                ialu.compare(32'h80000000, 32'h00000000, 3'b100));
+        if(1'b1 == ialu.compare(32'h02, 32'h01, FUNCT3_COMP_BLT))
+        {
+            error(ERROR_NUM_BIT_WIDTH'b1);
+            _display("[ failed ] 2 < 1 (blt)");
+        }
+        else
+        {
+            _display("[ passed ] 2 < 1 (blt)");
+        }
+    }
+
+    if(counter == 10'h8)
+    {
+        if(1'b0 == ialu.compare(32'h0f, 32'h0f, FUNCT3_COMP_BEQ))
+        {
+            error(ERROR_NUM_BIT_WIDTH'b1);
+            _display("[ failed ] 0xf == 0xf (beq)");
+        }
+        else
+        {
+            _display("[ passed ] 0xf == 0xf (beq)");
+        }
+    }
+
+    if(counter == 10'h9)
+    {
+        if(1'b1 == ialu.compare(32'h0e, 32'h0f, FUNCT3_COMP_BEQ))
+        {
+            error(ERROR_NUM_BIT_WIDTH'b1);
+            _display("[ failed ] 0xe == 0xf (beq)");
+        }
+        else
+        {
+            _display("[ passed ] 0xe == 0xf (beq)");
+        }
     }
 
     if(counter == 10'h10)

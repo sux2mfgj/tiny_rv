@@ -7,6 +7,11 @@ module integer_arithmetic_logic
     wire tmp_result[32];
     wire shift_amount[32];
 
+    wire local_comp_a[32], local_comp_b[32]
+        ,local_comp_funct[3], local_comp_result;
+    func_self local_compare(local_comp_a, local_comp_b, local_comp_funct)
+        : local_comp_result;
+
     func calculate
     {
         shift_amount = 32'in_b[4:0];
@@ -51,6 +56,12 @@ module integer_arithmetic_logic
             {
                 return in_a ^ in_b;
             }
+            /*
+            funct == FUNCT3_SLT:
+            {
+
+            }
+            */
             else:
             {
                 error(ERROR_ALU_UNKNWON_FUNCT);
@@ -59,32 +70,30 @@ module integer_arithmetic_logic
         }
     }
 
-    func compare
+    func local_compare
     {
         any
         {
-            comp_funct[2] == 0: // BEQ or BNE
+            local_comp_funct == FUNCT3_COMP_BEQ
+                || local_comp_funct == FUNCT3_COMP_BNE:
             {
-                cmp_result = comp_a == comp_b;
+                return local_comp_a == local_comp_b;
             }
-            comp_funct[2] == 1: // BLT or BGE
+            local_comp_funct == FUNCT3_COMP_BLT
+                || local_comp_funct == FUNCT3_COMP_BGE:
             {
-                tmp_result = comp_a - comp_b;
-                cmp_result = tmp_result[31];
+                tmp_result = local_comp_a - local_comp_b;
+                return tmp_result[31];
             }
             else:
             {
                 error(ERROR_ALU_UNKNWON_FUNCT);
             }
-            //TODO BLTU, BGEU
         }
-        if(comp_funct[0])
-        {
-            return !cmp_result;
-        }
-        else
-        {
-            return cmp_result;
-        }
+    }
+
+    func compare
+    {
+        return comp_funct[0] ^ local_compare(comp_a, comp_b, comp_funct);
     }
 }

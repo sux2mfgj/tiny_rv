@@ -234,6 +234,7 @@ module tiny_rv
                         branch = exec_inst;
                         sourece_1 = read_register_1(branch.rs1);
                         sourece_2 = read_register_2(branch.rs2);
+
                         comp_result = int_alu.compare(
                                 sourece_1, sourece_2, branch.funct3);
                         result = int_alu.calculate(

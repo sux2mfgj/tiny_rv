@@ -3,14 +3,20 @@
 
 #define FUNCT3_ADD_SUB      (3'b000)
 #define FUNCT3_SHIFT_LEFT   (3'b001)
-//TODO add
 #define FUNCT3_XOR          (3'b100)
 #define FUNCT3_SHIFT_RIGHT  (3'b101)
 #define FUNCT3_OR           (3'b110)
 #define FUNCT3_AND          (3'b111)
 
-#define FUNCT3_BRANCH_EQ    (3'b000)
-#define FUNCT3_BRANCH_LT    (3'b100)
+#define FUNCT3_SLT          (3'b010)
+#define FUNCT3_SLTU         (3'b011)
+
+#define FUNCT3_COMP_BEQ     (3'b000)
+#define FUNCT3_COMP_BNE     (3'b001)
+#define FUNCT3_COMP_BLT     (3'b100)
+#define FUNCT3_COMP_BGE     (3'b101)
+#define FUNCT3_COMP_BLTU    (3'b110)
+#define FUNCT3_COMP_BGEU    (3'b111)
 
 #define WIDTH_B (3'b000)
 #define WIDTH_H (3'b001)
