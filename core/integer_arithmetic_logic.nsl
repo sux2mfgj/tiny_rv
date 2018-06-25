@@ -85,6 +85,11 @@ module integer_arithmetic_logic
                 tmp_result = local_compare(in_a, in_b, FUNCT3_COMP_BLT);
                 return 32'tmp_result;
             }
+            funct == FUNCT3_SLTU:
+            {
+                tmp_result = in_a < in_b;
+                return 32'tmp_result;
+            }
             else:
             {
                 error(ERROR_ALU_UNKNWON_FUNCT);
@@ -106,6 +111,11 @@ module integer_arithmetic_logic
                 || local_comp_funct == FUNCT3_COMP_BGE:
             {
                 return signed_compare(local_comp_a, local_comp_b);
+            }
+            local_comp_funct == FUNCT3_COMP_BGEU
+                || local_comp_funct == FUNCT3_COMP_BLTU:
+            {
+                return local_comp_a < local_comp_b;
             }
             else:
             {
