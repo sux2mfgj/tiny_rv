@@ -5,11 +5,7 @@ DUMP_FILE   := ../toolchain/share/riscv-tests/isa/$(notdir $(MEMORY_HEX:.hex=.du
 
 .SUFFIXES: .nsl .v
 .nsl.v:
-	nsl2vl $< -o $@ -O0 -canreadoutput -regreport
-
-.SUFFIXES: .nsl .hpp
-.nsl.hpp:
-	nsl2vl -systemc -o $@ $<
+	nsl2vl -neg_res $< -o $@ -O0 -canreadoutput -regreport
 
 %.nsl: %.nh
 
@@ -22,7 +18,7 @@ $(VCD): $(VVP)
 
 vvp: $(VVP)
 $(VVP): $(TARGET)_tb.nsl $(TARGET).v $(REQUIRE_MODULES)
-	nsl2vl -verisim2 $< -target $(basename $<)
+	nsl2vl -neg_res -verisim2 $< -target $(basename $<)
 	iverilog $(addsuffix .v, $(basename $^)) -o $@
 
 hex.nh: FORCE

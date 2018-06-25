@@ -15,6 +15,7 @@ int main(int argc, char **argv)
     int result = 0;
 
     mod->trace(tfp, 99);
+    mod->p_reset = 1;
     tfp->open("test_system.vcd");
 
     while(!Verilated::gotFinish())
