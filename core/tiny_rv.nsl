@@ -338,27 +338,25 @@ module tiny_rv
         interlock();
         any
         {
-            wb_funct3 == WIDTH_W:
+            wb_funct3[1:0] == WIDTH_W:
             {
                 //TODO
                 load_w(wb_value);
-                write_back_stage_load_waiting(WIDTH_W);
             }
-            wb_funct3 == WIDTH_H:
+            wb_funct3[1:0] == WIDTH_H:
             {
                 load_h(wb_value);
-                write_back_stage_load_waiting(WIDTH_H);
             }
-            wb_funct3 == WIDTH_B:
+            wb_funct3[1:0] == WIDTH_B:
             {
                 load_b(wb_value);
-                write_back_stage_load_waiting(WIDTH_B);
             }
             else:
             {
                 error(ERROR_UNKNOWN_WIDTH);
             }
         }
+        write_back_stage_load_waiting(wb_funct3);
     }
 
     proc write_back_stage_load_waiting
@@ -367,17 +365,31 @@ module tiny_rv
         {
             any
             {
-                wb_width == WIDTH_W:
+                wb_width[1:0] == WIDTH_W:
                 {
                     wb_reg_value = loaded_data;
                 }
-                wb_width == WIDTH_H:
+                wb_width[1:0] == WIDTH_H:
                 {
-                    wb_reg_value = 32#loaded_data[15:0];
+                    if(wb_width[2])
+                    {
+                        wb_reg_value = 32'loaded_data[15:0];
+                    }
+                    else
+                    {
+                        wb_reg_value = 32#loaded_data[15:0];
+                    }
                 }
-                wb_width == WIDTH_B:
+                wb_width[1:0] == WIDTH_B:
                 {
-                    wb_reg_value = 32#loaded_data[7:0];
+                    if(wb_width[2])
+                    {
+                        wb_reg_value = 32'loaded_data[7:0];
+                    }
+                    else
+                    {
+                        wb_reg_value = 32#loaded_data[7:0];
+                    }
                 }
                 else:
                 {
@@ -398,17 +410,17 @@ module tiny_rv
         interlock();
         any
         {
-            wb_funct3 == WIDTH_W:
+            wb_funct3[1:0] == WIDTH_W:
             {
                 store_w(wb_address, wb_value);
                 write_back_stage_store_waiting();
             }
-            wb_funct3 == WIDTH_H:
+            wb_funct3[1:0] == WIDTH_H:
             {
                 store_h(wb_address, wb_value);
                 write_back_stage_store_waiting();
             }
-            wb_funct3 == WIDTH_B:
+            wb_funct3[1:0] == WIDTH_B:
             {
                 store_b(wb_address, wb_value);
                 write_back_stage_store_waiting();

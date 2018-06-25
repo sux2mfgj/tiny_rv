@@ -18,10 +18,8 @@
 #define FUNCT3_COMP_BLTU    (3'b110)
 #define FUNCT3_COMP_BGEU    (3'b111)
 
-#define WIDTH_B (3'b000)
-#define WIDTH_H (3'b001)
-#define WIDTH_W (3'b010)
-#define WIDTH_LBU (3'b100)
-#define WIDTH_LHU (3'b101)
+#define WIDTH_B (2'b00)
+#define WIDTH_H (2'b01)
+#define WIDTH_W (2'b10)
 
 #endif
