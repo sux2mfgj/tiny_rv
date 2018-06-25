@@ -27,6 +27,7 @@ hex.nh: FORCE
 dummy_memory.v: hex.nh
 
 veri: $(TARGET)_tb.v $(TARGET).v $(REQUIRE_MODULES)
+	sed s/XXXXX/$(TARGET)/g template_cpp > $(TARGET).cpp
 	verilator --cc $(TARGET)_tb.v --exe $(TARGET).cpp --trace --trace-underscore
 	make -j -C obj_dir -f V$(TARGET)_tb.mk V$(TARGET)_tb
 	obj_dir/V$(TARGET)_tb

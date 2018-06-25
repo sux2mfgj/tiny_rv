@@ -1,5 +1,5 @@
 clean:
-	rm -rf *.v *.vcd *.vvp obj_dir/ hex.nh
+	rm -rf *.v *.vcd *.vvp *.cpp obj_dir/ hex.nh
 
 TARGET  :=
 MEMORY_HEX  := ../hexs/rv32ui-p-add.hex

@@ -1,3 +1,4 @@
 !memory_test.hex
 hex.nh
 riscv_test_result
+*.cpp
