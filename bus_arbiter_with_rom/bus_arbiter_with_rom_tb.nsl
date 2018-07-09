@@ -1,0 +1,20 @@
+#include "bus_arbiter_with_rom.nh"
+
+declare bus_arbiter_with_rom_tb simulation
+{
+    output error_num[ERROR_NUM_BIT_WIDTH];
+    func_out error(error_num);
+}
+
+module bus_arbiter_with_rom_tb
+{
+    bus_arbiter_with_rom arbiter;
+    reg counter[16] = 0;
+    counter++;
+
+    if(counter == 16'h10)
+    {
+        //error(ERROR_TIME_OVER);
+        _finish();
+    }
+}

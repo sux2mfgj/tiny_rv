@@ -1,0 +1,43 @@
+#include "bus_arbiter_with_rom.nh"
+
+module bus_arbiter_with_rom
+{
+    axi4_lite_master axi_master;
+
+    // connection for axi master
+    awvalid = axi_master.awvalid;
+    axi_master.awready = awready;
+    awaddr = axi_master.awaddr;
+    awprot = axi_master.awprot;
+    wvalid = axi_master.wvalid;
+    axi_master.wready = wready;
+    wdata = axi_master.wdata;
+    wstrb = axi_master.wstrb;
+    axi_master.bvalid = bvalid;
+    bready = axi_master.bready;
+    axi_master.bresp = bresp;
+    arvalid = axi_master.arvalid;
+    axi_master.arready = arready;
+    araddr = axi_master.araddr;
+    arprot = axi_master.arprot;
+    axi_master.rvalid = rvalid;
+    rready = axi_master.rready;
+    axi_master.rdata = rdata;
+    axi_master.rresp = rresp;
+
+    // for core
+    //func_in i_request(i_address);
+    //func_in i_done(i_data);
+
+    //func_in load_b(d_address);
+    //func_in load_h(d_address);
+    //func_in load_w(d_address);
+    //func_out load_done(d_data);
+
+    //func_in store_b(d_address, d_data);
+    //func_in store_h(d_address, d_data);
+    //func_in store_w(d_address, d_data);
+    //func_in store_done();
+
+    //func_out error(error_num);
+}
