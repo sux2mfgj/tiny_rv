@@ -63,7 +63,8 @@ module fetch_tb
     // for memory
     func ifetch.request_to_bus
     {
-        read_mem(ifetch.address);
+        //read_mem(ifetch.address);
+        ifetch.enable(32'h12345678);
     }
 
     proc read_mem

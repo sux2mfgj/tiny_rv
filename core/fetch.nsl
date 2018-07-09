@@ -9,12 +9,14 @@ module fetch
         if(request)
         {
             request_to_bus(next_pc);
-            goto waiting;
-        }
-
-        if(enable)
-        {
-            error(ERROR_FETCH);
+            if(enable)
+            {
+                done(data);
+            }
+            else
+            {
+                goto waiting;
+            }
         }
     }
 
@@ -23,20 +25,13 @@ module fetch
         if(enable)
         {
             done(data);
-            if(request)
-            {
-                request_to_bus(next_pc);
-            }
-            else {
-                goto idle;
-            }
+            goto idle;
+            //TODO
+            if(request){}
         }
-        else
+        if(request)
         {
-            if(request)
-            {
-                error(ERROR_FETCH);
-            }
+            error(ERROR_FETCH);
         }
     }
 }
