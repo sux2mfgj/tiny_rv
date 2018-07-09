@@ -1,7 +1,7 @@
 #ifndef __INCLUDED_DUMMY_ARBITER_NH__
 #define __INCLUDED_DUMMY_ARBITER_NH__
 
-#include "error.nh"
+#include "../error.nh"
 
 declare dummy_arbiter
 {

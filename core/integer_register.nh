@@ -1,7 +1,7 @@
 #ifndef __INCLUDED_INTEGER_REGISTER_NH__
 #define __INCLUDED_INTEGER_REGISTER_NH__
 
-#include "error.nh"
+#include "../error.nh"
 
 declare integer_register
 {

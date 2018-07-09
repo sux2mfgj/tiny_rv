@@ -1,7 +1,7 @@
 #ifndef __INCLUDED_TEST_SYSTEM_NH__
 #define __INCLUDED_TEST_SYSTEM_NH__
 
-#include "error.nh"
+#include "../error.nh"
 
 declare test_system
 {

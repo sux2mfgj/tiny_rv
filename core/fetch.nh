@@ -1,7 +1,7 @@
 #ifndef __INCLUDED_INST_FETCH_NH__
 #define __INCLUDED_INST_FETCH_NH__
 
-#include "error.nh"
+#include "../error.nh"
 
 declare fetch
 {

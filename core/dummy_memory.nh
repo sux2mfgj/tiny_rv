@@ -1,7 +1,7 @@
 #ifndef __INCLUDED_MEMORY_NH__
 #define __INCLUDED_MEMORY_NH__
 
-#include "error.nh"
+#include "../error.nh"
 
 declare dummy_memory
 {

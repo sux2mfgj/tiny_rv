@@ -1,6 +1,6 @@
 #ifndef __INCLUDED_TINY_RV_NH__
 #define __INCLUDED_TINY_RV_NH__
-#include "error.nh"
+#include "../error.nh"
 
 declare tiny_rv
 {

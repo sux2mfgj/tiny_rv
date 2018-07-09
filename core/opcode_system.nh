@@ -1,7 +1,7 @@
 #ifndef __INCLUDED_OPCODE_SYSTEM_NH__
 #define __INCLUDED_OPCODE_SYSTEM_NH__
 
-#include "error.nh"
+#include "../error.nh"
 
 declare opcode_system
 {
