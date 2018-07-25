@@ -1,0 +1,20 @@
+#include "top.nh"
+
+declare top_tb simulation
+{
+    ERROR_INTERFACE
+}
+
+module top_tb
+{
+    top top_4_test;
+    reg counter[10] = 0;
+
+    counter++;
+    if(counter == 10'h80)
+    {
+        _finish();
+    }
+
+}
+

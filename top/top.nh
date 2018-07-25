@@ -1,0 +1,15 @@
+#ifndef __INCLUDED_TOP_NH__
+#define __INCLUDED_TOP_NH__
+
+#include "../error.nh"
+#include "../bus_arbiter_with_rom/bus_arbiter_with_rom.nh"
+
+declare top interface
+{
+    input m_clock;
+    input p_reset;
+    AXI4_LITE_MASTER_INTERFACE
+    ERROR_INTERFACE
+}
+
+#endif

@@ -1,0 +1,9 @@
+#ifndef __INCLUDED_CONFIG_NH__
+#define __INCLUDED_CONFIG_NH__
+
+#define BOOTROM_SIZE    (0x2400)
+#define BOOTROM_BASE    (32'h8000_0000)
+#define MEMORY_HEX "hex is not defined in config.nh"
+
+#endif
+

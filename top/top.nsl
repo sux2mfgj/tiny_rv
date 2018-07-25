@@ -1,0 +1,43 @@
+#include "top.nh"
+
+#include "../core/tiny_rv.nh"
+
+module top
+{
+    tiny_rv core;
+    bus_arbiter_with_rom arbiter;
+
+    core.p_reset = p_reset;
+    core.m_clock = m_clock;
+
+    /*
+     * functions for error
+     */
+    func core.error
+    {
+        error(core.error_num);
+    }
+
+    /*
+     * connections for axi master
+     */
+    awvalid = arbiter.awvalid;
+    arbiter.awready = awready;
+    awaddr = arbiter.awaddr;
+    awprot = arbiter.awprot;
+    wvalid = arbiter.wvalid;
+    arbiter.wready = wready;
+    wdata = arbiter.wdata;
+    wstrb = arbiter.wstrb;
+    arbiter.bvalid = bvalid;
+    bready = arbiter.bready;
+    arbiter.bresp = bresp;
+    arvalid = arbiter.arvalid;
+    arbiter.arready = arready;
+    araddr = arbiter.araddr;
+    arprot = arbiter.arprot;
+    arbiter.rvalid = rvalid;
+    rready = arbiter.rready;
+    arbiter.rdata = rdata;
+    arbiter.rresp = rresp;
+}
