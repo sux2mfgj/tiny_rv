@@ -1,8 +1,116 @@
 #include "bus_arbiter_with_rom.nh"
+#include "../config.nh"
+
+declare bootrom
+{
+    input address[32];
+    //input in_data[32];
+    output out_data[32];
+    func_in load(address) : out_data;
+    //func_in store(address, in_data);
+}
 
 module bus_arbiter_with_rom
 {
     axi4_lite_master axi_master;
+    bootrom rom;
+
+    reg is_inst;
+    proc_name request_wait_proc(is_inst);//, d_req, i_d_req, d_i_req;
+
+    reg store_d_address[32], store_d_data[32], store_d_wstrb[4];
+    proc_name store_wait_i_request(store_d_address, store_d_data, store_d_wstrb);
+
+    proc_name store_wait_done();
+
+    wire request_base[32];
+
+    func i_request
+    {
+        any
+        {
+            i_address < BOOTROM_BASE:
+            {
+                error(ERROR_NOT_IMPLEMENTED);
+            }
+            i_address >= BOOTROM_BASE:
+            {
+                request_base = i_address - BOOTROM_BASE;
+                i_done(rom.load(request_base));
+            }
+        }
+    }
+
+    proc request_wait_proc
+    {
+        error(ERROR_NOT_IMPLEMENTED);
+    }
+
+    //func_in store_b(d_address, d_in_data);
+    func store_b
+    {
+        if(i_request | request_wait_proc)
+        {
+            store_wait_i_request(d_address, d_in_data, 4'b0001);
+        }
+        else
+        {
+            axi_master.write_value(d_address, d_in_data, 4'b0001);
+            if(axi_master.write_done)
+            {
+                store_done();
+            }
+            else
+            {
+                store_wait_done();
+            }
+        }
+    }
+
+    //proc_name store_wait_i_request(store_d_address, store_d_data, store_d_wstrb);
+    proc store_wait_i_request
+    {
+        if(i_request | request_wait_proc)
+        {
+
+        }
+        else
+        {
+            axi_master.write_value(store_d_address, store_d_data, store_d_wstrb);
+            if(axi_master.write_done)
+            {
+                store_done();
+                finish();
+            }
+            else
+            {
+                store_wait_done();
+            }
+        }
+    }
+
+    proc store_wait_done
+    {
+        if(axi_master.write_done)
+        {
+            store_done();
+            finish();
+        }
+    }
+
+    // for core
+    //func_in i_request(i_address);
+    //func_in i_done(i_data);
+
+    //func_in load_b(d_address);
+    //func_in load_h(d_address);
+    //func_in load_w(d_address);
+    //func_out load_done(d_data);
+
+    //func_in store_b(d_address, d_data);
+    //func_in store_h(d_address, d_data);
+    //func_in store_w(d_address, d_data);
+    //func_in store_done();
 
     // connection for axi master
     awvalid = axi_master.awvalid;
@@ -24,20 +132,4 @@ module bus_arbiter_with_rom
     rready = axi_master.rready;
     axi_master.rdata = rdata;
     axi_master.rresp = rresp;
-
-    // for core
-    //func_in i_request(i_address);
-    //func_in i_done(i_data);
-
-    //func_in load_b(d_address);
-    //func_in load_h(d_address);
-    //func_in load_w(d_address);
-    //func_out load_done(d_data);
-
-    //func_in store_b(d_address, d_data);
-    //func_in store_h(d_address, d_data);
-    //func_in store_w(d_address, d_data);
-    //func_in store_done();
-
-    //func_out error(error_num);
 }

@@ -3,6 +3,10 @@ VCD     := $(TARGET)_tb.vcd
 VVP     := $(TARGET).vvp
 DUMP_FILE   := ../toolchain/share/riscv-tests/isa/$(notdir $(MEMORY_HEX:.hex=.dump))
 
+help:
+	@echo "command list"
+	@echo "$ make TARGET=.... {vcd, vvp, veri, dump, vwave, waveform}"
+
 .SUFFIXES: .nsl .v
 .nsl.v:
 	nsl2vl -neg_res $< -o $@ -O0 -canreadoutput -regreport
@@ -28,7 +32,7 @@ dummy_memory.v: hex.nh
 
 veri: $(TARGET)_tb.v $(TARGET).v $(REQUIRE_MODULES)
 	sed s/XXXXX/$(TARGET)/g ../template_cpp > $(TARGET).cpp
-	verilator --cc $(TARGET)_tb.v $(REQUIRE_MODULES) --exe $(TARGET).cpp --trace --trace-underscore
+	verilator --cc $(TARGET)_tb.v $(REQUIRE_MODULES) --exe $(TARGET).cpp --trace --trace-underscore --top-module $(TARGET)_tb
 	make -j -C obj_dir -f V$(TARGET)_tb.mk V$(TARGET)_tb
 	obj_dir/V$(TARGET)_tb
 

@@ -7,8 +7,58 @@ module top
     tiny_rv core;
     bus_arbiter_with_rom arbiter;
 
-    core.p_reset = p_reset;
-    core.m_clock = m_clock;
+    //core.p_reset = p_reset;
+    //core.m_clock = m_clock;
+    /*
+     * core functions
+     */
+    func core.inst_request
+    {
+        arbiter.i_request(core.i_address);
+    }
+
+    func core.load_b
+    {
+        error(ERROR_NOT_IMPLEMENTED);
+    }
+
+    func core.load_l
+    {
+        error(ERROR_NOT_IMPLEMENTED);
+    }
+
+    func core.load_w
+    {
+        error(ERROR_NOT_IMPLEMENTED);
+    }
+
+    func core.store_b
+    {
+        arbiter.store_b(core.d_address, core.store_data);
+    }
+
+    func core.store_l
+    {
+        error(ERROR_NOT_IMPLEMENTED);
+    }
+
+    func core.store_w
+    {
+        error(ERROR_NOT_IMPLEMENTED);
+    }
+
+    /*
+     * error functions
+     */
+    func arbiter.i_done
+    {
+        core.inst_done(arbiter.i_data);
+    }
+
+    func arbiter.store_done
+    {
+        core.store_done();
+    }
 
     /*
      * functions for error

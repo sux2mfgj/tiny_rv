@@ -1,6 +1,7 @@
 #ifndef __INCLUDED_ERROR_NH__
 #define __INCLUDED_ERROR_NH__
 
+
 #define ERROR_NUM_BIT_WIDTH 8
 
 #define ERROR_OK                (ERROR_NUM_BIT_WIDTH'h00)
@@ -20,5 +21,7 @@
 
 #define ERROR_TIME_OVER         (ERROR_NUM_BIT_WIDTH'hfe)
 #define ERROR_DUMMY_ARBITER     (ERROR_NUM_BIT_WIDTH'hff)
+
+#define ERROR_INTERFACE output error_num[ERROR_NUM_BIT_WIDTH]; func_out error(error_num);
 
 #endif

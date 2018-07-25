@@ -12,6 +12,16 @@ module bus_arbiter_with_rom_tb
     reg counter[16] = 0;
     counter++;
 
+    func arbiter.i_done
+    {
+        _display("i_done: 0x", arbiter.i_data);
+    }
+
+    if(counter == 16'h04)
+    {
+        arbiter.i_request(0x80000004);
+    }
+
     if(counter == 16'h10)
     {
         //error(ERROR_TIME_OVER);
