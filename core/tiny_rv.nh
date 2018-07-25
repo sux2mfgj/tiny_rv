@@ -11,13 +11,13 @@ declare tiny_rv
     input loaded_data[32];
     output store_data[32];
 
+    input reset_vector[32];
+
     output error_num[ERROR_NUM_BIT_WIDTH];
 
     /*
      * functions
      */
-    func_in start(instruction);
-
     // for instruction memory
     func_out inst_request(i_address);
     func_in inst_done(instruction);

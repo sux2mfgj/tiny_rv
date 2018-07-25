@@ -70,12 +70,16 @@ module tiny_rv
     wire trap_next_pc[32];
     func_self trap(trap_next_pc);
 
+    state_name reseted, running;
 
-    //func_in start(instruction);
-    func start
+    state reseted
     {
-        fetch_request_stage(instruction);
+        fetch_request_stage(reset_vector);
+        goto running;
     }
+
+    state running {}
+
     /*
      * instruction fetch
      */

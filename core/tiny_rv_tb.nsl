@@ -19,12 +19,8 @@ module tiny_rv_tb
     reg d_address[32], store_data[32];
     proc_name return_load_data(d_address);
     proc_name return_store_done(d_address, store_data);
+    rv_core.reset_vector = 32'h00000000;
     counter++;
-
-    if(counter == 10'h02)
-    {
-        rv_core.start(32'h00000000);
-    }
 
     if(counter == 10'h10)
     {
