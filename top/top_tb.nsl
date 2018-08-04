@@ -16,5 +16,10 @@ module top_tb
         _finish();
     }
 
+    func top_4_test.error
+    {
+        error(top_4_test.error_num);
+        _finish();
+    }
 }
 

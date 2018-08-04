@@ -8,3 +8,6 @@ include ../build.mk
 
 clean:
 	rm -rf *.v *.vcd *.vvp *.cpp obj_dir/ hex.nh
+	make -C ../bus_arbiter_with_rom clean
+	make -C ../core/ clean
+

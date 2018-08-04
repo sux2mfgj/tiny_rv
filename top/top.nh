@@ -4,10 +4,10 @@
 #include "../error.nh"
 #include "../bus_arbiter_with_rom/bus_arbiter_with_rom.nh"
 
-declare top interface
+declare top
 {
-    input m_clock;
-    input p_reset;
+    //input m_clock;
+    //input p_reset;
     AXI4_LITE_MASTER_INTERFACE
     ERROR_INTERFACE
 }
