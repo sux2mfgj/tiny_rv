@@ -13,11 +13,6 @@ module dummy_arbiter_tb
     reg counter[10] = 0;
     counter++;
 
-    if(counter == 10'h02)
-    {
-        arbiter.init();
-    }
-
     if(counter == 10'h08)
     {
         arbiter.request_inst(0x8000_0000);
