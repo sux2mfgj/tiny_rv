@@ -12,16 +12,7 @@ module test_system_tb
     reg counter[16] = 0;
     counter++;
 
-    if(counter == 16'h02)
-    {
-        tsystem.init();
-    }
-
-    if(counter == 16'h04)
-    {
-        tsystem.start(0x8000_0000);
-    }
-
+    tsystem.reset_vector_addr = 0x8000_0000; 
     if(counter == 16'h1000)
     {
         error(ERROR_TIME_OVER);

@@ -7,15 +7,7 @@ module test_system
     tiny_rv rv_core;
     dummy_arbiter arbiter;
 
-    func init
-    {
-        arbiter.init();
-    }
-
-    func start
-    {
-        rv_core.start(reset_vector_addr);
-    }
+    rv_core.reset_vector = reset_vector_addr;
 
     func rv_core.inst_request
     {

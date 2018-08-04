@@ -2,3 +2,4 @@
 hex.nh
 riscv_test_result
 *.cpp
+*.v

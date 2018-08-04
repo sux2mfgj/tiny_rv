@@ -27,6 +27,8 @@ $(VVP): $(TARGET)_tb.nsl $(TARGET).v $(REQUIRE_MODULES)
 
 hex.nh: FORCE
 	echo '#define MEMORY_HEX "$(MEMORY_HEX)"' > hex.nh
+	echo '`define MEMORY_HEX `"$(MEMORY_HEX)`"' > hex.v
+	cat bootrom.tmp > bootrom.v
 
 dummy_memory.v: hex.nh
 

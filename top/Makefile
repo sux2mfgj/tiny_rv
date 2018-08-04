@@ -5,3 +5,6 @@ ifeq ($(TARGET), top)
 endif
 
 include ../build.mk
+
+clean:
+	rm -rf *.v *.vcd *.vvp *.cpp obj_dir/ hex.nh

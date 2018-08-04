@@ -22,7 +22,7 @@ module top
         error(ERROR_NOT_IMPLEMENTED);
     }
 
-    func core.load_l
+    func core.load_h
     {
         error(ERROR_NOT_IMPLEMENTED);
     }
@@ -37,7 +37,7 @@ module top
         arbiter.store_b(core.d_address, core.store_data);
     }
 
-    func core.store_l
+    func core.store_h
     {
         error(ERROR_NOT_IMPLEMENTED);
     }

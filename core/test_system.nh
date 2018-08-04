@@ -9,9 +9,6 @@ declare test_system
     input reset_vector_addr[32];
 
     func_out error(error_num);
-
-    func_in init();
-    func_in start(reset_vector_addr);
 }
 
 #endif
