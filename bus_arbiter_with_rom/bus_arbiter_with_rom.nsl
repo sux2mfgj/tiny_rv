@@ -4,10 +4,10 @@
 declare bootrom
 {
     input address[32];
-    //input in_data[32];
+    input in_data[8];
     output out_data[32];
     func_in load(address) : out_data;
-    //func_in store(address, in_data);
+    func_in store(address, in_data);
 }
 
 module bus_arbiter_with_rom

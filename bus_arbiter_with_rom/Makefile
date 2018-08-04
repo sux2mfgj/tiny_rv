@@ -10,4 +10,3 @@ endif
 
 clean:
 	rm -rf bus_arbiter_with_rom_tb.v bus_arbiter_with_rom.v *.vcd *.vvp *.cpp obj_dir/ hex.nh
-

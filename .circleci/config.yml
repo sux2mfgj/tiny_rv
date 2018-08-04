@@ -17,3 +17,4 @@ jobs:
       - run: make -C /work/tiny_rv/core TARGET=dummy_memory veri
       - run: make -C /work/tiny_rv/core TARGET=dummy_arbiter veri
       - run: make -C /work/tiny_rv/core riscv-test
+      - run: make -C /work/bus_arbiter_with_rom TARGET=bus_arbiter_with_rom veri
