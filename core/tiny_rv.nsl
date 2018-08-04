@@ -123,7 +123,22 @@ module tiny_rv
         if(!stall && !trap)
         {
             ifetch.request(request_addr);
-            fetch_wait_stage();
+            if(ifetch.done)
+            {
+                if(interlock)
+                {
+                    fetch_stage_interlocked(ifetch.instruction);
+                }
+                else
+                {
+                    execute_stage(ifetch.instruction, request_addr);
+                    fetch_request_stage(pc_plus_4);
+                }
+            }
+            else
+            {
+                fetch_wait_stage();
+            }
         }
     }
 

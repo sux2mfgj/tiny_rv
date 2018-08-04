@@ -7,6 +7,8 @@ module top
     tiny_rv core;
     bus_arbiter_with_rom arbiter;
 
+    core.reset_vector = 0x8000_0000;
+
     /*
      * core functions
      */
