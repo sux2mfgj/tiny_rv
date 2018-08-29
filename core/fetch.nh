@@ -9,11 +9,12 @@ declare fetch
     output address[32];
     input data[32];
 
-    output error_num[ERROR_NUM_BIT_WIDTH];
 
     // for internal
     output instruction[32];
     input next_pc[32];
+
+    ERROR_INTERFACE
 
     // for memory
     func_out request_to_bus(address);
@@ -22,8 +23,6 @@ declare fetch
     // for internal
     func_in request(next_pc);
     func_out done(instruction);
-
-    func_out error(error_num);
 }
 
 #endif

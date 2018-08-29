@@ -1,30 +1,34 @@
-#include "opcode_system.nh"
+#include "csr_manager.nh"
 
-declare opcode_system_tb simulation
+declare csr_manager_tb simulation
 {
     output error_num[ERROR_NUM_BIT_WIDTH];
     func_out error(error_num);
 }
 
-module opcode_system_tb
+module csr_manager_tb
 {
-    opcode_system system;
+    csr_manager csr;
     wire result[32];
     reg counter[10] = 0;
     counter++;
 
-
     if(counter == 10'h04)
     {
         //f1402573            csrr    a0,mhartid
-        result = system.execute(12'hf14, 2'b10, 32'h0);
-        _display("csrr a0,mhartid: ", result);
+        result = csr.execute(12'hf14, 32'b10, 2'h0);
+        _display("csrr a0, mhartid: 0x%x", result);
     }
 
     if(counter == 10'h10)
     {
         error(ERROR_OK);
         _finish();
+    }
+
+    func csr.get_pc
+    {
+        _display("pc: 0x%x", csr.pc);
     }
 }
 

@@ -2,8 +2,7 @@
 
 declare tiny_rv_tb simulation
 {
-    output error_num[ERROR_NUM_BIT_WIDTH];
-    func_out error(error_num);
+    ERROR_INTERFACE
 }
 
 module tiny_rv_tb
@@ -37,7 +36,7 @@ module tiny_rv_tb
 
     proc return_inst
     {
-        _display("requested: ", i_address);
+        _display("requested: 0x%x", i_address);
         //01028293  addi    t0,t0,16 # 80000064 <reset_vector+0x18>
 
         rv_core.inst_done(32'h01028293);
@@ -57,7 +56,7 @@ module tiny_rv_tb
 
     proc return_load_data
     {
-        _display("load_w: 0x", d_address);
+        _display("load_w: 0x%x", d_address);
         rv_core.load_done(32'h76543210);
     }
 
@@ -68,12 +67,12 @@ module tiny_rv_tb
 
     proc return_store_done
     {
-        _display("store: 0x", d_address, store_data);
+        _display("store: 0x%x 0x%x", d_address, store_data);
         rv_core.store_done();
     }
 
     func finish_simulation
     {
-        _finish("finish: ", e_num);
+        _finish("finish: %d", e_num);
     }
 }

@@ -3,8 +3,7 @@
 
 declare integer_arithmetic_logic_tb simulation
 {
-    output error_num[ERROR_NUM_BIT_WIDTH];
-    func_out error(error_num);
+    ERROR_INTERFACE
 }
 
 module integer_arithmetic_logic_tb

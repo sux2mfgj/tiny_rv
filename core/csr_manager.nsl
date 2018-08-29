@@ -1,0 +1,52 @@
+#include "csr_manager.nh"
+#include "control_status_registers.nh"
+
+#define SYSTEM_INST_MRET    (12'h302)
+#define SYSTEM_INST_ECALL   (12'h000)
+
+module csr_manager
+{
+    control_status_registers csr;
+
+    //func_in execute(address, funct, source) : result;
+    func execute
+    {
+        any
+        {
+            funct == SYSTEM_FUNCT_CONTROL:
+            {
+                any
+                {
+                    address == SYSTEM_INST_MRET:
+                    {
+                        trap(csr.read_update(CSR_MEPC, SYSTEM_FUNCT_CSR_RS, 0));
+                    }
+                    address == SYSTEM_INST_ECALL:
+                    {
+                        csr.read_update(CSR_MEPC, SYSTEM_FUNCT_CSR_RW, get_pc());
+                        trap(csr.get_mtvec());
+                        csr.update_mcause(32'd11);
+                    }
+                    else:
+                    {
+                        error(ERROR_NOT_IMPLEMENTED);
+                    }
+                }
+            }
+            else:
+            {
+                return csr.read_update(address, funct, source);
+            }
+        }
+    }
+
+    func csr.trap
+    {
+        trap(csr.trap_address);
+    }
+
+    func csr.error
+    {
+        error(csr.error_num);
+    }
+}

@@ -1,9 +1,9 @@
-#ifndef __INCLUDED_OPCODE_SYSTEM_NH__
-#define __INCLUDED_OPCODE_SYSTEM_NH__
+#ifndef __INCLUDED_CSR_MANAGER_NH__
+#define __INCLUDED_CSR_MANAGER_NH__
 
 #include "../error.nh"
 
-declare opcode_system
+declare csr_manager
 {
     // for error
     output error_num[ERROR_NUM_BIT_WIDTH];

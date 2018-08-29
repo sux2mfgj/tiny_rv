@@ -2,7 +2,7 @@
 #include "fetch.nh"
 #include "integer_register.nh"
 #include "integer_arithmetic_logic.nh"
-#include "opcode_system.nh"
+#include "csr_manager.nh"
 
 #include "format.nh"
 #include "funct3.nh"
@@ -12,7 +12,7 @@ module tiny_rv
     fetch ifetch;
     integer_register int_regs;
     integer_arithmetic_logic int_alu;
-    opcode_system system;
+    csr_manager csr;
 
     reg request_addr[32];
     wire pc_plus_4[32];
@@ -108,9 +108,9 @@ module tiny_rv
         return int_regs.read_rs2(rs2);
     }
 
-    func system.trap
+    func csr.trap
     {
-        trap(system.trap_address);
+        trap(csr.trap_address);
     }
 
     /*
@@ -466,11 +466,11 @@ module tiny_rv
     //proc_name write_back_stage_csr(wb_csr, wb_value, wb_rd, wb_csr_funct);
     proc write_back_stage_csr
     {
-        func system.get_pc
+        func csr.get_pc
         {
             return wb_pc;
         }
-        int_regs.write(wb_rd, system.execute(wb_csr, wb_value, wb_csr_funct));
+        int_regs.write(wb_rd, csr.execute(wb_csr, wb_value, wb_csr_funct));
         finish();
     }
 
@@ -492,8 +492,8 @@ module tiny_rv
         error(int_alu.error_num);
     }
 
-    func system.error
+    func csr.error
     {
-        error(system.error_num);
+        error(csr.error_num);
     }
 }

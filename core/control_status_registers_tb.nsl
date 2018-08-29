@@ -1,0 +1,19 @@
+#include "control_status_registers.nh"
+
+declare control_status_registers_tb simulation
+{
+    ERROR_INTERFACE
+}
+
+module control_status_registers_tb
+{
+    reg counter[10] = 10'h0;
+    counter++;
+
+    if(counter == 10'hff)
+    {
+        _finish();
+    }
+
+    //TODO
+}

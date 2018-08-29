@@ -2,8 +2,7 @@
 
 declare fetch_tb simulation
 {
-    output error_num[ERROR_NUM_BIT_WIDTH];
-    func_out error(error_num);
+    ERROR_INTERFACE
 }
 
 module fetch_tb
@@ -56,7 +55,7 @@ module fetch_tb
 
     proc execute_stage
     {
-        _display("execute_stage: ", exec_inst);
+        _display("execute_stage: 0x%x", exec_inst);
         finish();
     }
 
@@ -71,7 +70,7 @@ module fetch_tb
     {
         if(counter[0] & counter[2])
         {
-            _display("requested: ", read_mem_addr);
+            _display("requested: 0x%x", read_mem_addr);
             ifetch.enable(32'h00000793); // li a5, 0
             finish();
         }
@@ -79,7 +78,7 @@ module fetch_tb
 
     func ifetch.error
     {
-        //_display("error occured: ", ifetch.error_num);
+        _display("error occured: %d", ifetch.error_num);
         //_finish("error occured: ", ifetch.error_num);
         error(ifetch.error_num);
     }

@@ -1,37 +1,4 @@
-#include "opcode_system.nh"
-
-#define SYSTEM_FUNCT_CONTROL    (2'b00)
-#define SYSTEM_FUNCT_CSR_RW     (2'b01)
-#define SYSTEM_FUNCT_CSR_RS     (2'b10)
-#define SYSTEM_FUNCT_CSR_RC     (2'b11)
-
-#define CSR_MHARTID (12'hf14)
-#define CSR_MTVEC   (12'h305)
-#define CSR_MSTATUS (12'h300)
-#define CSR_MEPC    (12'h341)
-#define CSR_MCAUSE  (12'h342)
-
-#define SYSTEM_INST_MRET    (12'h302)
-#define SYSTEM_INST_ECALL   (12'h000)
-
-declare control_status_registers
-{
-    output error_num[ERROR_NUM_BIT_WIDTH];
-
-    input address[12];
-    input source[32];
-    input funct[2];
-    output result[32];
-    output trap_address[32];
-    output mtvec_value[32];
-    input mcause_value[32];
-
-    func_in read_update(address, funct, source): result;
-    func_out trap(trap_address);
-    func_out error(error_num);
-    func_in get_mtvec() : mtvec_value;
-    func_in update_mcause(mcause_value);
-}
+#include "control_status_registers.nh"
 
 module control_status_registers
 {
@@ -120,52 +87,5 @@ module control_status_registers
                 error(ERROR_NOT_IMPLEMENTED);
             }
         }
-    }
-}
-
-module opcode_system
-{
-    control_status_registers csr;
-
-    //func_in execute(address, funct, source) : result;
-    func execute
-    {
-        any
-        {
-            funct == SYSTEM_FUNCT_CONTROL:
-            {
-                any
-                {
-                    address == SYSTEM_INST_MRET:
-                    {
-                        trap(csr.read_update(CSR_MEPC, SYSTEM_FUNCT_CSR_RS, 0));
-                    }
-                    address == SYSTEM_INST_ECALL:
-                    {
-                        csr.read_update(CSR_MEPC, SYSTEM_FUNCT_CSR_RW, get_pc());
-                        trap(csr.get_mtvec());
-                        csr.update_mcause(32'd11);
-                    }
-                    else:
-                    {
-                        error(ERROR_NOT_IMPLEMENTED);
-                    }
-                }
-            }
-            else:
-            {
-                return csr.read_update(address, funct, source);
-            }
-        }
-    }
-
-    func csr.trap
-    {
-        trap(csr.trap_address);
-    }
-
-    func csr.error
-    {
-        error(csr.error_num);
     }
 }
