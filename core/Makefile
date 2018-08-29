@@ -18,6 +18,10 @@ ifeq ($(TARGET), test_system)
     REQUIRE_MODULES := tiny_rv.v fetch.v integer_register.v integer_arithmetic_logic.v dummy_arbiter.v dummy_memory.v opcode_system.v bootrom.v
 endif
 
+ifeq ($(TARGET), arbiter)
+    REQUIRE_MODULES := arbiter.v ../nsl_axi4_lite/axi4_lite_master.v
+endif
+
 riscv-test: FORCE
 	echo '' > riscv_test_result
 	for hex in $(HEXS); do \
